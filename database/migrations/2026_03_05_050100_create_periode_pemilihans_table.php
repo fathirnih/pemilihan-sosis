@@ -13,11 +13,11 @@ return new class extends Migration
     {
         Schema::create('periode_pemilihan', function (Blueprint $table) {
             $table->id();
-            $table->string('nama_periode');
+            $table->string('nama_periode', 120);
             $table->dateTime('mulai_pada');
             $table->dateTime('selesai_pada');
-            $table->string('status')->default('draf');
-            $table->string('mode_pasangan')->default('ketua_wakil');
+            $table->enum('status', ['draf', 'aktif', 'ditutup'])->default('draf');
+            $table->enum('mode_pasangan', ['ketua_saja', 'ketua_wakil'])->default('ketua_wakil');
             $table->timestamps();
         });
     }

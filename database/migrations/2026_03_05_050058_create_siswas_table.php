@@ -13,13 +13,10 @@ return new class extends Migration
     {
         Schema::create('siswa', function (Blueprint $table) {
             $table->id();
-            $table->string('nis')->unique();
-            $table->string('nama');
+            $table->string('nis', 30)->unique();
+            $table->string('nama', 100);
             $table->foreignId('kelas_id')->constrained('kelas')->cascadeOnUpdate()->restrictOnDelete();
-            $table->string('password');
-            $table->boolean('harus_ganti_kata_sandi')->default(true);
             $table->boolean('aktif')->default(true);
-            $table->rememberToken();
             $table->timestamps();
         });
     }

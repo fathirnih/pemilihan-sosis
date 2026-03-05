@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('kandidat_id')->constrained('kandidat')->cascadeOnUpdate()->cascadeOnDelete();
             $table->foreignId('siswa_id')->constrained('siswa')->cascadeOnUpdate()->restrictOnDelete();
-            $table->string('peran');
+            $table->enum('peran', ['ketua', 'wakil']);
             $table->timestamps();
 
             $table->unique(['kandidat_id', 'peran']);

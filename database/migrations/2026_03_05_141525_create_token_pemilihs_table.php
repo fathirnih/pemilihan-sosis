@@ -11,13 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('suara', function (Blueprint $table) {
+        Schema::create('token_pemilih', function (Blueprint $table) {
             $table->id();
             $table->foreignId('periode_id')->constrained('periode_pemilihan')->cascadeOnUpdate()->cascadeOnDelete();
-            $table->foreignId('kandidat_id')->constrained('kandidat')->cascadeOnUpdate()->restrictOnDelete();
             $table->enum('tipe_pemilih', ['siswa', 'guru']);
             $table->unsignedBigInteger('pemilih_id');
-            $table->timestamp('created_at')->useCurrent();
+            $table->string('token_hash', 255)->unique();
+            $table->timestamp('digunakan_pada')->nullable();
+            $table->timestamp('kadaluarsa_pada')->nullable();
+            $table->timestamps();
 
             $table->unique(['periode_id', 'tipe_pemilih', 'pemilih_id']);
             $table->index(['tipe_pemilih', 'pemilih_id']);
@@ -29,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('suara');
+        Schema::dropIfExists('token_pemilih');
     }
 };

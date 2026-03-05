@@ -13,12 +13,9 @@ return new class extends Migration
     {
         Schema::create('guru', function (Blueprint $table) {
             $table->id();
-            $table->string('nip')->unique();
-            $table->string('nama');
-            $table->string('password');
-            $table->boolean('harus_ganti_kata_sandi')->default(true);
+            $table->string('nip', 30)->unique();
+            $table->string('nama', 100);
             $table->boolean('aktif')->default(true);
-            $table->rememberToken();
             $table->timestamps();
         });
     }

@@ -37,4 +37,9 @@ class PeriodePemilihan extends Model
     {
         return $this->hasMany(Suara::class, 'periode_id');
     }
+
+    public function tokenPemilih(): HasMany
+    {
+        return $this->hasMany(TokenPemilih::class, 'periode_id');
+    }
 }
