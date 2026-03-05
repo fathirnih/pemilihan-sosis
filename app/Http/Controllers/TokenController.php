@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\TokenPemilih;
 use App\Models\Siswa;
+use App\Models\Kelas;
 use App\Models\PeriodePemilihan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -17,7 +18,7 @@ class TokenController extends Controller
     public function index()
     {
         $periode = PeriodePemilihan::where('status', 'aktif')->first();
-        $tokens = TokenPemilih::with(['periode', 'siswa'])
+        $tokens = TokenPemilih::with(['periode', 'siswa.kelas', 'kelas'])
             ->where('tipe_pemilih', 'siswa')
             ->orderBy('created_at', 'desc')
             ->paginate(10);
@@ -34,7 +35,12 @@ class TokenController extends Controller
         if (!$periode) {
             return back()->withErrors(['periode' => 'Tidak ada periode pemilihan yang aktif']);
         }
-        return view('admin.tokens.create', compact('periode'));
+        $kelasList = Kelas::orderBy('tingkat')->orderBy('nama_kelas')->get();
+        if ($kelasList->isEmpty()) {
+            return redirect()->route('admin.kelas.index')
+                ->withErrors(['kelas' => 'Data kelas belum ada. Tambahkan kelas terlebih dahulu']);
+        }
+        return view('admin.tokens.create', compact('periode', 'kelasList'));
     }
 
     /**
@@ -45,9 +51,11 @@ class TokenController extends Controller
         $request->validate([
             'nama' => 'required|string|max:100',
             'nis' => 'required|string|max:20',
+            'kelas_id' => 'required|exists:kelas,id',
         ], [
             'nama.required' => 'Nama siswa harus diisi',
             'nis.required' => 'NIS harus diisi',
+            'kelas_id.required' => 'Kelas harus dipilih',
         ]);
 
         $periode = PeriodePemilihan::where('status', 'aktif')->first();
@@ -61,8 +69,13 @@ class TokenController extends Controller
             $siswa = Siswa::create([
                 'nama' => $request->nama,
                 'nis' => $request->nis,
-                'kelas_id' => 1, // Default class
+                'kelas_id' => $request->kelas_id,
                 'aktif' => true,
+            ]);
+        } else {
+            $siswa->update([
+                'nama' => $request->nama,
+                'kelas_id' => $request->kelas_id,
             ]);
         }
 
@@ -74,6 +87,7 @@ class TokenController extends Controller
             'periode_id' => $periode->id,
             'tipe_pemilih' => 'siswa',
             'pemilih_id' => $siswa->id,
+            'kelas_id' => $request->kelas_id,
             'token_hash' => Hash::make($token),
             'token' => $token,
             'status' => 'aktif',
@@ -92,8 +106,13 @@ class TokenController extends Controller
     {
         $token = TokenPemilih::with('siswa')->findOrFail($id);
         $periode = PeriodePemilihan::where('status', 'aktif')->first();
-        
-        return view('admin.tokens.edit', compact('token', 'periode'));
+        $kelasList = Kelas::orderBy('tingkat')->orderBy('nama_kelas')->get();
+        if ($kelasList->isEmpty()) {
+            return redirect()->route('admin.kelas.index')
+                ->withErrors(['kelas' => 'Data kelas belum ada. Tambahkan kelas terlebih dahulu']);
+        }
+
+        return view('admin.tokens.edit', compact('token', 'periode', 'kelasList'));
     }
 
     /**
@@ -102,19 +121,38 @@ class TokenController extends Controller
     public function update(Request $request, $id)
     {
         $token = TokenPemilih::findOrFail($id);
-        
+
+        $nisRule = 'required|string|max:20';
+        if ($token->siswa) {
+            $nisRule .= '|unique:siswa,nis,' . $token->siswa->id;
+        } else {
+            $nisRule .= '|unique:siswa,nis';
+        }
+
         $request->validate([
             'nama' => 'required|string|max:100',
-            'nis' => 'required|string|max:20',
+            'nis' => $nisRule,
+            'kelas_id' => 'required|exists:kelas,id',
         ], [
             'nama.required' => 'Nama siswa harus diisi',
             'nis.required' => 'NIS harus diisi',
+            'nis.unique' => 'NIS sudah digunakan siswa lain',
+            'kelas_id.required' => 'Kelas harus dipilih',
         ]);
+
+        if ($token->siswa) {
+            $token->siswa->update([
+                'nama' => $request->nama,
+                'nis' => $request->nis,
+                'kelas_id' => $request->kelas_id,
+            ]);
+        }
 
         // Update token record
         $token->update([
             'nama_pemilih' => $request->nama,
             'nis_pemilih' => $request->nis,
+            'kelas_id' => $request->kelas_id,
         ]);
 
         return redirect()->route('admin.tokens.index')->with('success', "Token untuk {$request->nama} berhasil diperbarui");
@@ -137,7 +175,7 @@ class TokenController extends Controller
      */
     public function downloadPdf($id)
     {
-        $token = TokenPemilih::with('siswa')->findOrFail($id);
+        $token = TokenPemilih::with(['siswa.kelas', 'kelas'])->findOrFail($id);
         
         $pdf = view('admin.tokens.pdf', ['token' => $token])->render();
         
@@ -151,7 +189,7 @@ class TokenController extends Controller
      */
     public function print($id)
     {
-        $token = TokenPemilih::with('siswa')->findOrFail($id);
+        $token = TokenPemilih::with(['siswa.kelas', 'kelas'])->findOrFail($id);
         return view('admin.tokens.print', compact('token'));
     }
 

@@ -7,6 +7,7 @@ use App\Models\PeriodePemilihan;
 use App\Models\Kandidat;
 use App\Models\TokenPemilih;
 use App\Models\Suara;
+use App\Models\Kelas;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Hash;
@@ -69,7 +70,8 @@ class AdminController extends Controller
     public function showGenerateToken()
     {
         $periode = PeriodePemilihan::where('status', 'aktif')->first();
-        return view('admin.generate-token', compact('periode'));
+        $kelasList = Kelas::orderBy('tingkat')->orderBy('nama_kelas')->get();
+        return view('admin.generate-token', compact('periode', 'kelasList'));
     }
 
     /**
@@ -80,7 +82,12 @@ class AdminController extends Controller
         $request->validate([
             'jumlah' => 'required|integer|min:1|max:100',
             'tipe_pemilih' => 'required|in:siswa,guru',
+            'kelas_id' => 'nullable|exists:kelas,id',
         ]);
+
+        if ($request->tipe_pemilih === 'siswa' && !$request->filled('kelas_id')) {
+            return back()->withErrors(['kelas_id' => 'Kelas wajib dipilih untuk token siswa'])->withInput();
+        }
 
         $periode = PeriodePemilihan::where('status', 'aktif')->first();
         if (!$periode) {
@@ -94,6 +101,7 @@ class AdminController extends Controller
                 'periode_id' => $periode->id,
                 'tipe_pemilih' => $request->tipe_pemilih,
                 'pemilih_id' => 0, // Will be assigned per voter
+                'kelas_id' => $request->tipe_pemilih === 'siswa' ? $request->kelas_id : null,
                 'token_hash' => Hash::make($token),
                 'token' => $token,
                 'status' => 'aktif',

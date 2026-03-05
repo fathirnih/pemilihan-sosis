@@ -100,9 +100,12 @@
         @endif
 
         <!-- Action Buttons -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-            <a href="{{ route('admin.show-generate-token') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg transition-colors text-center">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+            <a href="{{ route('admin.tokens.index') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg transition-colors text-center">
                 📄 Generate Token
+            </a>
+            <a href="{{ route('admin.kelas.index') }}" class="bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-3 px-6 rounded-lg transition-colors text-center">
+                🏫 Kelas
             </a>
             <a href="{{ route('admin.manage-periode') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-6 rounded-lg transition-colors text-center">
                 🔧 Manage Periode

@@ -6,232 +6,192 @@
     <title>Cetak Token - {{ $token->nama_pemilih }}</title>
     <style>
         * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f3f4f6;
-            padding: 20px;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background: #f1f5f9;
+            color: #0f172a;
+            padding: 24px;
         }
 
-        @media print {
-            body {
-                background-color: white;
-                padding: 0;
-            }
-        }
-
-        .print-container {
-            max-width: 350px;
+        .wrapper {
+            max-width: 420px;
             margin: 0 auto;
-            background-color: white;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-            overflow: hidden;
         }
 
         .token-card {
-            background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
-            color: white;
-            padding: 30px;
-            text-align: center;
-            position: relative;
+            background: #ffffff;
+            border: 2px solid #1e3a8a;
+            border-radius: 14px;
             overflow: hidden;
+            box-shadow: 0 14px 30px rgba(15, 23, 42, 0.18);
         }
 
-        .token-card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
-            background-size: 20px 20px;
-            animation: moveBackground 20s linear infinite;
+        .card-header {
+            background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
+            color: #ffffff;
+            padding: 18px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.25);
         }
 
-        @keyframes moveBackground {
-            0% { transform: translate(0, 0); }
-            100% { transform: translate(20px, 20px); }
-        }
-
-        .token-card-content {
-            position: relative;
-            z-index: 1;
-        }
-
-        .school-name {
+        .title {
             font-size: 12px;
-            font-weight: 600;
-            text-transform: uppercase;
             letter-spacing: 1px;
+            text-transform: uppercase;
+            font-weight: 700;
+            opacity: 0.95;
+        }
+
+        .subtitle {
+            margin-top: 6px;
+            font-size: 13px;
             opacity: 0.9;
-            margin-bottom: 20px;
         }
 
-        .header-divider {
-            height: 2px;
-            background: rgba(255, 255, 255, 0.3);
-            margin-bottom: 20px;
+        .card-body {
+            padding: 18px 20px 16px;
         }
 
-        .student-name {
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 5px;
+        .name {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 4px;
             word-break: break-word;
         }
 
-        .student-nis {
-            font-size: 12px;
-            opacity: 0.9;
-            margin-bottom: 20px;
+        .meta {
+            font-size: 13px;
+            color: #334155;
+            margin-bottom: 2px;
         }
 
-        .divider {
-            height: 1px;
-            background: rgba(255, 255, 255, 0.3);
-            margin: 20px 0;
+        .token-box {
+            margin-top: 14px;
+            padding: 12px;
+            border: 1px dashed #1e3a8a;
+            border-radius: 10px;
+            background: #eff6ff;
         }
 
         .token-label {
             font-size: 11px;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            opacity: 0.85;
-            margin-bottom: 8px;
+            color: #1e3a8a;
+            font-weight: 700;
+            margin-bottom: 6px;
         }
 
         .token-value {
-            font-size: 20px;
-            font-weight: bold;
-            letter-spacing: 2px;
-            font-family: 'Courier New', monospace;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 12px;
-            border-radius: 6px;
-            word-break: break-all;
-            margin-bottom: 15px;
-        }
-
-        .instruction {
-            font-size: 10px;
-            opacity: 0.8;
+            font-size: 18px;
             line-height: 1.4;
-            margin-top: 20px;
-            border-top: 1px solid rgba(255, 255, 255, 0.3);
-            padding-top: 15px;
+            letter-spacing: 1.2px;
+            font-family: "Courier New", monospace;
+            color: #0f172a;
+            word-break: break-all;
+            font-weight: 700;
         }
 
-        .footer {
-            background-color: #f8fafc;
-            padding: 20px;
-            text-align: center;
+        .hint {
+            margin-top: 14px;
+            border-top: 1px solid #dbeafe;
+            padding-top: 10px;
+            font-size: 11px;
             color: #475569;
+            line-height: 1.5;
+        }
+
+        .card-footer {
+            border-top: 1px solid #e2e8f0;
+            background: #f8fafc;
+            padding: 12px 20px;
             font-size: 12px;
+            color: #475569;
         }
 
         .print-controls {
             text-align: center;
-            margin-top: 20px;
+            margin-top: 16px;
         }
 
         .print-btn {
-            padding: 10px 20px;
-            font-size: 14px;
-            background-color: #1e40af;
-            color: white;
+            background: #1e40af;
+            color: #ffffff;
             border: none;
-            border-radius: 6px;
-            cursor: pointer;
+            border-radius: 8px;
+            padding: 10px 18px;
+            font-size: 14px;
             font-weight: 600;
-            transition: background-color 0.3s;
+            cursor: pointer;
         }
 
         .print-btn:hover {
-            background-color: #1e3a8a;
+            background: #1e3a8a;
         }
 
         @media print {
-            .print-controls {
-                display: none;
-            }
-            
-            .print-container {
-                max-width: 100%;
-                box-shadow: none;
-                margin: 0;
-            }
-
             body {
+                background: #ffffff;
                 padding: 0;
-                margin: 0;
             }
-        }
 
-        .watermark {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) rotate(-45deg);
-            font-size: 120px;
-            opacity: 0.05;
-            color: #000;
-            pointer-events: none;
-            z-index: 0;
-        }
+            .wrapper {
+                max-width: 100%;
+            }
 
-        @media print {
-            .watermark {
+            .token-card {
+                box-shadow: none;
+            }
+
+            .print-controls {
                 display: none;
             }
         }
     </style>
 </head>
 <body>
-    <div class="watermark">🗳️</div>
+    @php
+        $kelasNama = $token->kelas?->nama_kelas ?? $token->siswa?->kelas?->nama_kelas ?? '-';
+    @endphp
 
-    <div class="print-container">
+    <div class="wrapper">
         <div class="token-card">
-            <div class="token-card-content">
-                <div class="school-name">PEMILIHAN OSIS</div>
+            <div class="card-header">
+                <div class="title">Pemilihan OSIS</div>
+                <div class="subtitle">Kartu Token Pemilih</div>
+            </div>
 
-                <div class="header-divider"></div>
+            <div class="card-body">
+                <div class="name">{{ $token->nama_pemilih }}</div>
+                <div class="meta">NIS: {{ $token->nis_pemilih }}</div>
+                <div class="meta">Kelas: {{ $kelasNama }}</div>
 
-                <div class="student-name">{{ $token->nama_pemilih }}</div>
-                <div class="student-nis">NIS: {{ $token->nis_pemilih }}</div>
-
-                <div class="divider"></div>
-
-                <div class="token-label">Kode Akses Pemilihan</div>
-                <div class="token-value">{{ $token->token }}</div>
-
-                <div class="instruction">
-                    ✓ Simpan kode ini dengan baik<br>
-                    ✓ Gunakan saat login pemilihan<br>
-                    ✓ Satu kode hanya untuk satu pemilih
+                <div class="token-box">
+                    <div class="token-label">Kode Token</div>
+                    <div class="token-value">{{ $token->token }}</div>
                 </div>
+
+                <div class="hint">
+                    Simpan token ini dengan baik. Token hanya dapat digunakan satu kali saat pemungutan suara.
+                </div>
+            </div>
+
+            <div class="card-footer">
+                Dicetak: {{ now()->format('d/m/Y H:i') }}
             </div>
         </div>
 
-        <div class="footer">
-            <p><strong>{{ date('d/m/Y H:i') }}</strong></p>
-            <p>Dihasilkan oleh Sistem Pemilihan OSIS</p>
+        <div class="print-controls">
+            <button class="print-btn" onclick="window.print()">Cetak Kartu</button>
         </div>
     </div>
 
-    <div class="print-controls">
-        <button class="print-btn" onclick="window.print()">🖨️ Cetak Kartu Token</button>
-    </div>
-
     <script>
-        // Trigger print dialog on page load if requested
         if (new URLSearchParams(window.location.search).get('print') === '1') {
-            window.addEventListener('load', function() {
+            window.addEventListener('load', function () {
                 window.print();
             });
         }

@@ -12,9 +12,14 @@
                     <h1 class="text-3xl font-bold">Kelola Token Pemilih</h1>
                     <p class="text-blue-100 mt-2">Buat dan kelola token untuk siswa</p>
                 </div>
-                <a href="{{ route('admin.tokens.create') }}" class="bg-green-500 hover:bg-green-600 px-6 py-3 rounded-lg font-medium transition-colors inline-flex items-center gap-2">
-                    ➕ Token Baru
-                </a>
+                <div class="flex items-center gap-3">
+                    <a href="{{ route('admin.kelas.index') }}" class="bg-emerald-500 hover:bg-emerald-600 px-6 py-3 rounded-lg font-medium transition-colors inline-flex items-center gap-2">
+                        Kelas
+                    </a>
+                    <a href="{{ route('admin.tokens.create') }}" class="bg-green-500 hover:bg-green-600 px-6 py-3 rounded-lg font-medium transition-colors inline-flex items-center gap-2">
+                        ➕ Token Baru
+                    </a>
+                </div>
             </div>
         </div>
     </div>
@@ -57,6 +62,7 @@
                             <th class="px-6 py-4 text-left text-sm font-semibold text-slate-900">No</th>
                             <th class="px-6 py-4 text-left text-sm font-semibold text-slate-900">Nama Siswa</th>
                             <th class="px-6 py-4 text-left text-sm font-semibold text-slate-900">NIS</th>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-slate-900">Kelas</th>
                             <th class="px-6 py-4 text-left text-sm font-semibold text-slate-900">Token</th>
                             <th class="px-6 py-4 text-left text-sm font-semibold text-slate-900">Status</th>
                             <th class="px-6 py-4 text-left text-sm font-semibold text-slate-900">Aksi</th>
@@ -68,6 +74,7 @@
                                 <td class="px-6 py-4 text-sm text-slate-900">{{ $loop->iteration }}</td>
                                 <td class="px-6 py-4 text-sm text-slate-900 font-medium">{{ $token->nama_pemilih }}</td>
                                 <td class="px-6 py-4 text-sm text-slate-600">{{ $token->nis_pemilih }}</td>
+                                <td class="px-6 py-4 text-sm text-slate-600">{{ $token->kelas?->nama_kelas ?? $token->siswa?->kelas?->nama_kelas ?? '-' }}</td>
                                 <td class="px-6 py-4 text-sm">
                                     <code class="bg-slate-100 px-3 py-1 rounded text-xs font-mono">{{ $token->token }}</code>
                                 </td>
@@ -110,7 +117,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="px-6 py-8 text-center text-slate-600">
+                                <td colspan="7" class="px-6 py-8 text-center text-slate-600">
                                     <p class="text-lg">Belum ada token. <a href="{{ route('admin.tokens.create') }}" class="text-blue-600 hover:text-blue-700 font-medium">Buat token baru</a></p>
                                 </td>
                             </tr>

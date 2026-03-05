@@ -75,6 +75,29 @@
                     @enderror
                 </div>
 
+                <!-- Kelas Input -->
+                <div>
+                    <label for="kelas_id" class="block text-sm font-semibold text-slate-900 mb-2">
+                        Kelas <span class="text-red-500">*</span>
+                    </label>
+                    <select
+                        name="kelas_id"
+                        id="kelas_id"
+                        class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 @error('kelas_id') border-red-500 @enderror"
+                        required
+                    >
+                        <option value="">Pilih kelas</option>
+                        @foreach ($kelasList as $kelas)
+                            <option value="{{ $kelas->id }}" {{ old('kelas_id', $token->kelas_id ?? $token->siswa?->kelas_id) == $kelas->id ? 'selected' : '' }}>
+                                {{ $kelas->nama_kelas }} (Tingkat {{ $kelas->tingkat }})
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('kelas_id')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
                 <!-- Status Info -->
                 <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
                     <p class="text-sm text-slate-600 mb-2">📊 Status Token</p>

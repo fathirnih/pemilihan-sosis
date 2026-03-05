@@ -17,6 +17,7 @@ class TokenPemilih extends Model
         'periode_id',
         'tipe_pemilih',
         'pemilih_id',
+        'kelas_id',
         'token',
         'token_hash',
         'status',
@@ -48,6 +49,11 @@ class TokenPemilih extends Model
     public function siswa(): BelongsTo
     {
         return $this->belongsTo(Siswa::class, 'pemilih_id');
+    }
+
+    public function kelas(): BelongsTo
+    {
+        return $this->belongsTo(Kelas::class, 'kelas_id');
     }
 
     public function suara(): HasOne
