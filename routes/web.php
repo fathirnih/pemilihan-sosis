@@ -7,6 +7,7 @@ use App\Http\Controllers\ResultsController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\PanitiaController;
 use App\Http\Controllers\TokenController;
+use App\Http\Controllers\KelasController;
 
 // Public routes - Voter
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
@@ -41,6 +42,14 @@ Route::middleware('admin')->group(function () {
     Route::get('/admin/tokens/{id}/print', [TokenController::class, 'print'])->name('admin.tokens.print');
     Route::get('/admin/tokens/{id}/pdf', [TokenController::class, 'downloadPdf'])->name('admin.tokens.downloadPdf');
     Route::delete('/admin/tokens/{id}', [TokenController::class, 'destroy'])->name('admin.tokens.destroy');
+
+    // Kelas CRUD routes
+    Route::get('/admin/kelas', [KelasController::class, 'index'])->name('admin.kelas.index');
+    Route::get('/admin/kelas/create', [KelasController::class, 'create'])->name('admin.kelas.create');
+    Route::post('/admin/kelas', [KelasController::class, 'store'])->name('admin.kelas.store');
+    Route::get('/admin/kelas/{id}/edit', [KelasController::class, 'edit'])->name('admin.kelas.edit');
+    Route::put('/admin/kelas/{id}', [KelasController::class, 'update'])->name('admin.kelas.update');
+    Route::delete('/admin/kelas/{id}', [KelasController::class, 'destroy'])->name('admin.kelas.destroy');
     
     Route::post('/admin/logout', [AdminController::class, 'logout'])->name('admin.logout');
 });
