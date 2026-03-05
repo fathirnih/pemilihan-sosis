@@ -1,0 +1,141 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1100" viewBox="0 0 1600 1100">
+  <defs>
+    <style>
+      .bg { fill: #f3f6fb; }
+      .title { font: 700 30px 'Segoe UI', Arial, sans-serif; fill: #12324a; }
+      .text { font: 14px 'Segoe UI', Arial, sans-serif; fill: #1f2933; }
+      .small { font: 12px 'Segoe UI', Arial, sans-serif; fill: #475569; }
+      .startend { fill: #dcfce7; stroke: #15803d; stroke-width: 2; }
+      .process { fill: #ffffff; stroke: #1d4ed8; stroke-width: 2; }
+      .decision { fill: #fff7ed; stroke: #c2410c; stroke-width: 2; }
+      .error { fill: #fee2e2; stroke: #b91c1c; stroke-width: 2; }
+      .arrow { stroke: #334155; stroke-width: 2.2; fill: none; marker-end: url(#arrowHead); }
+      .label { font: 12px 'Segoe UI', Arial, sans-serif; fill: #334155; font-weight: 600; }
+    </style>
+    <marker id="arrowHead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <path d="M0,0 L10,3 L0,6 Z" fill="#334155" />
+    </marker>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1600" height="1100"/>
+  <text class="title" x="40" y="55">Flowcard Sistem Pemilihan OSIS</text>
+
+  <!-- Public flow (center-left) -->
+  <rect class="startend" x="120" y="90" width="220" height="56" rx="20"/>
+  <text class="text" x="230" y="124" text-anchor="middle">Mulai</text>
+
+  <rect class="process" x="80" y="190" width="300" height="64" rx="10"/>
+  <text class="text" x="230" y="228" text-anchor="middle">Halaman Publik Voting</text>
+
+  <rect class="process" x="40" y="300" width="380" height="64" rx="10"/>
+  <text class="text" x="230" y="338" text-anchor="middle">Login Pemilih (NIS/NIP + Password)</text>
+
+  <polygon class="decision" points="230,410 360,470 230,530 100,470"/>
+  <text class="text" x="230" y="466" text-anchor="middle">Identitas ditemukan?</text>
+
+  <rect class="error" x="20" y="560" width="210" height="56" rx="10"/>
+  <text class="text" x="125" y="594" text-anchor="middle">Login gagal</text>
+
+  <rect class="process" x="290" y="560" width="260" height="56" rx="10"/>
+  <text class="text" x="420" y="594" text-anchor="middle">Set tipe_pemilih</text>
+
+  <polygon class="decision" points="420,650 550,710 420,770 290,710"/>
+  <text class="text" x="420" y="706" text-anchor="middle">Akun aktif?</text>
+
+  <rect class="error" x="250" y="800" width="220" height="56" rx="10"/>
+  <text class="text" x="360" y="834" text-anchor="middle">Login ditolak</text>
+
+  <polygon class="decision" points="620,800 780,860 620,920 460,860"/>
+  <text class="text" x="620" y="856" text-anchor="middle">Harus ganti password?</text>
+
+  <rect class="process" x="470" y="960" width="220" height="56" rx="10"/>
+  <text class="text" x="580" y="994" text-anchor="middle">Ganti password</text>
+
+  <rect class="process" x="760" y="960" width="240" height="56" rx="10"/>
+  <text class="text" x="880" y="994" text-anchor="middle">Masuk halaman voting</text>
+
+  <polygon class="decision" points="900,800 1040,860 900,920 760,860"/>
+  <text class="text" x="900" y="856" text-anchor="middle">Periode aktif?</text>
+
+  <rect class="error" x="1060" y="960" width="320" height="56" rx="10"/>
+  <text class="text" x="1220" y="994" text-anchor="middle">Voting belum dibuka / sudah ditutup</text>
+
+  <rect class="process" x="1060" y="800" width="220" height="56" rx="10"/>
+  <text class="text" x="1170" y="834" text-anchor="middle">Daftar kandidat</text>
+
+  <rect class="process" x="1060" y="700" width="220" height="56" rx="10"/>
+  <text class="text" x="1170" y="734" text-anchor="middle">Pilih 1 kandidat</text>
+
+  <polygon class="decision" points="1170,590 1310,650 1170,710 1030,650"/>
+  <text class="text" x="1170" y="646" text-anchor="middle">Sudah vote?</text>
+
+  <rect class="error" x="1330" y="622" width="230" height="56" rx="10"/>
+  <text class="text" x="1445" y="656" text-anchor="middle">Tolak: sudah memilih</text>
+
+  <rect class="process" x="1030" y="510" width="220" height="56" rx="10"/>
+  <text class="text" x="1140" y="544" text-anchor="middle">Simpan ke tabel suara</text>
+
+  <rect class="startend" x="1030" y="420" width="220" height="56" rx="20"/>
+  <text class="text" x="1140" y="454" text-anchor="middle">Sukses</text>
+
+  <!-- Internal flow (right top) -->
+  <rect class="process" x="1200" y="110" width="320" height="60" rx="10"/>
+  <text class="text" x="1360" y="145" text-anchor="middle">Login Internal (URL Tersembunyi)</text>
+
+  <rect class="process" x="1200" y="210" width="320" height="60" rx="10"/>
+  <text class="text" x="1360" y="245" text-anchor="middle">Admin/Panitia Login</text>
+
+  <rect class="process" x="1200" y="310" width="320" height="90" rx="10"/>
+  <text class="text" x="1360" y="348" text-anchor="middle">Kelola periode, pemilih, kandidat,</text>
+  <text class="text" x="1360" y="370" text-anchor="middle">dan monitoring hasil</text>
+
+  <!-- Arrows public -->
+  <line class="arrow" x1="230" y1="146" x2="230" y2="190"/>
+  <line class="arrow" x1="230" y1="254" x2="230" y2="300"/>
+  <line class="arrow" x1="230" y1="364" x2="230" y2="410"/>
+
+  <line class="arrow" x1="120" y1="470" x2="80" y2="560"/>
+  <text class="label" x="70" y="520">Tidak</text>
+
+  <line class="arrow" x1="330" y1="510" x2="390" y2="560"/>
+  <text class="label" x="340" y="535">Ya</text>
+
+  <line class="arrow" x1="420" y1="616" x2="420" y2="650"/>
+
+  <line class="arrow" x1="330" y1="760" x2="330" y2="800"/>
+  <text class="label" x="300" y="785">Tidak</text>
+
+  <line class="arrow" x1="500" y1="750" x2="560" y2="800"/>
+  <text class="label" x="510" y="778">Ya</text>
+
+  <line class="arrow" x1="620" y1="920" x2="580" y2="960"/>
+  <text class="label" x="580" y="940">Ya</text>
+
+  <line class="arrow" x1="740" y1="860" x2="760" y2="860"/>
+  <text class="label" x="742" y="848">Tidak</text>
+
+  <line class="arrow" x1="880" y1="960" x2="880" y2="920"/>
+
+  <line class="arrow" x1="1000" y1="830" x2="1060" y2="830"/>
+  <text class="label" x="1012" y="818">Ya</text>
+
+  <line class="arrow" x1="940" y1="910" x2="1060" y2="960"/>
+  <text class="label" x="980" y="948">Tidak</text>
+
+  <line class="arrow" x1="1170" y1="800" x2="1170" y2="756"/>
+  <line class="arrow" x1="1170" y1="700" x2="1170" y2="710"/>
+
+  <line class="arrow" x1="1310" y1="650" x2="1330" y2="650"/>
+  <text class="label" x="1316" y="638">Ya</text>
+
+  <path class="arrow" d="M1030,650 L990,650 L990,538 L1030,538"/>
+  <text class="label" x="980" y="640">Tidak</text>
+
+  <line class="arrow" x1="1140" y1="510" x2="1140" y2="476"/>
+
+  <!-- Arrows internal -->
+  <line class="arrow" x1="1360" y1="170" x2="1360" y2="210"/>
+  <line class="arrow" x1="1360" y1="270" x2="1360" y2="310"/>
+
+  <text class="small" x="40" y="1060">Catatan: login admin/panitia tidak ditampilkan di halaman publik, hanya melalui URL internal.</text>
+</svg>

@@ -1,0 +1,100 @@
+@startuml
+entity users {
+  *id : bigint
+  --
+  name : varchar
+  email : varchar <<UK>>
+  password : varchar
+  role : varchar
+  aktif : boolean
+  created_at : timestamp
+  updated_at : timestamp
+}
+
+entity kelas {
+  *id : bigint
+  --
+  nama_kelas : varchar
+  tingkat : tinyint
+  created_at : timestamp
+  updated_at : timestamp
+}
+
+entity siswa {
+  *id : bigint
+  --
+  nis : varchar <<UK>>
+  nama : varchar
+  kelas_id : bigint <<FK>>
+  password : varchar
+  harus_ganti_kata_sandi : boolean
+  aktif : boolean
+  remember_token : varchar
+  created_at : timestamp
+  updated_at : timestamp
+}
+
+entity guru {
+  *id : bigint
+  --
+  nip : varchar <<UK>>
+  nama : varchar
+  password : varchar
+  harus_ganti_kata_sandi : boolean
+  aktif : boolean
+  remember_token : varchar
+  created_at : timestamp
+  updated_at : timestamp
+}
+
+entity periode_pemilihan {
+  *id : bigint
+  --
+  nama_periode : varchar
+  mulai_pada : datetime
+  selesai_pada : datetime
+  status : varchar
+  mode_pasangan : varchar
+  created_at : timestamp
+  updated_at : timestamp
+}
+
+entity kandidat {
+  *id : bigint
+  --
+  periode_id : bigint <<FK>>
+  nomor_urut : int
+  visi : text
+  misi : text
+  foto : varchar
+  created_at : timestamp
+  updated_at : timestamp
+}
+
+entity kandidat_anggota {
+  *id : bigint
+  --
+  kandidat_id : bigint <<FK>>
+  siswa_id : bigint <<FK>>
+  peran : varchar
+  created_at : timestamp
+  updated_at : timestamp
+}
+
+entity suara {
+  *id : bigint
+  --
+  periode_id : bigint <<FK>>
+  kandidat_id : bigint <<FK>>
+  tipe_pemilih : varchar
+  pemilih_id : bigint
+  created_at : timestamp
+}
+
+kelas ||--o{ siswa
+periode_pemilihan ||--o{ kandidat
+kandidat ||--o{ kandidat_anggota
+siswa ||--o{ kandidat_anggota
+periode_pemilihan ||--o{ suara
+kandidat ||--o{ suara
+@enduml

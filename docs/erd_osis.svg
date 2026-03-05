@@ -1,0 +1,135 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" width="1900" height="1200" viewBox="0 0 1900 1200">
+  <style>
+    .title { font: 700 18px Arial, sans-serif; fill: #ffffff; }
+    .head { fill: #1f4e79; }
+    .box { fill: #f9fbfd; stroke: #1f4e79; stroke-width: 2; }
+    .txt { font: 14px Consolas, monospace; fill: #222; }
+    .rel { stroke: #444; stroke-width: 2; marker-end: url(#arrow); }
+    .reltext { font: 12px Arial, sans-serif; fill: #333; }
+    .canvas { fill: #f2f6fb; }
+  </style>
+
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L10,3 L0,6 z" fill="#444" />
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="1900" height="1200" class="canvas" />
+  <text x="30" y="40" style="font:700 26px Arial,sans-serif; fill:#0f2d45;">ERD Sistem Pemilihan OSIS</text>
+
+  <!-- users -->
+  <rect x="40" y="80" width="380" height="250" class="box" />
+  <rect x="40" y="80" width="380" height="36" class="head" />
+  <text x="55" y="104" class="title">users</text>
+  <text x="55" y="136" class="txt">id (PK)</text>
+  <text x="55" y="158" class="txt">name</text>
+  <text x="55" y="180" class="txt">email (UK)</text>
+  <text x="55" y="202" class="txt">password</text>
+  <text x="55" y="224" class="txt">role (admin|panitia)</text>
+  <text x="55" y="246" class="txt">aktif</text>
+  <text x="55" y="268" class="txt">created_at, updated_at</text>
+
+  <!-- kelas -->
+  <rect x="40" y="380" width="380" height="170" class="box" />
+  <rect x="40" y="380" width="380" height="36" class="head" />
+  <text x="55" y="404" class="title">kelas</text>
+  <text x="55" y="436" class="txt">id (PK)</text>
+  <text x="55" y="458" class="txt">nama_kelas</text>
+  <text x="55" y="480" class="txt">tingkat</text>
+  <text x="55" y="502" class="txt">created_at, updated_at</text>
+
+  <!-- siswa -->
+  <rect x="500" y="80" width="430" height="300" class="box" />
+  <rect x="500" y="80" width="430" height="36" class="head" />
+  <text x="515" y="104" class="title">siswa</text>
+  <text x="515" y="136" class="txt">id (PK)</text>
+  <text x="515" y="158" class="txt">nis (UK)</text>
+  <text x="515" y="180" class="txt">nama</text>
+  <text x="515" y="202" class="txt">kelas_id (FK -> kelas.id)</text>
+  <text x="515" y="224" class="txt">password</text>
+  <text x="515" y="246" class="txt">harus_ganti_kata_sandi</text>
+  <text x="515" y="268" class="txt">aktif</text>
+  <text x="515" y="290" class="txt">remember_token</text>
+  <text x="515" y="312" class="txt">created_at, updated_at</text>
+
+  <!-- guru -->
+  <rect x="500" y="420" width="430" height="260" class="box" />
+  <rect x="500" y="420" width="430" height="36" class="head" />
+  <text x="515" y="444" class="title">guru</text>
+  <text x="515" y="476" class="txt">id (PK)</text>
+  <text x="515" y="498" class="txt">nip (UK)</text>
+  <text x="515" y="520" class="txt">nama</text>
+  <text x="515" y="542" class="txt">password</text>
+  <text x="515" y="564" class="txt">harus_ganti_kata_sandi</text>
+  <text x="515" y="586" class="txt">aktif</text>
+  <text x="515" y="608" class="txt">remember_token</text>
+  <text x="515" y="630" class="txt">created_at, updated_at</text>
+
+  <!-- periode -->
+  <rect x="1010" y="80" width="430" height="260" class="box" />
+  <rect x="1010" y="80" width="430" height="36" class="head" />
+  <text x="1025" y="104" class="title">periode_pemilihan</text>
+  <text x="1025" y="136" class="txt">id (PK)</text>
+  <text x="1025" y="158" class="txt">nama_periode</text>
+  <text x="1025" y="180" class="txt">mulai_pada</text>
+  <text x="1025" y="202" class="txt">selesai_pada</text>
+  <text x="1025" y="224" class="txt">status (draf|aktif|ditutup)</text>
+  <text x="1025" y="246" class="txt">mode_pasangan (ketua_saja|ketua_wakil)</text>
+  <text x="1025" y="268" class="txt">created_at, updated_at</text>
+
+  <!-- kandidat -->
+  <rect x="1010" y="390" width="430" height="240" class="box" />
+  <rect x="1010" y="390" width="430" height="36" class="head" />
+  <text x="1025" y="414" class="title">kandidat</text>
+  <text x="1025" y="446" class="txt">id (PK)</text>
+  <text x="1025" y="468" class="txt">periode_id (FK -> periode_pemilihan.id)</text>
+  <text x="1025" y="490" class="txt">nomor_urut (UK per periode)</text>
+  <text x="1025" y="512" class="txt">visi</text>
+  <text x="1025" y="534" class="txt">misi</text>
+  <text x="1025" y="556" class="txt">foto (nullable)</text>
+  <text x="1025" y="578" class="txt">created_at, updated_at</text>
+
+  <!-- kandidat_anggota -->
+  <rect x="1490" y="80" width="380" height="220" class="box" />
+  <rect x="1490" y="80" width="380" height="36" class="head" />
+  <text x="1505" y="104" class="title">kandidat_anggota</text>
+  <text x="1505" y="136" class="txt">id (PK)</text>
+  <text x="1505" y="158" class="txt">kandidat_id (FK -> kandidat.id)</text>
+  <text x="1505" y="180" class="txt">siswa_id (FK -> siswa.id)</text>
+  <text x="1505" y="202" class="txt">peran (ketua|wakil)</text>
+  <text x="1505" y="224" class="txt">created_at, updated_at</text>
+
+  <!-- suara -->
+  <rect x="1490" y="360" width="380" height="240" class="box" />
+  <rect x="1490" y="360" width="380" height="36" class="head" />
+  <text x="1505" y="384" class="title">suara</text>
+  <text x="1505" y="416" class="txt">id (PK)</text>
+  <text x="1505" y="438" class="txt">periode_id (FK -> periode_pemilihan.id)</text>
+  <text x="1505" y="460" class="txt">kandidat_id (FK -> kandidat.id)</text>
+  <text x="1505" y="482" class="txt">tipe_pemilih (siswa|guru)</text>
+  <text x="1505" y="504" class="txt">pemilih_id (polymorphic)</text>
+  <text x="1505" y="526" class="txt">created_at</text>
+  <text x="1505" y="548" class="txt">UK: periode_id+tipe_pemilih+pemilih_id</text>
+
+  <!-- relationships -->
+  <line x1="420" y1="465" x2="500" y2="210" class="rel" />
+  <text x="430" y="330" class="reltext">1..N</text>
+
+  <line x1="1440" y1="210" x2="1490" y2="190" class="rel" />
+  <text x="1448" y="182" class="reltext">1..N</text>
+
+  <line x1="930" y1="210" x2="1010" y2="500" class="rel" />
+  <text x="945" y="360" class="reltext">1..N</text>
+
+  <line x1="1440" y1="500" x2="1490" y2="470" class="rel" />
+  <text x="1450" y="450" class="reltext">1..N</text>
+
+  <line x1="1250" y1="340" x2="1250" y2="390" class="rel" />
+  <text x="1260" y="372" class="reltext">1..N</text>
+
+  <line x1="930" y1="210" x2="1490" y2="230" class="rel" />
+  <text x="1210" y="200" class="reltext">1..N (via kandidat_anggota)</text>
+
+  <text x="30" y="1165" class="txt">Catatan: tabel users digunakan khusus admin/panitia. Login pemilih menggunakan siswa/guru.</text>
+</svg>
