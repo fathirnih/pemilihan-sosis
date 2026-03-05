@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Model;
 
 class TokenPemilih extends Model
@@ -16,9 +17,14 @@ class TokenPemilih extends Model
         'periode_id',
         'tipe_pemilih',
         'pemilih_id',
+        'token',
         'token_hash',
+        'status',
+        'sudah_memilih',
         'digunakan_pada',
         'kadaluarsa_pada',
+        'nama_pemilih',
+        'nis_pemilih',
     ];
 
     protected $hidden = [
@@ -28,6 +34,7 @@ class TokenPemilih extends Model
     protected function casts(): array
     {
         return [
+            'sudah_memilih' => 'boolean',
             'digunakan_pada' => 'datetime',
             'kadaluarsa_pada' => 'datetime',
         ];
@@ -36,5 +43,31 @@ class TokenPemilih extends Model
     public function periode(): BelongsTo
     {
         return $this->belongsTo(PeriodePemilihan::class, 'periode_id');
+    }
+
+    public function siswa(): BelongsTo
+    {
+        return $this->belongsTo(Siswa::class, 'pemilih_id');
+    }
+
+    public function suara(): HasOne
+    {
+        return $this->hasOne(Suara::class, 'id');
+    }
+
+    /**
+     * Get nama_pemilih with fallback to siswa.nama
+     */
+    public function getNamaPemilihAttribute($value)
+    {
+        return $value ?? ($this->siswa?->nama ?? 'N/A');
+    }
+
+    /**
+     * Get nis_pemilih with fallback to siswa.nis
+     */
+    public function getNisPemilihAttribute($value)
+    {
+        return $value ?? ($this->siswa?->nis ?? '-');
     }
 }
