@@ -5,12 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Model;
 
-class Siswa extends Authenticatable
+class Siswa extends Model
 {
-    use HasFactory, Notifiable;
+    use HasFactory;
 
     protected $table = 'siswa';
 
@@ -18,21 +17,12 @@ class Siswa extends Authenticatable
         'nis',
         'nama',
         'kelas_id',
-        'password',
-        'harus_ganti_kata_sandi',
         'aktif',
-    ];
-
-    protected $hidden = [
-        'password',
-        'remember_token',
     ];
 
     protected function casts(): array
     {
         return [
-            'password' => 'hashed',
-            'harus_ganti_kata_sandi' => 'boolean',
             'aktif' => 'boolean',
         ];
     }
@@ -45,5 +35,11 @@ class Siswa extends Authenticatable
     public function kandidatAnggota(): HasMany
     {
         return $this->hasMany(KandidatAnggota::class, 'siswa_id');
+    }
+
+    public function tokenPemilih(): HasMany
+    {
+        return $this->hasMany(TokenPemilih::class, 'pemilih_id')
+            ->where('tipe_pemilih', 'siswa');
     }
 }

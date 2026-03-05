@@ -14,10 +14,10 @@ return new class extends Migration
         Schema::create('kandidat', function (Blueprint $table) {
             $table->id();
             $table->foreignId('periode_id')->constrained('periode_pemilihan')->cascadeOnUpdate()->cascadeOnDelete();
-            $table->unsignedInteger('nomor_urut');
-            $table->text('visi');
-            $table->text('misi');
-            $table->string('foto')->nullable();
+            $table->unsignedTinyInteger('nomor_urut');
+            $table->string('visi', 500);
+            $table->string('misi', 1500);
+            $table->string('foto', 255)->nullable();
             $table->timestamps();
 
             $table->unique(['periode_id', 'nomor_urut']);

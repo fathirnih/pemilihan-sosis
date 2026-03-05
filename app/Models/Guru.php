@@ -3,34 +3,31 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Model;
 
-class Guru extends Authenticatable
+class Guru extends Model
 {
-    use HasFactory, Notifiable;
+    use HasFactory;
 
     protected $table = 'guru';
 
     protected $fillable = [
         'nip',
         'nama',
-        'password',
-        'harus_ganti_kata_sandi',
         'aktif',
-    ];
-
-    protected $hidden = [
-        'password',
-        'remember_token',
     ];
 
     protected function casts(): array
     {
         return [
-            'password' => 'hashed',
-            'harus_ganti_kata_sandi' => 'boolean',
             'aktif' => 'boolean',
         ];
+    }
+
+    public function tokenPemilih(): HasMany
+    {
+        return $this->hasMany(TokenPemilih::class, 'pemilih_id')
+            ->where('tipe_pemilih', 'guru');
     }
 }
