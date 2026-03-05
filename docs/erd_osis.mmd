@@ -1,0 +1,91 @@
+erDiagram
+    users {
+        BIGINT id PK
+        VARCHAR name
+        VARCHAR email UK
+        VARCHAR password
+        VARCHAR role
+        BOOLEAN aktif
+        TIMESTAMP created_at
+        TIMESTAMP updated_at
+    }
+
+    kelas {
+        BIGINT id PK
+        VARCHAR nama_kelas
+        TINYINT tingkat
+        TIMESTAMP created_at
+        TIMESTAMP updated_at
+    }
+
+    siswa {
+        BIGINT id PK
+        VARCHAR nis UK
+        VARCHAR nama
+        BIGINT kelas_id FK
+        VARCHAR password
+        BOOLEAN harus_ganti_kata_sandi
+        BOOLEAN aktif
+        VARCHAR remember_token
+        TIMESTAMP created_at
+        TIMESTAMP updated_at
+    }
+
+    guru {
+        BIGINT id PK
+        VARCHAR nip UK
+        VARCHAR nama
+        VARCHAR password
+        BOOLEAN harus_ganti_kata_sandi
+        BOOLEAN aktif
+        VARCHAR remember_token
+        TIMESTAMP created_at
+        TIMESTAMP updated_at
+    }
+
+    periode_pemilihan {
+        BIGINT id PK
+        VARCHAR nama_periode
+        DATETIME mulai_pada
+        DATETIME selesai_pada
+        VARCHAR status
+        VARCHAR mode_pasangan
+        TIMESTAMP created_at
+        TIMESTAMP updated_at
+    }
+
+    kandidat {
+        BIGINT id PK
+        BIGINT periode_id FK
+        INT nomor_urut
+        TEXT visi
+        TEXT misi
+        VARCHAR foto
+        TIMESTAMP created_at
+        TIMESTAMP updated_at
+    }
+
+    kandidat_anggota {
+        BIGINT id PK
+        BIGINT kandidat_id FK
+        BIGINT siswa_id FK
+        VARCHAR peran
+        TIMESTAMP created_at
+        TIMESTAMP updated_at
+    }
+
+    suara {
+        BIGINT id PK
+        BIGINT periode_id FK
+        BIGINT kandidat_id FK
+        VARCHAR tipe_pemilih
+        BIGINT pemilih_id
+        TIMESTAMP created_at
+    }
+
+    kelas ||--o{ siswa : kelas_id
+    periode_pemilihan ||--o{ kandidat : periode_id
+    kandidat ||--o{ kandidat_anggota : kandidat_id
+    siswa ||--o{ kandidat_anggota : siswa_id
+    periode_pemilihan ||--o{ suara : periode_id
+    kandidat ||--o{ suara : kandidat_id
