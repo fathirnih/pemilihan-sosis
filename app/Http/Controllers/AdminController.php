@@ -27,7 +27,7 @@ class AdminController extends Controller
 
         $kandidats = collect();
         if ($periode) {
-            $kandidats = $periode->kandidat()->with(['anggota.siswa', 'suara'])->get();
+            $kandidats = $periode->kandidat()->with(['anggota.pemilih', 'suara'])->get();
         }
 
         return view('admin.dashboard', compact('periode', 'totalTokens', 'tokensAktif', 'sudahMemilih', 'totalSuara', 'kandidats'));

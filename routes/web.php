@@ -11,6 +11,8 @@ use App\Http\Controllers\PemilihController;
 use App\Http\Controllers\KelasController;
 use App\Http\Controllers\StaffAuthController;
 use App\Http\Controllers\PeriodeController;
+use App\Http\Controllers\KandidatController;
+use App\Http\Controllers\SuaraController;
 
 // Public routes - Voter
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
@@ -64,6 +66,22 @@ Route::middleware('admin')->group(function () {
     Route::get('/admin/periode/{id}/edit', [PeriodeController::class, 'edit'])->name('admin.periode.edit');
     Route::put('/admin/periode/{id}', [PeriodeController::class, 'update'])->name('admin.periode.update');
     Route::delete('/admin/periode/{id}', [PeriodeController::class, 'destroy'])->name('admin.periode.destroy');
+
+    // Kandidat CRUD routes
+    Route::get('/admin/kandidat', [KandidatController::class, 'index'])->name('admin.kandidat.index');
+    Route::get('/admin/kandidat/create', [KandidatController::class, 'create'])->name('admin.kandidat.create');
+    Route::post('/admin/kandidat', [KandidatController::class, 'store'])->name('admin.kandidat.store');
+    Route::get('/admin/kandidat/{id}/edit', [KandidatController::class, 'edit'])->name('admin.kandidat.edit');
+    Route::put('/admin/kandidat/{id}', [KandidatController::class, 'update'])->name('admin.kandidat.update');
+    Route::delete('/admin/kandidat/{id}', [KandidatController::class, 'destroy'])->name('admin.kandidat.destroy');
+
+    // Suara CRUD routes
+    Route::get('/admin/suara', [SuaraController::class, 'index'])->name('admin.suara.index');
+    Route::get('/admin/suara/create', [SuaraController::class, 'create'])->name('admin.suara.create');
+    Route::post('/admin/suara', [SuaraController::class, 'store'])->name('admin.suara.store');
+    Route::get('/admin/suara/{id}/edit', [SuaraController::class, 'edit'])->name('admin.suara.edit');
+    Route::put('/admin/suara/{id}', [SuaraController::class, 'update'])->name('admin.suara.update');
+    Route::delete('/admin/suara/{id}', [SuaraController::class, 'destroy'])->name('admin.suara.destroy');
 
     // Kelas CRUD routes
     Route::get('/admin/kelas', [KelasController::class, 'index'])->name('admin.kelas.index');

@@ -27,4 +27,9 @@ class KandidatAnggota extends Model
     {
         return $this->belongsTo(Pemilih::class, 'pemilih_id');
     }
+
+    public function pemilih(): BelongsTo
+    {
+        return $this->belongsTo(Pemilih::class, 'pemilih_id');
+    }
 }

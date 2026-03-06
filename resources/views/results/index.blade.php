@@ -86,7 +86,7 @@
                                 <p class="font-medium mb-1">Tim Kandidat:</p>
                                 <div class="space-y-1">
                                     @foreach ($kandidat->anggota as $anggota)
-                                        <p class="text-slate-700">{{ $anggota->siswa->nama ?? 'N/A' }}</p>
+                                        <p class="text-slate-700">{{ $anggota->pemilih->nama ?? 'N/A' }}</p>
                                     @endforeach
                                 </div>
                             </div>

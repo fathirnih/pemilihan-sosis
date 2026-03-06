@@ -15,7 +15,7 @@ class VotingController extends Controller
     {
         $periodeId = Session::get('pemilih_periode_id');
         $periode = PeriodePemilihan::findOrFail($periodeId);
-        $kandidats = $periode->kandidat()->with('anggota.siswa')->get();
+        $kandidats = $periode->kandidat()->with('anggota.pemilih')->get();
 
         return view('voting.index', compact('periode', 'kandidats'));
     }

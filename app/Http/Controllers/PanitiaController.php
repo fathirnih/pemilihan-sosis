@@ -17,7 +17,7 @@ class PanitiaController extends Controller
             return view('panitia.no-periode');
         }
 
-        $kandidats = $periode->kandidat()->with(['anggota.siswa', 'suara'])->get();
+        $kandidats = $periode->kandidat()->with(['anggota.pemilih', 'suara'])->get();
         $totalSuara = $periode->suara()->count();
 
         return view('panitia.results', compact('periode', 'kandidats', 'totalSuara'));

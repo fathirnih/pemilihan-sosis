@@ -106,7 +106,7 @@
                                     <p class="text-xs text-slate-600 font-medium mb-2">Tim:</p>
                                     <div class="space-y-1">
                                         @foreach ($kandidat->anggota as $anggota)
-                                            <p class="text-sm text-slate-700">• {{ ucfirst($anggota->peran) }}: {{ $anggota->siswa->nama ?? 'N/A' }}</p>
+                                            <p class="text-sm text-slate-700">• {{ ucfirst($anggota->peran) }}: {{ $anggota->pemilih->nama ?? 'N/A' }}</p>
                                         @endforeach
                                     </div>
                                 </div>

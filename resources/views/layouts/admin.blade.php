@@ -31,6 +31,12 @@
                 <a href="{{ route('admin.periode.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 {{ request()->routeIs('admin.periode.*') ? 'bg-slate-100 text-slate-900' : '' }}">
                     Periode
                 </a>
+                <a href="{{ route('admin.kandidat.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 {{ request()->routeIs('admin.kandidat.*') ? 'bg-slate-100 text-slate-900' : '' }}">
+                    Kandidat
+                </a>
+                <a href="{{ route('admin.suara.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 {{ request()->routeIs('admin.suara.*') ? 'bg-slate-100 text-slate-900' : '' }}">
+                    Suara
+                </a>
             </nav>
 
             <form action="{{ route('admin.logout') }}" method="POST" class="mt-6 hidden lg:block">
