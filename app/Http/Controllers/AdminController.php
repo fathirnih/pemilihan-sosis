@@ -2,49 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Admin;
 use App\Models\PeriodePemilihan;
 use App\Models\Kandidat;
 use App\Models\TokenPemilih;
 use App\Models\Suara;
 use App\Models\Kelas;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
 class AdminController extends Controller
 {
-    /**
-     * Show admin login form
-     */
-    public function showLogin()
-    {
-        return view('admin.login');
-    }
-
-    /**
-     * Process admin login
-     */
-    public function login(Request $request)
-    {
-        $request->validate([
-            'username' => 'required|string',
-            'password' => 'required|string',
-        ]);
-
-        $admin = Admin::findByUsername($request->username);
-
-        if ($admin && $admin->matchesPassword($request->password)) {
-            Session::put('admin_id', $admin->id);
-            Session::put('admin_username', $admin->username);
-            Session::put('admin_nama', $admin->nama);
-            return redirect()->route('admin.dashboard');
-        }
-
-        return back()->withErrors(['credentials' => 'Username atau password salah']);
-    }
-
     /**
      * Admin dashboard
      */
@@ -141,6 +109,6 @@ class AdminController extends Controller
     public function logout()
     {
         Session::forget(['admin_id', 'admin_username', 'admin_nama']);
-        return redirect()->route('admin.login')->with('success', 'Logout berhasil');
+        return redirect()->route('staff.login')->with('success', 'Logout berhasil');
     }
 }

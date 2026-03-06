@@ -15,7 +15,7 @@ class EnsurePanitiaAuthenticated
     public function handle(Request $request, Closure $next): Response
     {
         if (!Session::has('panitia_id')) {
-            return redirect()->route('panitia.login');
+            return redirect()->route('staff.login');
         }
 
         return $next($request);
