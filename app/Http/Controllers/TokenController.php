@@ -3,9 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\TokenPemilih;
-use App\Models\Siswa;
+use App\Models\Pemilih;
 use App\Models\Kelas;
 use App\Models\PeriodePemilihan;
+use App\Models\Suara;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
@@ -18,12 +19,17 @@ class TokenController extends Controller
     public function index()
     {
         $periode = PeriodePemilihan::where('status', 'aktif')->first();
-        $tokens = TokenPemilih::with(['periode', 'siswa.kelas', 'kelas'])
-            ->where('tipe_pemilih', 'siswa')
-            ->orderBy('created_at', 'desc')
+        $periodeId = $periode?->id ?? -1;
+        $pemilih = Pemilih::with([
+            'kelas',
+            'tokens' => function ($query) use ($periodeId) {
+                $query->where('periode_id', $periodeId);
+            }
+        ])
+            ->orderBy('nama')
             ->paginate(10);
 
-        return view('admin.tokens.index', compact('tokens', 'periode'));
+        return view('admin.tokens.index', compact('pemilih', 'periode'));
     }
 
     /**
@@ -63,19 +69,21 @@ class TokenController extends Controller
             return back()->withErrors(['periode' => 'Tidak ada periode pemilihan yang aktif']);
         }
 
-        // Check if siswa exists, if not create
-        $siswa = Siswa::where('nis', $request->nis)->first();
-        if (!$siswa) {
-            $siswa = Siswa::create([
+        // Check if pemilih (siswa) exists, if not create
+        $pemilih = Pemilih::where('nisn', $request->nis)->where('jenis', 'siswa')->first();
+        if (!$pemilih) {
+            $pemilih = Pemilih::create([
                 'nama' => $request->nama,
-                'nis' => $request->nis,
+                'nisn' => $request->nis,
+                'jenis' => 'siswa',
                 'kelas_id' => $request->kelas_id,
                 'aktif' => true,
             ]);
         } else {
-            $siswa->update([
+            $pemilih->update([
                 'nama' => $request->nama,
                 'kelas_id' => $request->kelas_id,
+                'aktif' => true,
             ]);
         }
 
@@ -85,8 +93,7 @@ class TokenController extends Controller
         // Create token record
         TokenPemilih::create([
             'periode_id' => $periode->id,
-            'tipe_pemilih' => 'siswa',
-            'pemilih_id' => $siswa->id,
+            'pemilih_id' => $pemilih->id,
             'kelas_id' => $request->kelas_id,
             'token_hash' => Hash::make($token),
             'token' => $token,
@@ -124,9 +131,9 @@ class TokenController extends Controller
 
         $nisRule = 'required|string|max:20';
         if ($token->siswa) {
-            $nisRule .= '|unique:siswa,nis,' . $token->siswa->id;
+            $nisRule .= '|unique:pemilih,nisn,' . $token->siswa->id;
         } else {
-            $nisRule .= '|unique:siswa,nis';
+            $nisRule .= '|unique:pemilih,nisn';
         }
 
         $request->validate([
@@ -143,8 +150,9 @@ class TokenController extends Controller
         if ($token->siswa) {
             $token->siswa->update([
                 'nama' => $request->nama,
-                'nis' => $request->nis,
+                'nisn' => $request->nis,
                 'kelas_id' => $request->kelas_id,
+                'jenis' => 'siswa',
             ]);
         }
 
@@ -203,5 +211,30 @@ class TokenController extends Controller
         $token->delete();
 
         return back()->with('success', "Token untuk {$nama} berhasil dihapus");
+    }
+
+    /**
+     * Reset token and delete vote for a voter
+     */
+    public function reset($id)
+    {
+        $token = TokenPemilih::findOrFail($id);
+
+        Suara::where('periode_id', $token->periode_id)
+            ->where('pemilih_id', $token->pemilih_id)
+            ->delete();
+
+        $newToken = 'VOTE-' . Str::random(16);
+
+        $token->update([
+            'token' => $newToken,
+            'token_hash' => Hash::make($newToken),
+            'status' => 'aktif',
+            'sudah_memilih' => false,
+            'digunakan_pada' => null,
+            'kadaluarsa_pada' => null,
+        ]);
+
+        return back()->with('success', "Token untuk {$token->nama_pemilih} berhasil direset");
     }
 }

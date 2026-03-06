@@ -154,7 +154,7 @@
 </head>
 <body>
     @php
-        $kelasNama = $token->kelas?->nama_kelas ?? $token->siswa?->kelas?->nama_kelas ?? '-';
+        $kelasNama = $token->kelas?->nama_kelas ?? $token->pemilih?->kelas?->nama_kelas ?? '-';
     @endphp
 
     <div class="wrapper">
@@ -166,7 +166,7 @@
 
             <div class="card-body">
                 <div class="name">{{ $token->nama_pemilih }}</div>
-                <div class="meta">NIS: {{ $token->nis_pemilih }}</div>
+                <div class="meta">NISN/NIP: {{ $token->nis_pemilih }}</div>
                 <div class="meta">Kelas: {{ $kelasNama }}</div>
 
                 <div class="token-box">

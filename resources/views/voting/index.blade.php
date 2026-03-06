@@ -73,7 +73,7 @@
                                         @foreach ($kandidat->anggota as $anggota)
                                             <div class="flex items-center gap-2">
                                                 <div class="w-2 h-2 rounded-full bg-blue-500"></div>
-                                                <span class="text-sm text-slate-700">{{ $anggota->siswa->nama ?? 'N/A' }}</span>
+                                                <span class="text-sm text-slate-700">{{ $anggota->pemilih->nama ?? 'N/A' }}</span>
                                             </div>
                                         @endforeach
                                     </div>

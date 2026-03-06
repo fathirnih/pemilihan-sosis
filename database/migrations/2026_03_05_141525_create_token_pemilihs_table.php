@@ -14,15 +14,13 @@ return new class extends Migration
         Schema::create('token_pemilih', function (Blueprint $table) {
             $table->id();
             $table->foreignId('periode_id')->constrained('periode_pemilihan')->cascadeOnUpdate()->cascadeOnDelete();
-            $table->enum('tipe_pemilih', ['siswa', 'guru']);
-            $table->unsignedBigInteger('pemilih_id');
+            $table->foreignId('pemilih_id')->nullable()->constrained('pemilih')->cascadeOnUpdate()->nullOnDelete();
             $table->string('token_hash', 255)->unique();
             $table->timestamp('digunakan_pada')->nullable();
             $table->timestamp('kadaluarsa_pada')->nullable();
             $table->timestamps();
 
-            $table->unique(['periode_id', 'tipe_pemilih', 'pemilih_id']);
-            $table->index(['tipe_pemilih', 'pemilih_id']);
+            $table->unique(['periode_id', 'pemilih_id']);
         });
     }
 

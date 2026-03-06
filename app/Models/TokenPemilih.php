@@ -15,7 +15,6 @@ class TokenPemilih extends Model
 
     protected $fillable = [
         'periode_id',
-        'tipe_pemilih',
         'pemilih_id',
         'kelas_id',
         'token',
@@ -48,7 +47,12 @@ class TokenPemilih extends Model
 
     public function siswa(): BelongsTo
     {
-        return $this->belongsTo(Siswa::class, 'pemilih_id');
+        return $this->belongsTo(Pemilih::class, 'pemilih_id');
+    }
+
+    public function pemilih(): BelongsTo
+    {
+        return $this->belongsTo(Pemilih::class, 'pemilih_id');
     }
 
     public function kelas(): BelongsTo
@@ -74,6 +78,6 @@ class TokenPemilih extends Model
      */
     public function getNisPemilihAttribute($value)
     {
-        return $value ?? ($this->siswa?->nis ?? '-');
+        return $value ?? ($this->siswa?->nisn ?? '-');
     }
 }

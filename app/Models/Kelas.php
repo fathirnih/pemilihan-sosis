@@ -19,6 +19,7 @@ class Kelas extends Model
 
     public function siswa(): HasMany
     {
-        return $this->hasMany(Siswa::class, 'kelas_id');
+        return $this->hasMany(Pemilih::class, 'kelas_id')
+            ->where('jenis', 'siswa');
     }
 }

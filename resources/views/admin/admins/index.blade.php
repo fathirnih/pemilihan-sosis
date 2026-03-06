@@ -1,21 +1,21 @@
 @extends('layouts.admin')
 
-@section('title', 'Kelola Kelas - Admin')
+@section('title', 'Admin - Admin')
 
 @section('admin.content')
 <div class="admin-page">
     <div class="admin-container">
         <div class="admin-header">
             <div>
-                <h1 class="admin-title">Kelas</h1>
-                <p class="admin-subtitle">Kelola data kelas untuk pemilih siswa.</p>
+                <h1 class="admin-title">Admin</h1>
+                <p class="admin-subtitle">Kelola akun admin.</p>
             </div>
-            <a href="{{ route('admin.kelas.create') }}" class="admin-btn admin-btn-primary">
+            <a href="{{ route('admin.admins.create') }}" class="admin-btn admin-btn-primary">
                 <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M12 5v14"></path>
                     <path d="M5 12h14"></path>
                 </svg>
-                Tambah Kelas
+                Tambah Admin
             </a>
         </div>
 
@@ -24,7 +24,6 @@
                 <p class="text-emerald-800">{{ session('success') }}</p>
             </div>
         @endif
-
         @if ($errors->any())
             <div class="bg-rose-50 border border-rose-200 rounded-lg p-4 mb-6">
                 <p class="text-rose-800">{{ $errors->first() }}</p>
@@ -37,29 +36,35 @@
                     <thead class="admin-thead">
                         <tr>
                             <th class="admin-th">No</th>
-                            <th class="admin-th">Nama Kelas</th>
-                            <th class="admin-th">Tingkat</th>
-                            <th class="admin-th">Jumlah Siswa</th>
+                            <th class="admin-th">Nama</th>
+                            <th class="admin-th">Username</th>
+                            <th class="admin-th">Email</th>
+                            <th class="admin-th">Status</th>
                             <th class="admin-th">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-200">
-                        @forelse ($kelas as $item)
+                        @forelse ($admins as $item)
                             <tr class="hover:bg-slate-50 transition-colors">
                                 <td class="admin-td text-slate-900">{{ $loop->iteration }}</td>
-                                <td class="admin-td text-slate-900 font-medium">{{ $item->nama_kelas }}</td>
-                                <td class="admin-td text-slate-600">{{ $item->tingkat }}</td>
-                                <td class="admin-td text-slate-600">{{ $item->siswa_count }}</td>
+                                <td class="admin-td text-slate-900 font-medium">{{ $item->nama }}</td>
+                                <td class="admin-td text-slate-600">{{ $item->username }}</td>
+                                <td class="admin-td text-slate-600">{{ $item->email }}</td>
                                 <td class="admin-td">
-                                    <div class="flex gap-2">
-                                        <a href="{{ route('admin.kelas.edit', $item->id) }}" class="admin-btn admin-btn-warning text-xs px-3 py-2">
+                                    <span class="admin-badge {{ $item->aktif ? 'admin-badge-success' : 'admin-badge-muted' }}">
+                                        {{ $item->aktif ? 'Aktif' : 'Nonaktif' }}
+                                    </span>
+                                </td>
+                                <td class="admin-td">
+                                    <div class="flex flex-wrap gap-2">
+                                        <a href="{{ route('admin.admins.edit', $item->id) }}" class="admin-btn admin-btn-warning text-xs px-3 py-2">
                                             <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                                 <path d="M12 20h9"></path>
                                                 <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"></path>
                                             </svg>
                                             Edit
                                         </a>
-                                        <form action="{{ route('admin.kelas.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Hapus kelas ini?')" class="inline">
+                                        <form action="{{ route('admin.admins.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Hapus admin ini?')" class="inline">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="admin-btn admin-btn-danger text-xs px-3 py-2">
@@ -76,7 +81,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="px-6 py-8 text-center text-slate-600">Belum ada data kelas</td>
+                                <td colspan="6" class="px-6 py-8 text-center text-slate-600">Belum ada admin</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -84,9 +89,9 @@
             </div>
         </div>
 
-        @if ($kelas->hasPages())
+        @if ($admins->hasPages())
             <div class="mt-6">
-                {{ $kelas->links() }}
+                {{ $admins->links() }}
             </div>
         @endif
     </div>

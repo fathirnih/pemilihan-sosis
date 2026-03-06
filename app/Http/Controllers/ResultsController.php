@@ -13,7 +13,7 @@ class ResultsController extends Controller
     {
         $periodeId = Session::get('pemilih_periode_id');
         $periode = PeriodePemilihan::findOrFail($periodeId);
-        $kandidats = $periode->kandidat()->with(['anggota.siswa', 'suara'])->get();
+        $kandidats = $periode->kandidat()->with(['anggota.pemilih', 'suara'])->get();
         $totalSuara = $periode->suara()->count();
 
         return view('results.index', compact('periode', 'kandidats', 'totalSuara'));

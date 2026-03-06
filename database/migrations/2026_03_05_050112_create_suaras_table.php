@@ -15,12 +15,10 @@ return new class extends Migration
             $table->id();
             $table->foreignId('periode_id')->constrained('periode_pemilihan')->cascadeOnUpdate()->cascadeOnDelete();
             $table->foreignId('kandidat_id')->constrained('kandidat')->cascadeOnUpdate()->restrictOnDelete();
-            $table->enum('tipe_pemilih', ['siswa', 'guru']);
-            $table->unsignedBigInteger('pemilih_id');
+            $table->foreignId('pemilih_id')->constrained('pemilih')->cascadeOnUpdate()->restrictOnDelete();
             $table->timestamp('created_at')->useCurrent();
 
-            $table->unique(['periode_id', 'tipe_pemilih', 'pemilih_id']);
-            $table->index(['tipe_pemilih', 'pemilih_id']);
+            $table->unique(['periode_id', 'pemilih_id']);
         });
     }
 

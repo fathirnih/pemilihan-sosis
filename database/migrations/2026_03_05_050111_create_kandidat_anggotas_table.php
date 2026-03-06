@@ -14,12 +14,12 @@ return new class extends Migration
         Schema::create('kandidat_anggota', function (Blueprint $table) {
             $table->id();
             $table->foreignId('kandidat_id')->constrained('kandidat')->cascadeOnUpdate()->cascadeOnDelete();
-            $table->foreignId('siswa_id')->constrained('siswa')->cascadeOnUpdate()->restrictOnDelete();
+            $table->foreignId('pemilih_id')->constrained('pemilih')->cascadeOnUpdate()->restrictOnDelete();
             $table->enum('peran', ['ketua', 'wakil']);
             $table->timestamps();
 
             $table->unique(['kandidat_id', 'peran']);
-            $table->unique(['kandidat_id', 'siswa_id']);
+            $table->unique(['kandidat_id', 'pemilih_id']);
         });
     }
 
