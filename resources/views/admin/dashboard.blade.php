@@ -1,71 +1,54 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('title', 'Admin Dashboard')
 
-@section('content')
-<div class="min-h-screen bg-slate-50">
-    <!-- Header -->
-    <div class="bg-gradient-to-r from-blue-600 to-blue-700 text-white py-8 px-4">
-        <div class="max-w-6xl mx-auto">
-            <div class="flex justify-between items-center">
-                <div>
-                    <h1 class="text-3xl font-bold mb-2">Admin Dashboard</h1>
-                    <p class="text-blue-100">Selamat datang, {{ Session::get('admin_nama') }}</p>
-                </div>
-                <form action="{{ route('admin.logout') }}" method="POST">
-                    @csrf
-                    <button type="submit" class="bg-red-500 hover:bg-red-600 px-6 py-2 rounded-lg font-medium transition-colors">
-                        Logout
-                    </button>
-                </form>
-            </div>
+@section('admin.content')
+<div class="px-4 py-8 lg:px-8">
+    <div class="max-w-6xl">
+        <div class="mb-6">
+            <h2 class="text-2xl font-bold text-slate-900">Ringkasan</h2>
+            <p class="mt-1 text-slate-600">Pantau aktivitas pemilihan dan status periode.</p>
         </div>
-    </div>
 
-    <div class="max-w-6xl mx-auto px-4 py-8">
         <!-- Statistics -->
         <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            <!-- Total Tokens -->
             <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-slate-600 text-sm font-medium mb-2">Total Token</p>
                         <p class="text-3xl font-bold text-slate-900">{{ $totalTokens }}</p>
                     </div>
-                    <div class="text-4xl text-blue-600 opacity-20">📋</div>
+                    <div class="h-10 w-10 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center text-sm font-semibold">TK</div>
                 </div>
             </div>
 
-            <!-- Active Tokens -->
             <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-slate-600 text-sm font-medium mb-2">Token Aktif</p>
-                        <p class="text-3xl font-bold text-green-600">{{ $tokensAktif }}</p>
+                        <p class="text-3xl font-bold text-emerald-600">{{ $tokensAktif }}</p>
                     </div>
-                    <div class="text-4xl text-green-600 opacity-20">✓</div>
+                    <div class="h-10 w-10 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center text-sm font-semibold">AK</div>
                 </div>
             </div>
 
-            <!-- Sudah Memilih -->
             <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-slate-600 text-sm font-medium mb-2">Sudah Memilih</p>
                         <p class="text-3xl font-bold text-blue-600">{{ $sudahMemilih }}</p>
                     </div>
-                    <div class="text-4xl text-blue-600 opacity-20">🗳️</div>
+                    <div class="h-10 w-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-sm font-semibold">SM</div>
                 </div>
             </div>
 
-            <!-- Total Suara -->
             <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-slate-600 text-sm font-medium mb-2">Total Suara</p>
                         <p class="text-3xl font-bold text-purple-600">{{ $totalSuara }}</p>
                     </div>
-                    <div class="text-4xl text-purple-600 opacity-20">📊</div>
+                    <div class="h-10 w-10 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center text-sm font-semibold">TS</div>
                 </div>
             </div>
         </div>
@@ -73,7 +56,7 @@
         <!-- Active Period -->
         @if ($periode)
             <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 mb-8">
-                <h2 class="text-xl font-bold text-slate-900 mb-4">Periode Aktif</h2>
+                <h3 class="text-lg font-bold text-slate-900 mb-4">Periode Aktif</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <p class="text-slate-600 text-sm mb-1">Nama Periode</p>
@@ -95,30 +78,14 @@
             </div>
         @else
             <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-8">
-                <p class="text-yellow-800">⚠️ Tidak ada periode pemilihan yang aktif</p>
+                <p class="text-yellow-800">Tidak ada periode pemilihan yang aktif.</p>
             </div>
         @endif
-
-        <!-- Action Buttons -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-            <a href="{{ route('admin.tokens.index') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg transition-colors text-center">
-                📄 Generate Token
-            </a>
-            <a href="{{ route('admin.kelas.index') }}" class="bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-3 px-6 rounded-lg transition-colors text-center">
-                🏫 Kelas
-            </a>
-            <a href="{{ route('admin.manage-periode') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-6 rounded-lg transition-colors text-center">
-                🔧 Manage Periode
-            </a>
-            <a href="{{ route('admin.dashboard') }}" class="bg-slate-600 hover:bg-slate-700 text-white font-medium py-3 px-6 rounded-lg transition-colors text-center">
-                🔄 Refresh
-            </a>
-        </div>
 
         <!-- Candidates Results -->
         @if ($kandidats->count() > 0)
             <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
-                <h2 class="text-xl font-bold text-slate-900 mb-6">Hasil Sementara Kandidat</h2>
+                <h3 class="text-lg font-bold text-slate-900 mb-6">Hasil Sementara Kandidat</h3>
                 <div class="space-y-4">
                     @foreach ($kandidats as $kandidat)
                         <div class="border border-slate-200 rounded-lg p-4">

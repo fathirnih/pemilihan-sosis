@@ -1,8 +1,8 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('title', 'Tokens Generated - Admin')
 
-@section('content')
+@section('admin.content')
 <div class="min-h-screen bg-slate-50">
     <!-- Header -->
     <div class="bg-gradient-to-r from-green-600 to-green-700 text-white py-8 px-4">

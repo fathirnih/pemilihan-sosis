@@ -1,8 +1,8 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('title', 'Tambah Kelas - Admin')
 
-@section('content')
+@section('admin.content')
 <div class="min-h-screen bg-slate-50">
     <div class="bg-gradient-to-r from-blue-600 to-blue-700 text-white py-8 px-4">
         <div class="max-w-3xl mx-auto">

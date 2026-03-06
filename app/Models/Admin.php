@@ -42,4 +42,12 @@ class Admin extends Model
     {
         return self::where('username', $username)->where('aktif', true)->first();
     }
+
+    /**
+     * Get admin by email
+     */
+    public static function findByEmail($email)
+    {
+        return self::where('email', $email)->where('aktif', true)->first();
+    }
 }

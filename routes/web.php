@@ -8,6 +8,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\PanitiaController;
 use App\Http\Controllers\TokenController;
 use App\Http\Controllers\KelasController;
+use App\Http\Controllers\StaffAuthController;
 
 // Public routes - Voter
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
@@ -22,9 +23,11 @@ Route::middleware('pemilih')->group(function () {
     Route::get('/results', [ResultsController::class, 'index'])->name('results.index');
 });
 
-// Public routes - Admin
-Route::get('/admin/login', [AdminController::class, 'showLogin'])->name('admin.login');
-Route::post('/admin/login', [AdminController::class, 'login']);
+// Public routes - Staff (Admin + Panitia)
+Route::get('/admin/login', [StaffAuthController::class, 'showLogin'])->name('admin.login');
+Route::post('/admin/login', [StaffAuthController::class, 'login'])->name('admin.login.submit');
+
+// Backward-compatible login entry points
 
 // Protected admin routes
 Route::middleware('admin')->group(function () {
@@ -54,10 +57,6 @@ Route::middleware('admin')->group(function () {
     
     Route::post('/admin/logout', [AdminController::class, 'logout'])->name('admin.logout');
 });
-
-// Public routes - Panitia
-Route::get('/panitia/login', [PanitiaController::class, 'showLogin'])->name('panitia.login');
-Route::post('/panitia/login', [PanitiaController::class, 'login']);
 
 // Protected panitia routes
 Route::middleware('panitia')->group(function () {
