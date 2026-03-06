@@ -13,9 +13,6 @@
                     <p class="text-blue-100 mt-2">Buat dan kelola token untuk siswa</p>
                 </div>
                 <div class="flex items-center gap-3">
-                    <a href="{{ route('admin.kelas.index') }}" class="bg-emerald-500 hover:bg-emerald-600 px-6 py-3 rounded-lg font-medium transition-colors inline-flex items-center gap-2">
-                        Kelas
-                    </a>
                     <a href="{{ route('admin.tokens.create') }}" class="bg-green-500 hover:bg-green-600 px-6 py-3 rounded-lg font-medium transition-colors inline-flex items-center gap-2">
                         ➕ Token Baru
                     </a>
@@ -136,3 +133,4 @@
     </div>
 </div>
 @endsection
+
