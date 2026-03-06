@@ -22,15 +22,11 @@ Route::middleware('pemilih')->group(function () {
     Route::get('/results', [ResultsController::class, 'index'])->name('results.index');
 });
 
-// Public routes - Staff
-Route::get('/staff/login', [StaffAuthController::class, 'showLogin'])->name('staff.login');
-Route::post('/staff/login', [StaffAuthController::class, 'login'])->name('staff.login.submit');
+// Public routes - Staff (Admin + Panitia)
+Route::get('/admin/login', [StaffAuthController::class, 'showLogin'])->name('admin.login');
+Route::post('/admin/login', [StaffAuthController::class, 'login'])->name('admin.login.submit');
 
 // Backward-compatible login entry points
-Route::redirect('/admin/login', '/staff/login')->name('admin.login');
-Route::redirect('/panitia/login', '/staff/login')->name('panitia.login');
-Route::post('/admin/login', [StaffAuthController::class, 'login']);
-Route::post('/panitia/login', [StaffAuthController::class, 'login']);
 
 // Protected admin routes
 Route::middleware('admin')->group(function () {

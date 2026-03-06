@@ -29,6 +29,6 @@ class PanitiaController extends Controller
     public function logout()
     {
         Session::forget(['panitia_id', 'panitia_username', 'panitia_nama']);
-        return redirect()->route('staff.login')->with('success', 'Logout berhasil');
+        return redirect()->route('admin.login')->with('success', 'Logout berhasil');
     }
 }

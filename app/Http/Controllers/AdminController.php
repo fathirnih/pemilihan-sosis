@@ -109,6 +109,6 @@ class AdminController extends Controller
     public function logout()
     {
         Session::forget(['admin_id', 'admin_username', 'admin_nama']);
-        return redirect()->route('staff.login')->with('success', 'Logout berhasil');
+        return redirect()->route('admin.login')->with('success', 'Logout berhasil');
     }
 }

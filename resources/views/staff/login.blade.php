@@ -23,7 +23,7 @@
                 </div>
             @endif
 
-        <form action="{{ route('staff.login.submit') }}" method="POST" class="mt-6 space-y-4">
+        <form action="{{ route('admin.login.submit') }}" method="POST" class="mt-6 space-y-4">
             @csrf
 
             <div>
