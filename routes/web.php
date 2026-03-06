@@ -10,6 +10,7 @@ use App\Http\Controllers\TokenController;
 use App\Http\Controllers\PemilihController;
 use App\Http\Controllers\KelasController;
 use App\Http\Controllers\StaffAuthController;
+use App\Http\Controllers\PeriodeController;
 
 // Public routes - Voter
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
@@ -35,8 +36,10 @@ Route::middleware('admin')->group(function () {
     Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
     Route::get('/admin/generate-token', [AdminController::class, 'showGenerateToken'])->name('admin.show-generate-token');
     Route::post('/admin/generate-token', [AdminController::class, 'generateToken'])->name('admin.generate-token');
-    Route::get('/admin/manage-periode', [AdminController::class, 'managePeriode'])->name('admin.manage-periode');
-    Route::post('/admin/toggle-periode/{id}', [AdminController::class, 'togglePeriode'])->name('admin.toggle-periode');
+    Route::get('/admin/manage-periode', function () {
+        return redirect()->route('admin.periode.index');
+    })->name('admin.manage-periode');
+    Route::post('/admin/toggle-periode/{id}', [PeriodeController::class, 'toggleStatus'])->name('admin.toggle-periode');
     
     // Pemilih CRUD routes
     Route::get('/admin/pemilih', [PemilihController::class, 'index'])->name('admin.pemilih.index');
@@ -53,6 +56,14 @@ Route::middleware('admin')->group(function () {
     // Token print/pdf routes (keep)
     Route::get('/admin/tokens/{id}/print', [TokenController::class, 'print'])->name('admin.tokens.print');
     Route::get('/admin/tokens/{id}/pdf', [TokenController::class, 'downloadPdf'])->name('admin.tokens.downloadPdf');
+
+    // Periode CRUD routes
+    Route::get('/admin/periode', [PeriodeController::class, 'index'])->name('admin.periode.index');
+    Route::get('/admin/periode/create', [PeriodeController::class, 'create'])->name('admin.periode.create');
+    Route::post('/admin/periode', [PeriodeController::class, 'store'])->name('admin.periode.store');
+    Route::get('/admin/periode/{id}/edit', [PeriodeController::class, 'edit'])->name('admin.periode.edit');
+    Route::put('/admin/periode/{id}', [PeriodeController::class, 'update'])->name('admin.periode.update');
+    Route::delete('/admin/periode/{id}', [PeriodeController::class, 'destroy'])->name('admin.periode.destroy');
 
     // Kelas CRUD routes
     Route::get('/admin/kelas', [KelasController::class, 'index'])->name('admin.kelas.index');

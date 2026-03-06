@@ -28,7 +28,7 @@
                 <a href="{{ route('admin.kelas.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 {{ request()->routeIs('admin.kelas.*') ? 'bg-slate-100 text-slate-900' : '' }}">
                     Kelas
                 </a>
-                <a href="{{ route('admin.manage-periode') }}" class="block rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 {{ request()->routeIs('admin.manage-periode') ? 'bg-slate-100 text-slate-900' : '' }}">
+                <a href="{{ route('admin.periode.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 {{ request()->routeIs('admin.periode.*') ? 'bg-slate-100 text-slate-900' : '' }}">
                     Periode
                 </a>
             </nav>
