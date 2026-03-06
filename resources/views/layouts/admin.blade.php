@@ -20,7 +20,7 @@
 
             <nav class="mt-6 space-y-2">
                 <a href="{{ route('admin.dashboard') }}" class="block rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 {{ request()->routeIs('admin.dashboard') ? 'bg-slate-100 text-slate-900' : '' }}">
-                    Ringkasan
+                    Dashboard
                 </a>
                 <a href="{{ route('admin.tokens.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 {{ request()->routeIs('admin.tokens.*') ? 'bg-slate-100 text-slate-900' : '' }}">
                     Token
@@ -30,9 +30,6 @@
                 </a>
                 <a href="{{ route('admin.manage-periode') }}" class="block rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 {{ request()->routeIs('admin.manage-periode') ? 'bg-slate-100 text-slate-900' : '' }}">
                     Periode
-                </a>
-                <a href="{{ route('admin.dashboard') }}" class="block rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100">
-                    Refresh
                 </a>
             </nav>
 
