@@ -61,10 +61,6 @@
                                         <div class="text-sm font-medium text-slate-600">NOMOR URUT</div>
                                         <div class="text-3xl font-bold text-blue-600 mt-1">{{ $kandidat->nomor_urut }}</div>
                                     </div>
-                                    <div class="hidden sm:block text-right">
-                                        <div class="text-2xl font-bold text-slate-900">{{ $kandidat->suara()->count() }}</div>
-                                        <div class="text-xs text-slate-600">suara</div>
-                                    </div>
                                 </div>
                             </div>
 

@@ -29,6 +29,17 @@ class VotingController extends Controller
         $tokenId = Session::get('pemilih_token_id');
         $periodeId = Session::get('pemilih_periode_id');
         $tokenRecord = TokenPemilih::findOrFail($tokenId);
+        $periode = PeriodePemilihan::findOrFail($periodeId);
+
+        if ($periode->status !== 'aktif') {
+            Session::forget(['pemilih_token_id', 'pemilih_periode_id']);
+            return redirect()->route('login')->withErrors(['login' => 'Periode pemilihan sudah ditutup']);
+        }
+
+        if ($tokenRecord->sudah_memilih || $tokenRecord->status !== 'aktif') {
+            Session::forget(['pemilih_token_id', 'pemilih_periode_id']);
+            return redirect()->route('login')->withErrors(['login' => 'Token sudah digunakan']);
+        }
 
         // Create vote record
         $suara = Suara::create([

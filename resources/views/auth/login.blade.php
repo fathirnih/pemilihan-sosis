@@ -50,6 +50,8 @@
                         type="text"
                         id="nis"
                         name="nis"
+                        value="{{ old('nis') }}"
+                        required
                         placeholder="Conto: 2024001"
                         class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white text-slate-900 placeholder-slate-500 transition-all"
                     />
@@ -64,6 +66,8 @@
                         type="text"
                         id="token"
                         name="token"
+                        value="{{ old('token') }}"
+                        required
                         placeholder="Conto: VOTE-Kq8T6pxcyyIC"
                         class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white text-slate-900 placeholder-slate-500 transition-all"
                     />
@@ -84,7 +88,7 @@
             <!-- Info Box -->
             <div class="mt-8 pt-8 border-t border-slate-200">
                 <p class="text-sm text-slate-600 text-center">
-                    🔓 Gunakan token atau NIS untuk login
+                    🔓 Gunakan NIS/NIP dan token untuk login
                 </p>
             </div>
         </div>
