@@ -42,6 +42,7 @@ Route::middleware('admin')->group(function () {
     Route::get('/admin/tokens/create', [TokenController::class, 'create'])->name('admin.tokens.create');
     Route::post('/admin/tokens', [TokenController::class, 'store'])->name('admin.tokens.store');
     Route::get('/admin/tokens/{id}/edit', [TokenController::class, 'edit'])->name('admin.tokens.edit');
+    Route::post('/admin/tokens/{id}/reset', [TokenController::class, 'reset'])->name('admin.tokens.reset');
     Route::put('/admin/tokens/{id}', [TokenController::class, 'update'])->name('admin.tokens.update');
     Route::get('/admin/tokens/{id}/print', [TokenController::class, 'print'])->name('admin.tokens.print');
     Route::get('/admin/tokens/{id}/pdf', [TokenController::class, 'downloadPdf'])->name('admin.tokens.downloadPdf');

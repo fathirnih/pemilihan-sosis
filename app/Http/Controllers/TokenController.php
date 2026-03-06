@@ -6,6 +6,7 @@ use App\Models\TokenPemilih;
 use App\Models\Siswa;
 use App\Models\Kelas;
 use App\Models\PeriodePemilihan;
+use App\Models\Suara;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
@@ -203,5 +204,31 @@ class TokenController extends Controller
         $token->delete();
 
         return back()->with('success', "Token untuk {$nama} berhasil dihapus");
+    }
+
+    /**
+     * Reset token and delete vote for a voter
+     */
+    public function reset($id)
+    {
+        $token = TokenPemilih::findOrFail($id);
+
+        Suara::where('periode_id', $token->periode_id)
+            ->where('tipe_pemilih', $token->tipe_pemilih)
+            ->where('pemilih_id', $token->pemilih_id)
+            ->delete();
+
+        $newToken = 'VOTE-' . Str::random(16);
+
+        $token->update([
+            'token' => $newToken,
+            'token_hash' => Hash::make($newToken),
+            'status' => 'aktif',
+            'sudah_memilih' => false,
+            'digunakan_pada' => null,
+            'kadaluarsa_pada' => null,
+        ]);
+
+        return back()->with('success', "Token untuk {$token->nama_pemilih} berhasil direset");
     }
 }
