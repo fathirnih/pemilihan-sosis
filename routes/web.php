@@ -17,6 +17,7 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('pemilih')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('/voting', [VotingController::class, 'index'])->name('voting.index');
+    Route::get('/voting/status', [VotingController::class, 'status'])->name('voting.status');
     Route::post('/voting', [VotingController::class, 'store'])->name('voting.store');
     Route::get('/results', [ResultsController::class, 'index'])->name('results.index');
 });

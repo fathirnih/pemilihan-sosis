@@ -20,6 +20,11 @@ class VotingController extends Controller
         return view('voting.index', compact('periode', 'kandidats'));
     }
 
+    public function status()
+    {
+        return response()->json(['active' => true]);
+    }
+
     public function store(Request $request)
     {
         $request->validate([
