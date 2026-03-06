@@ -15,6 +15,8 @@ class DatabaseSeeder extends Seeder
             AdminPanitiaSeeder::class,
             KelasSeeder::class,
             PemilihSeeder::class,
+            KandidatSeeder::class,
+            SuaraSeeder::class,
         ]);
     }
 }
