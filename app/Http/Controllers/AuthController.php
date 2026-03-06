@@ -17,31 +17,21 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $request->validate([
-            'token' => 'nullable|string',
-            'nis' => 'nullable|string',
+            'token' => 'required|string',
+            'nis' => 'required|string',
         ], [
-            'token.required' => 'Token atau NIS harus diisi',
+            'token.required' => 'Token wajib diisi',
+            'nis.required' => 'NIS/NIP wajib diisi',
         ]);
 
-        // Check if either token or NIS is provided
-        if (!$request->token && !$request->nis) {
-            return back()->withErrors(['login' => 'Token atau NIS harus diisi']);
-        }
-
-        // Find token by either token code or NIS
-        $query = TokenPemilih::where('status', 'aktif');
-        
-        if ($request->token) {
-            $query->where('token', $request->token);
-        } else {
-            $query->where('nis_pemilih', $request->nis);
-        }
-        
-        $tokenRecord = $query->first();
+        // NIS/NIP dan token harus cocok pada record token yang sama
+        $tokenRecord = TokenPemilih::where('status', 'aktif')
+            ->where('token', $request->token)
+            ->where('nis_pemilih', $request->nis)
+            ->first();
 
         if (!$tokenRecord) {
-            $fieldName = $request->token ? 'Token' : 'NIS';
-            return back()->withErrors(['login' => "$fieldName tidak valid atau sudah digunakan"]);
+            return back()->withErrors(['login' => 'NIS/NIP atau token tidak valid, atau token sudah digunakan']);
         }
 
         // Check if token has already voted

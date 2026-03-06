@@ -61,10 +61,6 @@
                                         <div class="text-sm font-medium text-slate-600">NOMOR URUT</div>
                                         <div class="text-3xl font-bold text-blue-600 mt-1">{{ $kandidat->nomor_urut }}</div>
                                     </div>
-                                    <div class="hidden sm:block text-right">
-                                        <div class="text-2xl font-bold text-slate-900">{{ $kandidat->suara()->count() }}</div>
-                                        <div class="text-xs text-slate-600">suara</div>
-                                    </div>
                                 </div>
                             </div>
 
@@ -111,4 +107,47 @@
         @endif
     </div>
 </div>
+<script>
+    (() => {
+        const statusUrl = @json(route('voting.status'));
+        const loginUrl = @json(route('login'));
+        let redirected = false;
+
+        const checkVotingStatus = async () => {
+            if (redirected) return;
+
+            try {
+                const response = await fetch(statusUrl, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
+                    credentials: 'same-origin',
+                });
+
+                if (response.status === 401) {
+                    let message = 'Periode pemilihan sudah ditutup. Silakan login kembali.';
+                    try {
+                        const payload = await response.json();
+                        if (payload && payload.message) {
+                            message = payload.message;
+                        }
+                    } catch (error) {
+                        // Keep default message when response body is not JSON.
+                    }
+
+                    redirected = true;
+                    const separator = loginUrl.includes('?') ? '&' : '?';
+                    window.location.href = `${loginUrl}${separator}logout_reason=${encodeURIComponent(message)}`;
+                }
+            } catch (error) {
+                // Ignore temporary network issues and retry on next interval.
+            }
+        };
+
+        checkVotingStatus();
+        setInterval(checkVotingStatus, 5000);
+    })();
+</script>
 @endsection
