@@ -37,6 +37,12 @@
                 <a href="{{ route('admin.suara.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 {{ request()->routeIs('admin.suara.*') ? 'bg-slate-100 text-slate-900' : '' }}">
                     Suara
                 </a>
+                <a href="{{ route('admin.admins.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 {{ request()->routeIs('admin.admins.*') ? 'bg-slate-100 text-slate-900' : '' }}">
+                    Admin
+                </a>
+                <a href="{{ route('admin.panitia.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 {{ request()->routeIs('admin.panitia.*') ? 'bg-slate-100 text-slate-900' : '' }}">
+                    Panitia
+                </a>
             </nav>
 
             <form action="{{ route('admin.logout') }}" method="POST" class="mt-6 hidden lg:block">

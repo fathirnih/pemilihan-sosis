@@ -13,6 +13,8 @@ use App\Http\Controllers\StaffAuthController;
 use App\Http\Controllers\PeriodeController;
 use App\Http\Controllers\KandidatController;
 use App\Http\Controllers\SuaraController;
+use App\Http\Controllers\AdminUserController;
+use App\Http\Controllers\PanitiaUserController;
 
 // Public routes - Voter
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
@@ -82,6 +84,22 @@ Route::middleware('admin')->group(function () {
     Route::get('/admin/suara/{id}/edit', [SuaraController::class, 'edit'])->name('admin.suara.edit');
     Route::put('/admin/suara/{id}', [SuaraController::class, 'update'])->name('admin.suara.update');
     Route::delete('/admin/suara/{id}', [SuaraController::class, 'destroy'])->name('admin.suara.destroy');
+
+    // Admin CRUD routes
+    Route::get('/admin/admins', [AdminUserController::class, 'index'])->name('admin.admins.index');
+    Route::get('/admin/admins/create', [AdminUserController::class, 'create'])->name('admin.admins.create');
+    Route::post('/admin/admins', [AdminUserController::class, 'store'])->name('admin.admins.store');
+    Route::get('/admin/admins/{id}/edit', [AdminUserController::class, 'edit'])->name('admin.admins.edit');
+    Route::put('/admin/admins/{id}', [AdminUserController::class, 'update'])->name('admin.admins.update');
+    Route::delete('/admin/admins/{id}', [AdminUserController::class, 'destroy'])->name('admin.admins.destroy');
+
+    // Panitia CRUD routes
+    Route::get('/admin/panitia', [PanitiaUserController::class, 'index'])->name('admin.panitia.index');
+    Route::get('/admin/panitia/create', [PanitiaUserController::class, 'create'])->name('admin.panitia.create');
+    Route::post('/admin/panitia', [PanitiaUserController::class, 'store'])->name('admin.panitia.store');
+    Route::get('/admin/panitia/{id}/edit', [PanitiaUserController::class, 'edit'])->name('admin.panitia.edit');
+    Route::put('/admin/panitia/{id}', [PanitiaUserController::class, 'update'])->name('admin.panitia.update');
+    Route::delete('/admin/panitia/{id}', [PanitiaUserController::class, 'destroy'])->name('admin.panitia.destroy');
 
     // Kelas CRUD routes
     Route::get('/admin/kelas', [KelasController::class, 'index'])->name('admin.kelas.index');
