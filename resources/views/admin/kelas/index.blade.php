@@ -3,33 +3,27 @@
 @section('title', 'Kelola Kelas - Admin')
 
 @section('admin.content')
-<div class="min-h-screen bg-slate-50">
-    <div class="bg-gradient-to-r from-blue-600 to-blue-700 text-white py-8 px-4">
-        <div class="max-w-5xl mx-auto flex items-center justify-between gap-4">
+<div class="px-4 py-8 lg:px-8">
+    <div class="max-w-6xl">
+        <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-6">
             <div>
-                <h1 class="text-3xl font-bold">Kelola Kelas</h1>
-                <p class="text-blue-100 mt-2">CRUD data kelas untuk dipakai pada input token</p>
+                <h1 class="text-2xl font-bold text-slate-900">Kelas</h1>
+                <p class="mt-1 text-slate-600">Kelola data kelas untuk pemilih siswa.</p>
             </div>
-            <a href="{{ route('admin.kelas.create') }}" class="bg-green-500 hover:bg-green-600 px-6 py-3 rounded-lg font-medium transition-colors">
+            <a href="{{ route('admin.kelas.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-md transition-colors text-sm shadow-sm">
                 Tambah Kelas
             </a>
         </div>
-    </div>
-
-    <div class="max-w-5xl mx-auto px-4 py-8">
-        <a href="{{ route('admin.dashboard') }}" class="inline-flex items-center text-blue-600 hover:text-blue-700 mb-6">
-            Kembali ke Dashboard
-        </a>
 
         @if (session('success'))
-            <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
-                <p class="text-green-800">{{ session('success') }}</p>
+            <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-4 mb-6">
+                <p class="text-emerald-800">{{ session('success') }}</p>
             </div>
         @endif
 
         @if ($errors->any())
-            <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-                <p class="text-red-800">{{ $errors->first() }}</p>
+            <div class="bg-rose-50 border border-rose-200 rounded-lg p-4 mb-6">
+                <p class="text-rose-800">{{ $errors->first() }}</p>
             </div>
         @endif
 
@@ -54,13 +48,13 @@
                                 <td class="px-6 py-4 text-sm text-slate-600">{{ $item->siswa_count }}</td>
                                 <td class="px-6 py-4 text-sm">
                                     <div class="flex gap-2">
-                                        <a href="{{ route('admin.kelas.edit', $item->id) }}" class="px-3 py-2 bg-yellow-600 hover:bg-yellow-700 text-white text-xs font-medium rounded transition-colors">
+                                        <a href="{{ route('admin.kelas.edit', $item->id) }}" class="px-3 py-2 bg-amber-500 hover:bg-amber-600 text-white text-xs font-medium rounded transition-colors">
                                             Edit
                                         </a>
                                         <form action="{{ route('admin.kelas.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Hapus kelas ini?')" class="inline">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="px-3 py-2 bg-red-600 hover:bg-red-700 text-white text-xs font-medium rounded transition-colors">
+                                            <button type="submit" class="px-3 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-medium rounded transition-colors">
                                                 Hapus
                                             </button>
                                         </form>
