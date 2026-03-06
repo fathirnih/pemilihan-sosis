@@ -3,14 +3,18 @@
 @section('title', 'Kelola Kelas - Admin')
 
 @section('admin.content')
-<div class="px-4 py-8 lg:px-8">
-    <div class="max-w-6xl">
-        <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-6">
+<div class="admin-page">
+    <div class="admin-container">
+        <div class="admin-header">
             <div>
-                <h1 class="text-2xl font-bold text-slate-900">Kelas</h1>
-                <p class="mt-1 text-slate-600">Kelola data kelas untuk pemilih siswa.</p>
+                <h1 class="admin-title">Kelas</h1>
+                <p class="admin-subtitle">Kelola data kelas untuk pemilih siswa.</p>
             </div>
-            <a href="{{ route('admin.kelas.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-md transition-colors text-sm shadow-sm">
+            <a href="{{ route('admin.kelas.create') }}" class="admin-btn admin-btn-primary">
+                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 5v14"></path>
+                    <path d="M5 12h14"></path>
+                </svg>
                 Tambah Kelas
             </a>
         </div>
@@ -27,34 +31,43 @@
             </div>
         @endif
 
-        <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="admin-card overflow-hidden">
             <div class="overflow-x-auto">
-                <table class="w-full">
-                    <thead class="bg-slate-50 border-b border-slate-200">
+                <table class="admin-table">
+                    <thead class="admin-thead">
                         <tr>
-                            <th class="px-6 py-4 text-left text-sm font-semibold text-slate-900">No</th>
-                            <th class="px-6 py-4 text-left text-sm font-semibold text-slate-900">Nama Kelas</th>
-                            <th class="px-6 py-4 text-left text-sm font-semibold text-slate-900">Tingkat</th>
-                            <th class="px-6 py-4 text-left text-sm font-semibold text-slate-900">Jumlah Siswa</th>
-                            <th class="px-6 py-4 text-left text-sm font-semibold text-slate-900">Aksi</th>
+                            <th class="admin-th">No</th>
+                            <th class="admin-th">Nama Kelas</th>
+                            <th class="admin-th">Tingkat</th>
+                            <th class="admin-th">Jumlah Siswa</th>
+                            <th class="admin-th">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-200">
                         @forelse ($kelas as $item)
                             <tr class="hover:bg-slate-50 transition-colors">
-                                <td class="px-6 py-4 text-sm text-slate-900">{{ $loop->iteration }}</td>
-                                <td class="px-6 py-4 text-sm text-slate-900 font-medium">{{ $item->nama_kelas }}</td>
-                                <td class="px-6 py-4 text-sm text-slate-600">{{ $item->tingkat }}</td>
-                                <td class="px-6 py-4 text-sm text-slate-600">{{ $item->siswa_count }}</td>
-                                <td class="px-6 py-4 text-sm">
+                                <td class="admin-td text-slate-900">{{ $loop->iteration }}</td>
+                                <td class="admin-td text-slate-900 font-medium">{{ $item->nama_kelas }}</td>
+                                <td class="admin-td text-slate-600">{{ $item->tingkat }}</td>
+                                <td class="admin-td text-slate-600">{{ $item->siswa_count }}</td>
+                                <td class="admin-td">
                                     <div class="flex gap-2">
-                                        <a href="{{ route('admin.kelas.edit', $item->id) }}" class="px-3 py-2 bg-amber-500 hover:bg-amber-600 text-white text-xs font-medium rounded transition-colors">
+                                        <a href="{{ route('admin.kelas.edit', $item->id) }}" class="admin-btn admin-btn-warning text-xs px-3 py-2">
+                                            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M12 20h9"></path>
+                                                <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"></path>
+                                            </svg>
                                             Edit
                                         </a>
                                         <form action="{{ route('admin.kelas.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Hapus kelas ini?')" class="inline">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="px-3 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-medium rounded transition-colors">
+                                            <button type="submit" class="admin-btn admin-btn-danger text-xs px-3 py-2">
+                                                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <path d="M3 6h18"></path>
+                                                    <path d="M8 6V4h8v2"></path>
+                                                    <path d="M6 6l1 14h10l1-14"></path>
+                                                </svg>
                                                 Hapus
                                             </button>
                                         </form>

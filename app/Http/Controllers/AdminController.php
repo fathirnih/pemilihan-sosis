@@ -26,11 +26,25 @@ class AdminController extends Controller
         $totalSuara = Suara::count();
 
         $kandidats = collect();
+        $topKandidats = collect();
+        $otherKandidats = collect();
         if ($periode) {
             $kandidats = $periode->kandidat()->with(['anggota.pemilih', 'suara'])->get();
+            $sorted = $kandidats->sortByDesc(fn ($kandidat) => $kandidat->suara->count())->values();
+            $topKandidats = $sorted->take(3);
+            $otherKandidats = $sorted->slice(3);
         }
 
-        return view('admin.dashboard', compact('periode', 'totalTokens', 'tokensAktif', 'sudahMemilih', 'totalSuara', 'kandidats'));
+        return view('admin.dashboard', compact(
+            'periode',
+            'totalTokens',
+            'tokensAktif',
+            'sudahMemilih',
+            'totalSuara',
+            'kandidats',
+            'topKandidats',
+            'otherKandidats'
+        ));
     }
 
     /**

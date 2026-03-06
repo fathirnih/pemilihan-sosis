@@ -3,14 +3,18 @@
 @section('title', 'Periode Pemilihan - Admin')
 
 @section('admin.content')
-<div class="px-4 py-8 lg:px-8">
-    <div class="max-w-6xl">
-        <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between mb-6">
+<div class="admin-page">
+    <div class="admin-container">
+        <div class="admin-header">
             <div>
-                <h1 class="text-2xl font-bold text-slate-900">Periode Pemilihan</h1>
-                <p class="mt-1 text-slate-600">Atur jadwal, status, dan mode pemilihan.</p>
+                <h1 class="admin-title">Periode Pemilihan</h1>
+                <p class="admin-subtitle">Atur jadwal, status, dan mode pemilihan.</p>
             </div>
-            <a href="{{ route('admin.periode.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-md transition-colors text-sm shadow-sm">
+            <a href="{{ route('admin.periode.create') }}" class="admin-btn admin-btn-primary">
+                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 5v14"></path>
+                    <path d="M5 12h14"></path>
+                </svg>
                 Tambah Periode
             </a>
         </div>
@@ -27,51 +31,68 @@
             </div>
         @endif
 
-        <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="admin-card overflow-hidden">
             <div class="overflow-x-auto">
-                <table class="w-full">
-                    <thead class="bg-slate-50 border-b border-slate-200">
+                <table class="admin-table">
+                    <thead class="admin-thead">
                         <tr>
-                            <th class="px-6 py-4 text-left text-sm font-semibold text-slate-900">No</th>
-                            <th class="px-6 py-4 text-left text-sm font-semibold text-slate-900">Nama</th>
-                            <th class="px-6 py-4 text-left text-sm font-semibold text-slate-900">Mulai</th>
-                            <th class="px-6 py-4 text-left text-sm font-semibold text-slate-900">Selesai</th>
-                            <th class="px-6 py-4 text-left text-sm font-semibold text-slate-900">Mode</th>
-                            <th class="px-6 py-4 text-left text-sm font-semibold text-slate-900">Status</th>
-                            <th class="px-6 py-4 text-left text-sm font-semibold text-slate-900">Aksi</th>
+                            <th class="admin-th">No</th>
+                            <th class="admin-th">Nama</th>
+                            <th class="admin-th">Mulai</th>
+                            <th class="admin-th">Selesai</th>
+                            <th class="admin-th">Mode</th>
+                            <th class="admin-th">Status</th>
+                            <th class="admin-th">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-200">
                         @forelse ($periodes as $item)
                             <tr class="hover:bg-slate-50 transition-colors">
-                                <td class="px-6 py-4 text-sm text-slate-900">{{ $loop->iteration }}</td>
-                                <td class="px-6 py-4 text-sm text-slate-900 font-medium">{{ $item->nama_periode }}</td>
-                                <td class="px-6 py-4 text-sm text-slate-600">{{ $item->mulai_pada->format('d M Y H:i') }}</td>
-                                <td class="px-6 py-4 text-sm text-slate-600">{{ $item->selesai_pada->format('d M Y H:i') }}</td>
-                                <td class="px-6 py-4 text-sm text-slate-600">{{ $item->mode_pasangan === 'ketua_wakil' ? 'Ketua & Wakil' : 'Ketua Saja' }}</td>
-                                <td class="px-6 py-4 text-sm">
+                                <td class="admin-td text-slate-900">{{ $loop->iteration }}</td>
+                                <td class="admin-td text-slate-900 font-medium">{{ $item->nama_periode }}</td>
+                                <td class="admin-td text-slate-600">{{ $item->mulai_pada->format('d M Y H:i') }}</td>
+                                <td class="admin-td text-slate-600">{{ $item->selesai_pada->format('d M Y H:i') }}</td>
+                                <td class="admin-td text-slate-600">{{ $item->mode_pasangan === 'ketua_wakil' ? 'Ketua & Wakil' : 'Ketua Saja' }}</td>
+                                <td class="admin-td">
                                     @php
                                         $badge = $item->status === 'aktif'
-                                            ? 'bg-emerald-50 text-emerald-700'
-                                            : ($item->status === 'ditutup' ? 'bg-rose-50 text-rose-700' : 'bg-slate-100 text-slate-700');
+                                            ? 'admin-badge-success'
+                                            : ($item->status === 'ditutup' ? 'bg-rose-50 text-rose-700' : 'admin-badge-muted');
                                     @endphp
-                                    <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold {{ $badge }}">
+                                    <span class="admin-badge {{ $badge }}">
                                         {{ ucfirst($item->status) }}
                                     </span>
                                 </td>
-                                <td class="px-6 py-4 text-sm">
+                                <td class="admin-td">
                                     <div class="flex flex-wrap gap-2">
-                                        <a href="{{ route('admin.periode.edit', $item->id) }}" class="px-3 py-2 bg-amber-500 hover:bg-amber-600 text-white text-xs font-medium rounded transition-colors">Edit</a>
+                                        <a href="{{ route('admin.periode.edit', $item->id) }}" class="admin-btn admin-btn-warning text-xs px-3 py-2">
+                                            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M12 20h9"></path>
+                                                <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"></path>
+                                            </svg>
+                                            Edit
+                                        </a>
                                         <form action="{{ route('admin.toggle-periode', $item->id) }}" method="POST" onsubmit="return confirm('Ubah status periode ini?')" class="inline">
                                             @csrf
-                                            <button type="submit" class="px-3 py-2 bg-sky-600 hover:bg-sky-700 text-white text-xs font-medium rounded transition-colors">
+                                            <button type="submit" class="admin-btn admin-btn-soft text-xs px-3 py-2">
+                                                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <path d="M5 12h14"></path>
+                                                    <path d="M12 5v14"></path>
+                                                </svg>
                                                 {{ $item->status === 'aktif' ? 'Tutup' : 'Aktifkan' }}
                                             </button>
                                         </form>
                                         <form action="{{ route('admin.periode.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Hapus periode ini?')" class="inline">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="px-3 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-medium rounded transition-colors">Hapus</button>
+                                            <button type="submit" class="admin-btn admin-btn-danger text-xs px-3 py-2">
+                                                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <path d="M3 6h18"></path>
+                                                    <path d="M8 6V4h8v2"></path>
+                                                    <path d="M6 6l1 14h10l1-14"></path>
+                                                </svg>
+                                                Hapus
+                                            </button>
                                         </form>
                                     </div>
                                 </td>

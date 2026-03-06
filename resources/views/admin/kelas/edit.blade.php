@@ -3,18 +3,18 @@
 @section('title', 'Edit Kelas - Admin')
 
 @section('admin.content')
-<div class="px-4 py-8 lg:px-8">
+<div class="admin-page">
     <div class="max-w-3xl">
         <div class="mb-6">
-            <h1 class="text-2xl font-bold text-slate-900">Edit Kelas</h1>
-            <p class="mt-1 text-slate-600">Perbarui data kelas.</p>
+            <h1 class="admin-title">Edit Kelas</h1>
+            <p class="admin-subtitle">Perbarui data kelas.</p>
         </div>
 
         <a href="{{ route('admin.kelas.index') }}" class="inline-flex items-center text-slate-600 hover:text-slate-900 mb-6">
             <- Kembali ke daftar kelas
         </a>
 
-        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-8">
+        <div class="admin-card admin-card-body">
             <form action="{{ route('admin.kelas.update', $kelas->id) }}" method="POST" class="space-y-6">
                 @csrf
                 @method('PUT')
@@ -29,7 +29,7 @@
                         id="nama_kelas"
                         value="{{ old('nama_kelas', $kelas->nama_kelas) }}"
                         placeholder="Contoh: 12 IPA 1"
-                        class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400 @error('nama_kelas') border-red-500 @enderror"
+                        class="admin-input @error('nama_kelas') border-red-500 @enderror"
                         required
                         autofocus
                     >
@@ -50,7 +50,7 @@
                         min="1"
                         max="12"
                         placeholder="Contoh: 12"
-                        class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400 @error('tingkat') border-red-500 @enderror"
+                        class="admin-input @error('tingkat') border-red-500 @enderror"
                         required
                     >
                     @error('tingkat')
@@ -59,12 +59,15 @@
                 </div>
 
                 <div class="flex gap-3 pt-4">
-                    <button type="submit" class="flex-1 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors">
+                    <button type="submit" class="flex-1 admin-btn admin-btn-primary justify-center">
+                        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                            <path d="M17 21v-8H7v8"></path>
+                            <path d="M7 3v5h8"></path>
+                        </svg>
                         Simpan
                     </button>
-                    <a href="{{ route('admin.kelas.index') }}" class="flex-1 px-6 py-3 bg-slate-900 hover:bg-slate-800 text-white font-semibold rounded-lg transition-colors text-center">
-                        Batal
-                    </a>
+                    <a href="{{ route('admin.kelas.index') }}" class="flex-1 admin-btn admin-btn-soft justify-center">Batal</a>
                 </div>
             </form>
         </div>

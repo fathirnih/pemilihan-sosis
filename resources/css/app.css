@@ -1,4 +1,4 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
@@ -6,8 +6,9 @@
 @source '../**/*.js';
 
 @theme {
-    --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-sans:
+        "Inter", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+        "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
 @layer base {
@@ -19,12 +20,98 @@
         @apply outline-none;
     }
 
-    input, textarea, select {
+    input,
+    textarea,
+    select {
         @apply outline-none;
     }
 }
 
 @layer components {
+    .admin-page {
+        @apply px-4 py-8 lg:px-8;
+    }
+
+    .admin-container {
+        @apply max-w-6xl;
+    }
+
+    .admin-header {
+        @apply flex flex-col gap-3 md:flex-row md:items-center md:justify-between mb-6;
+    }
+
+    .admin-title {
+        @apply text-2xl font-bold text-slate-900;
+    }
+
+    .admin-subtitle {
+        @apply mt-1 text-slate-600;
+    }
+
+    .admin-card {
+        @apply bg-white rounded-2xl border border-slate-200 shadow-sm;
+    }
+
+    .admin-card-body {
+        @apply p-6;
+    }
+
+    .admin-btn {
+        @apply inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-colors;
+    }
+
+    .admin-btn-primary {
+        @apply bg-slate-900 text-white hover:bg-slate-800;
+    }
+
+    .admin-btn-soft {
+        @apply bg-slate-100 text-slate-700 hover:bg-slate-200;
+    }
+
+    .admin-btn-warning {
+        @apply bg-amber-500 text-white hover:bg-amber-600;
+    }
+
+    .admin-btn-danger {
+        @apply bg-rose-600 text-white hover:bg-rose-700;
+    }
+
+    .admin-badge {
+        @apply inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold;
+    }
+
+    .admin-badge-success {
+        @apply bg-emerald-50 text-emerald-700;
+    }
+
+    .admin-badge-muted {
+        @apply bg-slate-100 text-slate-700;
+    }
+
+    .admin-input {
+        @apply w-full rounded-lg border border-slate-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-slate-200 focus:border-slate-400;
+    }
+
+    .admin-select {
+        @apply rounded-lg border border-slate-300 px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-slate-200 focus:border-slate-400;
+    }
+
+    .admin-table {
+        @apply w-full;
+    }
+
+    .admin-thead {
+        @apply bg-slate-50 border-b border-slate-200;
+    }
+
+    .admin-th {
+        @apply px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-500;
+    }
+
+    .admin-td {
+        @apply px-6 py-4 text-sm text-slate-700;
+    }
+
     .btn-primary {
         @apply bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-4 rounded-lg transition-colors;
     }

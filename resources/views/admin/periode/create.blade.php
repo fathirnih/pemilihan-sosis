@@ -3,15 +3,15 @@
 @section('title', 'Tambah Periode - Admin')
 
 @section('admin.content')
-<div class="px-4 py-8 lg:px-8">
+<div class="admin-page">
     <div class="max-w-3xl">
         <div class="mb-6">
-            <h1 class="text-2xl font-bold text-slate-900">Tambah Periode</h1>
-            <p class="mt-1 text-slate-600">Buat periode pemilihan baru.</p>
+            <h1 class="admin-title">Tambah Periode</h1>
+            <p class="admin-subtitle">Buat periode pemilihan baru.</p>
         </div>
 
         <a href="{{ route('admin.periode.index') }}" class="inline-flex items-center text-slate-600 hover:text-slate-900 mb-6">
-            ← Kembali ke daftar periode
+            <- Kembali ke daftar periode
         </a>
 
         <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-8">

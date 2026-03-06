@@ -3,14 +3,18 @@
 @section('title', 'Kandidat - Admin')
 
 @section('admin.content')
-<div class="px-4 py-8 lg:px-8">
-    <div class="max-w-6xl">
-        <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-6">
+<div class="admin-page">
+    <div class="admin-container">
+        <div class="admin-header">
             <div>
-                <h1 class="text-2xl font-bold text-slate-900">Kandidat</h1>
-                <p class="mt-1 text-slate-600">Kelola kandidat per periode pemilihan.</p>
+                <h1 class="admin-title">Kandidat</h1>
+                <p class="admin-subtitle">Kelola kandidat per periode pemilihan.</p>
             </div>
-            <a href="{{ route('admin.kandidat.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-md transition-colors text-sm shadow-sm">
+            <a href="{{ route('admin.kandidat.create') }}" class="admin-btn admin-btn-primary">
+                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 5v14"></path>
+                    <path d="M5 12h14"></path>
+                </svg>
                 Tambah Kandidat
             </a>
         </div>
@@ -21,11 +25,11 @@
             </div>
         @endif
 
-        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5 mb-6">
+        <div class="admin-card admin-card-body mb-6">
             <form method="GET" class="flex flex-wrap items-end gap-3">
                 <div>
                     <label class="block text-sm font-semibold text-slate-700 mb-2">Periode</label>
-                    <select name="periode_id" class="rounded-lg border border-slate-300 px-3 py-2" onchange="this.form.submit()">
+                    <select name="periode_id" class="admin-select" onchange="this.form.submit()">
                         @foreach ($periodes as $p)
                             <option value="{{ $p->id }}" @selected((string) $p->id === (string) $periodeId)>{{ $p->nama_periode }}</option>
                         @endforeach
@@ -34,18 +38,18 @@
             </form>
         </div>
 
-        <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="admin-card overflow-hidden">
             <div class="overflow-x-auto">
-                <table class="w-full">
-                    <thead class="bg-slate-50 border-b border-slate-200">
+                <table class="admin-table">
+                    <thead class="admin-thead">
                         <tr>
-                            <th class="px-6 py-4 text-left text-sm font-semibold text-slate-900">No</th>
-                            <th class="px-6 py-4 text-left text-sm font-semibold text-slate-900">Nomor Urut</th>
-                            <th class="px-6 py-4 text-left text-sm font-semibold text-slate-900">Ketua</th>
-                            <th class="px-6 py-4 text-left text-sm font-semibold text-slate-900">Wakil</th>
-                            <th class="px-6 py-4 text-left text-sm font-semibold text-slate-900">Foto</th>
-                            <th class="px-6 py-4 text-left text-sm font-semibold text-slate-900">Visi</th>
-                            <th class="px-6 py-4 text-left text-sm font-semibold text-slate-900">Aksi</th>
+                            <th class="admin-th">No</th>
+                            <th class="admin-th">Nomor Urut</th>
+                            <th class="admin-th">Ketua</th>
+                            <th class="admin-th">Wakil</th>
+                            <th class="admin-th">Foto</th>
+                            <th class="admin-th">Visi</th>
+                            <th class="admin-th">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-200">
@@ -55,25 +59,38 @@
                                 $wakil = $item->anggota->firstWhere('peran', 'wakil')?->pemilih?->nama;
                             @endphp
                             <tr class="hover:bg-slate-50 transition-colors">
-                                <td class="px-6 py-4 text-sm text-slate-900">{{ $loop->iteration }}</td>
-                                <td class="px-6 py-4 text-sm text-slate-900 font-medium">{{ $item->nomor_urut }}</td>
-                                <td class="px-6 py-4 text-sm text-slate-700">{{ $ketua ?? '-' }}</td>
-                                <td class="px-6 py-4 text-sm text-slate-700">{{ $wakil ?? '-' }}</td>
-                                <td class="px-6 py-4 text-sm">
+                                <td class="admin-td text-slate-900">{{ $loop->iteration }}</td>
+                                <td class="admin-td text-slate-900 font-medium">{{ $item->nomor_urut }}</td>
+                                <td class="admin-td text-slate-700">{{ $ketua ?? '-' }}</td>
+                                <td class="admin-td text-slate-700">{{ $wakil ?? '-' }}</td>
+                                <td class="admin-td">
                                     @if ($item->foto)
                                         <img src="{{ asset('storage/' . $item->foto) }}" alt="Foto kandidat" class="h-10 w-10 rounded-lg object-cover border border-slate-200">
                                     @else
                                         <span class="text-slate-400 text-xs">-</span>
                                     @endif
                                 </td>
-                                <td class="px-6 py-4 text-sm text-slate-600">{{ \Illuminate\Support\Str::limit($item->visi, 60) }}</td>
-                                <td class="px-6 py-4 text-sm">
+                                <td class="admin-td text-slate-600">{{ \Illuminate\Support\Str::limit($item->visi, 60) }}</td>
+                                <td class="admin-td">
                                     <div class="flex flex-wrap gap-2">
-                                        <a href="{{ route('admin.kandidat.edit', $item->id) }}" class="px-3 py-2 bg-amber-500 hover:bg-amber-600 text-white text-xs font-medium rounded transition-colors">Edit</a>
+                                        <a href="{{ route('admin.kandidat.edit', $item->id) }}" class="admin-btn admin-btn-warning text-xs px-3 py-2">
+                                            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M12 20h9"></path>
+                                                <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"></path>
+                                            </svg>
+                                            Edit
+                                        </a>
                                         <form action="{{ route('admin.kandidat.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Hapus kandidat ini?')" class="inline">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="px-3 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-medium rounded transition-colors">Hapus</button>
+                                            <button type="submit" class="admin-btn admin-btn-danger text-xs px-3 py-2">
+                                                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <path d="M3 6h18"></path>
+                                                    <path d="M8 6V4h8v2"></path>
+                                                    <path d="M6 6l1 14h10l1-14"></path>
+                                                </svg>
+                                                Hapus
+                                            </button>
                                         </form>
                                     </div>
                                 </td>
