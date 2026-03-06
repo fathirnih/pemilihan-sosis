@@ -114,7 +114,10 @@ Route::middleware('admin')->group(function () {
 
 // Protected panitia routes
 Route::middleware('panitia')->group(function () {
+    Route::get('/panitia/dashboard', [PanitiaController::class, 'dashboard'])->name('panitia.dashboard');
     Route::get('/panitia/results', [PanitiaController::class, 'viewResults'])->name('panitia.results');
+    Route::get('/panitia/report', [PanitiaController::class, 'report'])->name('panitia.report');
+    Route::get('/panitia/report/export', [PanitiaController::class, 'exportReportExcel'])->name('panitia.report.export');
     Route::post('/panitia/logout', [PanitiaController::class, 'logout'])->name('panitia.logout');
 });
 
