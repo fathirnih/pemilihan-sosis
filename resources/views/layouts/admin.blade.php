@@ -23,7 +23,7 @@
                     Dashboard
                 </a>
                 <a href="{{ route('admin.tokens.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 {{ request()->routeIs('admin.tokens.*') ? 'bg-slate-100 text-slate-900' : '' }}">
-                    Token
+                    Siswa
                 </a>
                 <a href="{{ route('admin.kelas.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 {{ request()->routeIs('admin.kelas.*') ? 'bg-slate-100 text-slate-900' : '' }}">
                     Kelas

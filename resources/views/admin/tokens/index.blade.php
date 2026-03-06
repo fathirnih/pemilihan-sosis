@@ -1,14 +1,14 @@
 @extends('layouts.admin')
 
-@section('title', 'Kelola Token - Admin')
+@section('title', 'Kelola Siswa - Admin')
 
 @section('admin.content')
 <div class="px-4 py-8 lg:px-8">
     <div class="max-w-6xl">
         <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-6">
             <div>
-                <h2 class="text-2xl font-bold text-slate-900">Token</h2>
-                <p class="mt-1 text-slate-600">Buat dan kelola token untuk siswa.</p>
+                <h2 class="text-2xl font-bold text-slate-900">Siswa</h2>
+                <p class="mt-1 text-slate-600">Kelola data siswa, token, dan reset token.</p>
             </div>
             <div class="flex items-center gap-3">
                 <a href="{{ route('admin.tokens.create') }}" class="bg-slate-900 hover:bg-slate-800 text-white font-semibold px-5 py-2.5 rounded-lg transition-colors inline-flex items-center gap-2">
