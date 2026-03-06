@@ -14,7 +14,7 @@ class KandidatAnggota extends Model
 
     protected $fillable = [
         'kandidat_id',
-        'siswa_id',
+        'pemilih_id',
         'peran',
     ];
 
@@ -25,6 +25,6 @@ class KandidatAnggota extends Model
 
     public function siswa(): BelongsTo
     {
-        return $this->belongsTo(Siswa::class, 'siswa_id');
+        return $this->belongsTo(Pemilih::class, 'pemilih_id');
     }
 }

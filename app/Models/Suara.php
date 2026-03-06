@@ -17,7 +17,6 @@ class Suara extends Model
     protected $fillable = [
         'periode_id',
         'kandidat_id',
-        'tipe_pemilih',
         'pemilih_id',
     ];
 
@@ -29,5 +28,10 @@ class Suara extends Model
     public function kandidat(): BelongsTo
     {
         return $this->belongsTo(Kandidat::class, 'kandidat_id');
+    }
+
+    public function pemilih(): BelongsTo
+    {
+        return $this->belongsTo(Pemilih::class, 'pemilih_id');
     }
 }

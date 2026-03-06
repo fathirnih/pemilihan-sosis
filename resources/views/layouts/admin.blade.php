@@ -22,8 +22,8 @@
                 <a href="{{ route('admin.dashboard') }}" class="block rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 {{ request()->routeIs('admin.dashboard') ? 'bg-slate-100 text-slate-900' : '' }}">
                     Dashboard
                 </a>
-                <a href="{{ route('admin.tokens.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 {{ request()->routeIs('admin.tokens.*') ? 'bg-slate-100 text-slate-900' : '' }}">
-                    Siswa
+                <a href="{{ route('admin.pemilih.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 {{ request()->routeIs('admin.pemilih.*') ? 'bg-slate-100 text-slate-900' : '' }}">
+                    Pemilih
                 </a>
                 <a href="{{ route('admin.kelas.index') }}" class="block rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 {{ request()->routeIs('admin.kelas.*') ? 'bg-slate-100 text-slate-900' : '' }}">
                     Kelas

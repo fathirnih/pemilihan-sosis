@@ -50,7 +50,6 @@ class VotingController extends Controller
         $suara = Suara::create([
             'periode_id' => $periodeId,
             'kandidat_id' => $request->kandidat_id,
-            'tipe_pemilih' => $tokenRecord->tipe_pemilih,
             'pemilih_id' => $tokenRecord->pemilih_id,
         ]);
 

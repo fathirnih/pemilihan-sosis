@@ -7,6 +7,7 @@ use App\Http\Controllers\ResultsController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\PanitiaController;
 use App\Http\Controllers\TokenController;
+use App\Http\Controllers\PemilihController;
 use App\Http\Controllers\KelasController;
 use App\Http\Controllers\StaffAuthController;
 
@@ -37,16 +38,20 @@ Route::middleware('admin')->group(function () {
     Route::get('/admin/manage-periode', [AdminController::class, 'managePeriode'])->name('admin.manage-periode');
     Route::post('/admin/toggle-periode/{id}', [AdminController::class, 'togglePeriode'])->name('admin.toggle-periode');
     
-    // Token CRUD routes
-    Route::get('/admin/tokens', [TokenController::class, 'index'])->name('admin.tokens.index');
-    Route::get('/admin/tokens/create', [TokenController::class, 'create'])->name('admin.tokens.create');
-    Route::post('/admin/tokens', [TokenController::class, 'store'])->name('admin.tokens.store');
-    Route::get('/admin/tokens/{id}/edit', [TokenController::class, 'edit'])->name('admin.tokens.edit');
-    Route::post('/admin/tokens/{id}/reset', [TokenController::class, 'reset'])->name('admin.tokens.reset');
-    Route::put('/admin/tokens/{id}', [TokenController::class, 'update'])->name('admin.tokens.update');
+    // Pemilih CRUD routes
+    Route::get('/admin/pemilih', [PemilihController::class, 'index'])->name('admin.pemilih.index');
+    Route::get('/admin/pemilih/create', [PemilihController::class, 'create'])->name('admin.pemilih.create');
+    Route::post('/admin/pemilih', [PemilihController::class, 'store'])->name('admin.pemilih.store');
+    Route::get('/admin/pemilih/{id}/edit', [PemilihController::class, 'edit'])->name('admin.pemilih.edit');
+    Route::put('/admin/pemilih/{id}', [PemilihController::class, 'update'])->name('admin.pemilih.update');
+    Route::delete('/admin/pemilih/{id}', [PemilihController::class, 'destroy'])->name('admin.pemilih.destroy');
+    Route::post('/admin/pemilih/generate-token', [PemilihController::class, 'generateTokens'])->name('admin.pemilih.generate-token');
+    Route::post('/admin/pemilih/hapus-token-semua', [PemilihController::class, 'deleteAllTokens'])->name('admin.pemilih.hapus-token-semua');
+    Route::post('/admin/pemilih/{id}/reset-token', [PemilihController::class, 'resetToken'])->name('admin.pemilih.reset-token');
+
+    // Token print/pdf routes (keep)
     Route::get('/admin/tokens/{id}/print', [TokenController::class, 'print'])->name('admin.tokens.print');
     Route::get('/admin/tokens/{id}/pdf', [TokenController::class, 'downloadPdf'])->name('admin.tokens.downloadPdf');
-    Route::delete('/admin/tokens/{id}', [TokenController::class, 'destroy'])->name('admin.tokens.destroy');
 
     // Kelas CRUD routes
     Route::get('/admin/kelas', [KelasController::class, 'index'])->name('admin.kelas.index');
