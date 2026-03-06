@@ -21,14 +21,36 @@ class PemilihController extends Controller
         }
         $periodeId = $periode?->id ?? -1;
 
-        $pemilih = Pemilih::with([
+        $query = Pemilih::with([
             'kelas',
             'tokens' => function ($query) use ($periodeId) {
                 $query->where('periode_id', $periodeId);
             }
-        ])
-            ->orderBy('nama')
-            ->paginate(10);
+        ]);
+
+        if (request()->filled('q')) {
+            $q = request('q');
+            $query->where(function ($sub) use ($q) {
+                $sub->where('nama', 'like', '%' . $q . '%')
+                    ->orWhere('nisn', 'like', '%' . $q . '%');
+            });
+        }
+
+        if (request()->filled('jenis')) {
+            $query->where('jenis', request('jenis'));
+        }
+
+        if (request()->filled('tingkat')) {
+            $query->whereHas('kelas', function ($sub) {
+                $sub->where('tingkat', request('tingkat'));
+            });
+        }
+
+        if (request()->filled('kelas_id')) {
+            $query->where('kelas_id', request('kelas_id'));
+        }
+
+        $pemilih = $query->orderBy('nama')->paginate(10)->withQueryString();
 
         $kelasList = Kelas::orderBy('tingkat')->orderBy('nama_kelas')->get();
 

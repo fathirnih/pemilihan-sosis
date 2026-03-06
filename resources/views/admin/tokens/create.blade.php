@@ -28,7 +28,7 @@
                         id="nama"
                         value="{{ old('nama') }}"
                         placeholder="Contoh: Budi Santoso"
-                        class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-400 @error('nama') border-red-500 @enderror"
+                        class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400 @error('nama') border-red-500 @enderror"
                         required
                         autofocus
                     >
@@ -47,7 +47,7 @@
                         id="nis"
                         value="{{ old('nis') }}"
                         placeholder="Contoh: 2024001 / NIP000001"
-                        class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-400 @error('nis') border-red-500 @enderror"
+                        class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400 @error('nis') border-red-500 @enderror"
                         required
                     >
                     @error('nis')
@@ -62,7 +62,7 @@
                     <select
                         name="jenis"
                         id="jenis"
-                        class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-400 @error('jenis') border-red-500 @enderror"
+                        class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400 @error('jenis') border-red-500 @enderror"
                         required
                     >
                         <option value="siswa" {{ old('jenis', 'siswa') === 'siswa' ? 'selected' : '' }}>Siswa</option>
@@ -80,7 +80,7 @@
                     <select
                         name="kelas_id"
                         id="kelas_id"
-                        class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-400 @error('kelas_id') border-red-500 @enderror"
+                        class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400 @error('kelas_id') border-red-500 @enderror"
                     >
                         <option value="">Pilih kelas</option>
                         @foreach ($kelasList as $kelas)
@@ -95,10 +95,10 @@
                 </div>
 
                 <div class="flex gap-3 pt-4">
-                    <button type="submit" class="flex-1 px-6 py-3 bg-slate-900 hover:bg-slate-800 text-white font-semibold rounded-lg transition-colors">
+                    <button type="submit" class="flex-1 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors">
                         Simpan
                     </button>
-                    <a href="{{ route('admin.pemilih.index') }}" class="flex-1 px-6 py-3 bg-slate-200 hover:bg-slate-300 text-slate-900 font-semibold rounded-lg transition-colors text-center">
+                    <a href="{{ route('admin.pemilih.index') }}" class="flex-1 px-6 py-3 bg-slate-900 hover:bg-slate-800 text-white font-semibold rounded-lg transition-colors text-center">
                         Batal
                     </a>
                 </div>
