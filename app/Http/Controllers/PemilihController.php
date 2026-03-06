@@ -30,7 +30,9 @@ class PemilihController extends Controller
             ->orderBy('nama')
             ->paginate(10);
 
-        return view('admin.tokens.index', compact('pemilih', 'periode'));
+        $kelasList = Kelas::orderBy('tingkat')->orderBy('nama_kelas')->get();
+
+        return view('admin.tokens.index', compact('pemilih', 'periode', 'kelasList'));
     }
 
     public function create()
@@ -195,6 +197,51 @@ class PemilihController extends Controller
         ]);
 
         return back()->with('success', "Token untuk {$pemilih->nama} berhasil direset");
+    }
+
+    public function printTokens(Request $request)
+    {
+        $periode = PeriodePemilihan::where('status', 'aktif')->first();
+        if (!$periode) {
+            $periode = PeriodePemilihan::orderByDesc('id')->first();
+        }
+        if (!$periode) {
+            return back()->withErrors(['periode' => 'Belum ada periode pemilihan. Silakan buat periode terlebih dahulu.']);
+        }
+
+        $query = Pemilih::with([
+            'kelas',
+            'tokens' => function ($q) use ($periode) {
+                $q->where('periode_id', $periode->id);
+            }
+        ])->whereHas('tokens', function ($q) use ($periode) {
+            $q->where('periode_id', $periode->id);
+        });
+
+        if ($request->filled('jenis')) {
+            $query->where('jenis', $request->jenis);
+        }
+
+        if ($request->filled('tingkat')) {
+            $query->whereHas('kelas', function ($q) use ($request) {
+                $q->where('tingkat', $request->tingkat);
+            });
+        }
+
+        if ($request->filled('kelas_id')) {
+            $query->where('kelas_id', $request->kelas_id);
+        }
+
+        $pemilih = $query->orderBy('nama')->get();
+
+        if ($pemilih->isEmpty()) {
+            return back()->withErrors(['token' => 'Tidak ada token untuk dicetak dengan filter tersebut.']);
+        }
+
+        return view('admin.tokens.print-all', [
+            'pemilih' => $pemilih,
+            'periode' => $periode,
+        ]);
     }
 
     public function deleteAllTokens()

@@ -29,6 +29,42 @@
             </div>
         </div>
 
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5 mb-6">
+            <form action="{{ route('admin.pemilih.print-tokens') }}" method="GET" target="_blank" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Jenis</label>
+                    <select name="jenis" class="w-full rounded-lg border border-slate-300 px-3 py-2">
+                        <option value="">Semua</option>
+                        <option value="siswa">Siswa</option>
+                        <option value="guru">Guru</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Tingkat</label>
+                    <select name="tingkat" class="w-full rounded-lg border border-slate-300 px-3 py-2">
+                        <option value="">Semua</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Kelas</label>
+                    <select name="kelas_id" class="w-full rounded-lg border border-slate-300 px-3 py-2">
+                        <option value="">Semua</option>
+                        @foreach ($kelasList as $kelas)
+                            <option value="{{ $kelas->id }}">{{ $kelas->nama_kelas }} ({{ $kelas->tingkat }})</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="flex gap-3">
+                    <button type="submit" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold px-4 py-2.5 rounded-lg">
+                        Cetak Token (Filter)
+                    </button>
+                </div>
+            </form>
+        </div>
+
         @if (session('success'))
             <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-4 mb-6">
                 <p class="text-emerald-800">{{ session('success') }}</p>
@@ -102,9 +138,6 @@
                                             Edit
                                         </a>
                                         @if ($token)
-                                            <a href="{{ route('admin.tokens.print', $token->id) }}" target="_blank" class="inline-flex items-center gap-1 px-3 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-medium rounded transition-colors">
-                                                Cetak
-                                            </a>
                                             <form action="{{ route('admin.pemilih.reset-token', $row->id) }}" method="POST" onsubmit="return confirm('Reset token dan hapus suara pemilih ini?')" class="inline">
                                                 @csrf
                                                 <button type="submit" class="inline-flex items-center gap-1 px-3 py-2 bg-sky-600 hover:bg-sky-700 text-white text-xs font-medium rounded transition-colors">

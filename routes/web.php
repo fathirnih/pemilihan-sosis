@@ -45,6 +45,7 @@ Route::middleware('admin')->group(function () {
     Route::get('/admin/pemilih/{id}/edit', [PemilihController::class, 'edit'])->name('admin.pemilih.edit');
     Route::put('/admin/pemilih/{id}', [PemilihController::class, 'update'])->name('admin.pemilih.update');
     Route::delete('/admin/pemilih/{id}', [PemilihController::class, 'destroy'])->name('admin.pemilih.destroy');
+    Route::get('/admin/pemilih/print-tokens', [PemilihController::class, 'printTokens'])->name('admin.pemilih.print-tokens');
     Route::post('/admin/pemilih/generate-token', [PemilihController::class, 'generateTokens'])->name('admin.pemilih.generate-token');
     Route::post('/admin/pemilih/hapus-token-semua', [PemilihController::class, 'deleteAllTokens'])->name('admin.pemilih.hapus-token-semua');
     Route::post('/admin/pemilih/{id}/reset-token', [PemilihController::class, 'resetToken'])->name('admin.pemilih.reset-token');

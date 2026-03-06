@@ -50,6 +50,11 @@ class TokenPemilih extends Model
         return $this->belongsTo(Pemilih::class, 'pemilih_id');
     }
 
+    public function pemilih(): BelongsTo
+    {
+        return $this->belongsTo(Pemilih::class, 'pemilih_id');
+    }
+
     public function kelas(): BelongsTo
     {
         return $this->belongsTo(Kelas::class, 'kelas_id');
