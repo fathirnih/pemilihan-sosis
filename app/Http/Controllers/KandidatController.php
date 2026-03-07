@@ -46,6 +46,8 @@ class KandidatController extends Controller
             'visi' => 'required|string|max:500',
             'misi' => 'required|string|max:1500',
             'foto' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'foto_ketua' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'foto_wakil' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'ketua_id' => 'required|exists:pemilih,id',
             'wakil_id' => 'nullable|exists:pemilih,id|different:ketua_id',
         ]);
@@ -59,6 +61,12 @@ class KandidatController extends Controller
 
         if ($request->hasFile('foto')) {
             $payload['foto'] = $request->file('foto')->store('kandidat', 'public');
+        }
+        if ($request->hasFile('foto_ketua')) {
+            $payload['foto_ketua'] = $request->file('foto_ketua')->store('kandidat', 'public');
+        }
+        if ($request->hasFile('foto_wakil')) {
+            $payload['foto_wakil'] = $request->file('foto_wakil')->store('kandidat', 'public');
         }
 
         $kandidat = Kandidat::create($payload);
@@ -109,6 +117,8 @@ class KandidatController extends Controller
             'visi' => 'required|string|max:500',
             'misi' => 'required|string|max:1500',
             'foto' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'foto_ketua' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'foto_wakil' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'ketua_id' => 'required|exists:pemilih,id',
             'wakil_id' => 'nullable|exists:pemilih,id|different:ketua_id',
         ]);
@@ -125,6 +135,18 @@ class KandidatController extends Controller
                 Storage::disk('public')->delete($kandidat->foto);
             }
             $payload['foto'] = $request->file('foto')->store('kandidat', 'public');
+        }
+        if ($request->hasFile('foto_ketua')) {
+            if ($kandidat->foto_ketua) {
+                Storage::disk('public')->delete($kandidat->foto_ketua);
+            }
+            $payload['foto_ketua'] = $request->file('foto_ketua')->store('kandidat', 'public');
+        }
+        if ($request->hasFile('foto_wakil')) {
+            if ($kandidat->foto_wakil) {
+                Storage::disk('public')->delete($kandidat->foto_wakil);
+            }
+            $payload['foto_wakil'] = $request->file('foto_wakil')->store('kandidat', 'public');
         }
 
         $kandidat->update($payload);
@@ -152,6 +174,12 @@ class KandidatController extends Controller
         $kandidat = Kandidat::findOrFail($id);
         if ($kandidat->foto) {
             Storage::disk('public')->delete($kandidat->foto);
+        }
+        if ($kandidat->foto_ketua) {
+            Storage::disk('public')->delete($kandidat->foto_ketua);
+        }
+        if ($kandidat->foto_wakil) {
+            Storage::disk('public')->delete($kandidat->foto_wakil);
         }
         KandidatAnggota::where('kandidat_id', $kandidat->id)->delete();
         $kandidat->delete();

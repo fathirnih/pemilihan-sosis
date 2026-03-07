@@ -47,7 +47,9 @@
                             <th class="admin-th">Nomor Urut</th>
                             <th class="admin-th">Ketua</th>
                             <th class="admin-th">Wakil</th>
-                            <th class="admin-th">Foto</th>
+                            <th class="admin-th">Foto Pasangan</th>
+                            <th class="admin-th">Foto Ketua</th>
+                            <th class="admin-th">Foto Wakil</th>
                             <th class="admin-th">Visi</th>
                             <th class="admin-th">Aksi</th>
                         </tr>
@@ -66,6 +68,20 @@
                                 <td class="admin-td">
                                     @if ($item->foto)
                                         <img src="{{ asset('storage/' . $item->foto) }}" alt="Foto kandidat" class="h-10 w-10 rounded-lg object-cover border border-slate-200">
+                                    @else
+                                        <span class="text-slate-400 text-xs">-</span>
+                                    @endif
+                                </td>
+                                <td class="admin-td">
+                                    @if ($item->foto_ketua)
+                                        <img src="{{ asset('storage/' . $item->foto_ketua) }}" alt="Foto ketua" class="h-10 w-10 rounded-lg object-cover border border-slate-200">
+                                    @else
+                                        <span class="text-slate-400 text-xs">-</span>
+                                    @endif
+                                </td>
+                                <td class="admin-td">
+                                    @if ($item->foto_wakil)
+                                        <img src="{{ asset('storage/' . $item->foto_wakil) }}" alt="Foto wakil" class="h-10 w-10 rounded-lg object-cover border border-slate-200">
                                     @else
                                         <span class="text-slate-400 text-xs">-</span>
                                     @endif
@@ -97,7 +113,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="px-6 py-8 text-center text-slate-600">Belum ada kandidat</td>
+                                <td colspan="9" class="px-6 py-8 text-center text-slate-600">Belum ada kandidat</td>
                             </tr>
                         @endforelse
                     </tbody>

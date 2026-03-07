@@ -3,105 +3,128 @@
 @section('title', 'Pilih Kandidat')
 
 @section('content')
-<div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 py-8">
+<div class="min-h-screen bg-slate-50 py-8">
     <div class="container-app">
-        <!-- Header -->
-        <div class="mb-8">
-            <div class="flex items-center justify-between mb-6">
+        <div class="mb-8 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+            <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                 <div>
-                    <h1 class="text-3xl font-bold text-slate-900 mb-1">{{ $periode->nama_periode }}</h1>
-                    <p class="text-slate-600">Pilih pasangan kandidat pilihan Anda</p>
+                    <p class="text-[11px] font-semibold uppercase tracking-[0.3em] text-slate-400">Akses Siswa</p>
+                    <h1 class="mt-1 text-2xl font-bold text-slate-900 sm:text-3xl">{{ $periode->nama_periode }}</h1>
+                    <p class="mt-1 text-sm text-slate-600">Pilih satu pasangan kandidat. Pilihan tidak dapat diubah.</p>
                 </div>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
-                    <button type="submit" class="text-slate-600 hover:text-slate-900 font-medium text-sm">
+                    <button type="submit" class="inline-flex items-center rounded-xl border border-slate-200 bg-slate-50 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-100">
                         Keluar
                     </button>
                 </form>
             </div>
 
-            <!-- Timeline Info -->
-            <div class="bg-white rounded-xl border border-slate-200 p-4">
-                <div class="flex items-center gap-4 text-sm">
-                    <div class="flex items-center gap-2">
-                        <svg class="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
-                        </svg>
-                        <span class="text-slate-700">Status: <strong class="text-green-600">Dibuka</strong></span>
-                    </div>
-                    <div class="hidden sm:flex items-center gap-2">
-                        <svg class="w-5 h-5 text-slate-400" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M10.5 1.5H5.75A4.25 4.25 0 1 0 10 18.5h.5m0-17v11m0 0l3-3m-3 3l-3-3"/>
-                        </svg>
-                        <span class="text-slate-600">Berakhir: <strong>{{ $periode->selesai_pada->format('d M Y, H:i') }}</strong></span>
-                    </div>
+            <div class="mt-4 grid grid-cols-1 gap-3 md:grid-cols-3">
+                <div class="rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm text-slate-700">
+                    <span class="font-semibold text-emerald-700">Status:</span> Dibuka
+                </div>
+                <div class="rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm text-slate-700 md:col-span-2">
+                    <span class="font-semibold text-slate-900">Berakhir:</span> {{ $periode->selesai_pada->format('d M Y, H:i') }}
                 </div>
             </div>
         </div>
 
         @if ($kandidats->isEmpty())
-            <!-- Empty State -->
-            <div class="bg-white rounded-2xl border border-slate-200 p-12 text-center">
-                <svg class="w-16 h-16 text-slate-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="rounded-2xl border border-slate-200 bg-white p-12 text-center shadow-sm">
+                <svg class="mx-auto mb-4 h-16 w-16 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
                 </svg>
-                <h3 class="text-lg font-semibold text-slate-900 mb-2">Tidak Ada Kandidat</h3>
-                <p class="text-slate-600">Kandidat belum tersedia untuk pemilihan ini</p>
+                <h3 class="mb-2 text-lg font-semibold text-slate-900">Tidak Ada Kandidat</h3>
+                <p class="text-slate-600">Kandidat belum tersedia untuk pemilihan ini.</p>
             </div>
         @else
-            <!-- Candidates Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="grid grid-cols-1 gap-6 xl:grid-cols-2">
                 @foreach ($kandidats as $kandidat)
-                    <div class="group">
-                        <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden hover:shadow-lg hover:border-slate-300 transition-all h-full flex flex-col">
-                            <!-- Candidate Card Header -->
-                            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 border-b border-slate-200">
-                                <div class="flex items-center justify-between">
-                                    <div>
-                                        <div class="text-sm font-medium text-slate-600">NOMOR URUT</div>
-                                        <div class="text-3xl font-bold text-blue-600 mt-1">{{ $kandidat->nomor_urut }}</div>
-                                    </div>
+                    @php
+                        $ketua = $kandidat->anggota->firstWhere('peran', 'ketua')?->pemilih?->nama;
+                        $wakil = $kandidat->anggota->firstWhere('peran', 'wakil')?->pemilih?->nama;
+                        $fotoPasanganUrl = $kandidat->foto ? asset('storage/' . $kandidat->foto) : null;
+                        $fotoKetuaUrl = $kandidat->foto_ketua ? asset('storage/' . $kandidat->foto_ketua) : $fotoPasanganUrl;
+                        $fotoWakilUrl = $kandidat->foto_wakil ? asset('storage/' . $kandidat->foto_wakil) : $fotoPasanganUrl;
+                    @endphp
+                    <article class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:border-slate-300 hover:shadow-md">
+                        <div class="border-b border-slate-200 bg-slate-50 px-5 py-4">
+                            <div class="flex items-center justify-between gap-4">
+                                <div>
+                                    <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-500">Pasangan Kandidat</p>
+                                    <h2 class="mt-1 text-lg font-bold text-slate-900 sm:text-xl">Nomor Urut {{ $kandidat->nomor_urut }}</h2>
                                 </div>
-                            </div>
-
-                            <!-- Details -->
-                            <div class="p-6 flex-1 flex flex-col">
-                                <!-- Team Members -->
-                                <div class="mb-6">
-                                    <h3 class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Tim Kandidat</h3>
-                                    <div class="space-y-2">
-                                        @foreach ($kandidat->anggota as $anggota)
-                                            <div class="flex items-center gap-2">
-                                                <div class="w-2 h-2 rounded-full bg-blue-500"></div>
-                                                <span class="text-sm text-slate-700">{{ $anggota->pemilih->nama ?? 'N/A' }}</span>
-                                            </div>
-                                        @endforeach
-                                    </div>
-                                </div>
-
-                                <!-- Visi -->
-                                <div class="mb-4">
-                                    <h4 class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Visi</h4>
-                                    <p class="text-sm text-slate-700 leading-relaxed">{{ $kandidat->visi }}</p>
-                                </div>
-
-                                <!-- Misi -->
-                                <div class="mb-6 flex-1">
-                                    <h4 class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Misi</h4>
-                                    <p class="text-sm text-slate-700 leading-relaxed">{{ Str::limit($kandidat->misi, 150) }}</p>
-                                </div>
-
-                                <!-- Vote Button -->
-                                <form method="POST" action="{{ route('voting.store') }}" class="w-full">
-                                    @csrf
-                                    <input type="hidden" name="kandidat_id" value="{{ $kandidat->id }}">
-                                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-lg transition-colors">
-                                        Pilih Kandidat Ini
-                                    </button>
-                                </form>
+                                <span class="inline-flex h-12 w-12 items-center justify-center rounded-xl border border-slate-200 bg-white text-xl font-bold text-slate-900 shadow-sm">{{ $kandidat->nomor_urut }}</span>
                             </div>
                         </div>
-                    </div>
+
+                        <div class="grid grid-cols-1 gap-4 border-b border-slate-200 bg-slate-50/40 p-5 sm:grid-cols-2">
+                            <div class="rounded-xl border border-slate-200 bg-white p-3">
+                                <p class="mb-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-500">Ketua</p>
+                                @if ($fotoKetuaUrl)
+                                    <img src="{{ $fotoKetuaUrl }}" alt="Foto ketua {{ $ketua ?? 'kandidat' }}" class="h-40 w-full rounded-lg border border-slate-200 object-cover">
+                                @else
+                                    <div class="flex h-40 w-full items-center justify-center rounded-lg border border-slate-200 bg-slate-100 text-slate-400">
+                                        <svg class="h-12 w-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zm-8 10a4 4 0 00-4 4h16a4 4 0 00-4-4H8z"></path>
+                                        </svg>
+                                    </div>
+                                @endif
+                            </div>
+
+                            <div class="rounded-xl border border-slate-200 bg-white p-3">
+                                <p class="mb-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-500">Wakil</p>
+                                @if ($fotoWakilUrl)
+                                    <img src="{{ $fotoWakilUrl }}" alt="Foto wakil {{ $wakil ?? 'kandidat' }}" class="h-40 w-full rounded-lg border border-slate-200 object-cover">
+                                @else
+                                    <div class="flex h-40 w-full items-center justify-center rounded-lg border border-slate-200 bg-slate-100 text-slate-400">
+                                        <svg class="h-12 w-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zm-8 10a4 4 0 00-4 4h16a4 4 0 00-4-4H8z"></path>
+                                        </svg>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+
+                        <div class="p-5 sm:p-6">
+                            <div class="mb-4 flex items-start justify-between gap-4">
+                                <span class="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">Siap Dipilih</span>
+                                @if ($fotoPasanganUrl)
+                                    <a href="{{ $fotoPasanganUrl }}" target="_blank" class="text-xs font-semibold text-slate-500 hover:text-slate-800">Lihat foto pasangan</a>
+                                @endif
+                            </div>
+
+                            <div class="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                                <div class="rounded-xl border border-slate-200 bg-slate-50 p-3">
+                                    <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-500">Ketua</p>
+                                    <p class="mt-1 text-sm font-semibold text-slate-800">{{ $ketua ?? '-' }}</p>
+                                </div>
+                                <div class="rounded-xl border border-slate-200 bg-slate-50 p-3">
+                                    <p class="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-500">Wakil</p>
+                                    <p class="mt-1 text-sm font-semibold text-slate-800">{{ $wakil ?? '-' }}</p>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <h3 class="mb-1 text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Visi</h3>
+                                <p class="text-sm leading-relaxed text-slate-700">{{ $kandidat->visi }}</p>
+                            </div>
+
+                            <div class="mb-5">
+                                <h3 class="mb-1 text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Misi</h3>
+                                <p class="text-sm leading-relaxed text-slate-700">{{ Str::limit($kandidat->misi, 170) }}</p>
+                            </div>
+
+                            <form method="POST" action="{{ route('voting.store') }}" class="w-full">
+                                @csrf
+                                <input type="hidden" name="kandidat_id" value="{{ $kandidat->id }}">
+                                <button type="submit" class="w-full rounded-xl bg-slate-900 py-3 font-semibold text-white transition-colors hover:bg-slate-800">
+                                    Pilih Kandidat Ini
+                                </button>
+                            </form>
+                        </div>
+                    </article>
                 @endforeach
             </div>
         @endif
