@@ -42,7 +42,7 @@ class PemilihSeeder extends Seeder
         $guruNames = ['Bu Rini', 'Pak Damar'];
         foreach ($guruNames as $index => $name) {
             $pemilihRows[] = [
-                'nisn' => 'NIP' . str_pad($index + 1, 6, '0', STR_PAD_LEFT),
+                'nisn' =>  str_pad($index + 1, 6, '0', STR_PAD_LEFT),
                 'nama' => $name,
                 'jenis' => 'guru',
                 'kelas_id' => null,
