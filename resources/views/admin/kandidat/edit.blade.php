@@ -81,16 +81,43 @@
                     @enderror
                 </div>
 
+                <div class="grid gap-4 md:grid-cols-2">
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-900 mb-2">Foto Pasangan (Opsional)</label>
+                        <input type="file" name="foto" accept="image/png,image/jpeg" class="admin-input">
+                        @if ($kandidat->foto)
+                            <div class="mt-3">
+                                <img src="{{ asset('storage/' . $kandidat->foto) }}" alt="Foto kandidat" class="h-20 w-20 rounded-lg object-cover border border-slate-200">
+                            </div>
+                        @endif
+                        <p class="text-xs text-slate-500 mt-2">Upload baru untuk mengganti foto. Maks 2MB.</p>
+                        @error('foto')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-900 mb-2">Foto Ketua (Opsional)</label>
+                        <input type="file" name="foto_ketua" accept="image/png,image/jpeg" class="admin-input">
+                        @if ($kandidat->foto_ketua)
+                            <div class="mt-3">
+                                <img src="{{ asset('storage/' . $kandidat->foto_ketua) }}" alt="Foto ketua" class="h-20 w-20 rounded-lg object-cover border border-slate-200">
+                            </div>
+                        @endif
+                        @error('foto_ketua')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+                </div>
+
                 <div>
-                    <label class="block text-sm font-semibold text-slate-900 mb-2">Foto</label>
-                    <input type="file" name="foto" accept="image/png,image/jpeg" class="admin-input">
-                    @if ($kandidat->foto)
+                    <label class="block text-sm font-semibold text-slate-900 mb-2">Foto Wakil (Opsional)</label>
+                    <input type="file" name="foto_wakil" accept="image/png,image/jpeg" class="admin-input">
+                    @if ($kandidat->foto_wakil)
                         <div class="mt-3">
-                            <img src="{{ asset('storage/' . $kandidat->foto) }}" alt="Foto kandidat" class="h-20 w-20 rounded-lg object-cover border border-slate-200">
+                            <img src="{{ asset('storage/' . $kandidat->foto_wakil) }}" alt="Foto wakil" class="h-20 w-20 rounded-lg object-cover border border-slate-200">
                         </div>
                     @endif
-                    <p class="text-xs text-slate-500 mt-2">Upload baru untuk mengganti foto. Maks 2MB.</p>
-                    @error('foto')
+                    @error('foto_wakil')
                         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                     @enderror
                 </div>

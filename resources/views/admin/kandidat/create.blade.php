@@ -80,11 +80,28 @@
                     @enderror
                 </div>
 
+                <div class="grid gap-4 md:grid-cols-2">
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-900 mb-2">Foto Pasangan (Opsional)</label>
+                        <input type="file" name="foto" accept="image/png,image/jpeg" class="admin-input">
+                        <p class="text-xs text-slate-500 mt-2">Format: JPG/PNG. Maks 2MB.</p>
+                        @error('foto')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-900 mb-2">Foto Ketua (Opsional)</label>
+                        <input type="file" name="foto_ketua" accept="image/png,image/jpeg" class="admin-input">
+                        @error('foto_ketua')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+                </div>
+
                 <div>
-                    <label class="block text-sm font-semibold text-slate-900 mb-2">Foto</label>
-                    <input type="file" name="foto" accept="image/png,image/jpeg" class="admin-input">
-                    <p class="text-xs text-slate-500 mt-2">Format: JPG/PNG. Maks 2MB.</p>
-                    @error('foto')
+                    <label class="block text-sm font-semibold text-slate-900 mb-2">Foto Wakil (Opsional)</label>
+                    <input type="file" name="foto_wakil" accept="image/png,image/jpeg" class="admin-input">
+                    @error('foto_wakil')
                         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                     @enderror
                 </div>
