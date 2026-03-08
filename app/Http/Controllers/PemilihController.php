@@ -10,6 +10,7 @@ use App\Models\Suara;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
+use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 
 class PemilihController extends Controller
 {
@@ -374,14 +375,44 @@ class PemilihController extends Controller
             // Handle Excel files
             if ($file->getClientOriginalExtension() === 'xlsx') {
                 // Gunakan PhpSpreadsheet jika tersedia
-                if (class_exists('\PhpOffice\PhpSpreadsheet\Reader\Xlsx')) {
-                    $reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
+                if (class_exists(Xlsx::class)) {
+                    $reader = new Xlsx();
                     $spreadsheet = $reader->load($file->path());
                     $worksheet = $spreadsheet->getActiveSheet();
-                    $rows = $worksheet->toArray();
+                    $allRows = $worksheet->toArray();
                     
-                    // Skip header row
-                    unset($rows[0]);
+                    // Find first non-empty row as header
+                    $headerRowIndex = 0;
+                    foreach ($allRows as $index => $row) {
+                        if (!empty(array_filter($row))) {
+                            $headerRowIndex = $index;
+                            break;
+                        }
+                    }
+                    
+                    $header = array_filter($allRows[$headerRowIndex], function($val) {
+                        return $val !== null && $val !== '';
+                    });
+                    
+                    // Process data rows
+                    $rows = [];
+                    for ($i = $headerRowIndex + 1; $i < count($allRows); $i++) {
+                        if (!empty(array_filter($allRows[$i]))) { // Skip empty rows
+                            $rowData = $allRows[$i];
+                            // Filter out null values and match with header
+                            $cleanedRow = [];
+                            $headerIndex = 0;
+                            foreach ($rowData as $cellValue) {
+                                if ($cellValue !== null && isset(array_values($header)[$headerIndex])) {
+                                    $cleanedRow[array_values($header)[$headerIndex]] = $cellValue;
+                                    $headerIndex++;
+                                }
+                            }
+                            if (!empty($cleanedRow)) {
+                                $rows[] = $cleanedRow;
+                            }
+                        }
+                    }
                 } else {
                     return back()->withErrors(['file' => 'Library Excel tidak tersedia. Silakan save file Excel sebagai CSV terlebih dahulu.']);
                 }
@@ -402,10 +433,10 @@ class PemilihController extends Controller
                 $rowNumber = $rowNum + 2; // +2 karena array mulai dari 0 dan header di row 1
                 
                 // Get values from row
-                $nisn = isset($row['NISN']) ? trim($row['NISN']) : (isset($row[0]) ? trim($row[0]) : null);
-                $nama = isset($row['Nama']) ? trim($row['Nama']) : (isset($row[1]) ? trim($row[1]) : null);
-                $tingkat = isset($row['Tingkat']) ? trim($row['Tingkat']) : (isset($row[2]) ? trim($row[2]) : null);
-                $namaKelas = isset($row['Nama Kelas']) ? trim($row['Nama Kelas']) : (isset($row[3]) ? trim($row[3]) : null);
+                $nisn = isset($row['NISN']) ? trim((string)$row['NISN']) : '';
+                $nama = isset($row['Nama']) ? trim((string)$row['Nama']) : '';
+                $tingkat = isset($row['Tingkat']) ? trim((string)$row['Tingkat']) : '';
+                $namaKelas = isset($row['Nama Kelas']) ? trim((string)$row['Nama Kelas']) : '';
 
                 // Validasi kolom wajib
                 if (empty($nisn) || empty($nama)) {
@@ -458,7 +489,7 @@ class PemilihController extends Controller
 
             $message = "Import selesai! {$imported} pemilih berhasil ditambahkan.";
             if (!empty($errors)) {
-                return back()->with('success', $message)->with('errors', $errors);
+                return back()->with('success', $message)->with('import_errors', $errors);
             }
 
             return back()->with('success', $message);

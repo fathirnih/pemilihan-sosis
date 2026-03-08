@@ -19,11 +19,11 @@
                 <p class="text-emerald-800">{{ session('success') }}</p>
             </div>
 
-            @if (session('errors', []) && count(session('errors', [])) > 0)
+            @if (session('import_errors', []) && count(session('import_errors', [])) > 0)
                 <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
                     <p class="text-yellow-800 font-semibold mb-2">Peringatan:</p>
                     <ul class="text-yellow-700 text-sm space-y-1">
-                        @foreach (session('errors', []) as $error)
+                        @foreach (session('import_errors', []) as $error)
                             <li>• {{ $error }}</li>
                         @endforeach
                     </ul>
@@ -91,7 +91,7 @@
                     <ul class="text-amber-800 text-sm space-y-1 ml-4">
                         <li>• Jenis pemilih otomatis ditentukan (siswa jika ada tingkat, guru jika kosong)</li>
                         <li>• Duplikat NISN dalam periode yang sama akan di-skip</li>
-                        <li>• Nama kelas harus sesuai dengan data kelas yang sudah ada</li>
+                        <li>• Nama kelas dan Tingkat harus sesuai dengan data kelas yang sudah ada</li>
                     </ul>
                 </div>
 
