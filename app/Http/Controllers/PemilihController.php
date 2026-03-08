@@ -192,29 +192,35 @@ class PemilihController extends Controller
 
     public function generateTokens(Request $request)
     {
-        $periode = PeriodePemilihan::where('status', 'aktif')->first();
-        if (!$periode) {
-            $periode = PeriodePemilihan::orderByDesc('id')->first();
-        }
-        if (!$periode) {
-            return back()->withErrors(['periode' => 'Belum ada periode pemilihan. Silakan buat periode terlebih dahulu.']);
-        }
+        // Hanya generate token untuk periode yang aktif atau draft
+        $pemilihList = Pemilih::whereHas('periodePemilihan', function ($query) {
+            $query->whereIn('status', ['aktif', 'draf']);
+        })
+        ->where('aktif', true)
+        ->get();
 
-        $pemilihList = Pemilih::where('aktif', true)->get();
         if ($pemilihList->isEmpty()) {
-            return back()->withErrors(['pemilih' => 'Data pemilih kosong']);
+            return back()->withErrors(['pemilih' => 'Data pemilih kosong atau semua periode sudah ditutup']);
         }
-
-        $existing = TokenPemilih::where('periode_id', $periode->id)->pluck('pemilih_id')->all();
 
         $created = 0;
+        // Generate token untuk setiap pemilih berdasarkan periode pemilih itu sendiri
         foreach ($pemilihList as $pemilih) {
-            if (in_array($pemilih->id, $existing, true)) {
+            // Token harus di-generate untuk periode yang sama dengan periode_pemilihan_id pemilih
+            $periodeId = $pemilih->periode_pemilihan_id;
+            
+            // Cek apakah sudah ada token untuk pemilih ini di periode tersebut
+            $existing = TokenPemilih::where('periode_id', $periodeId)
+                ->where('pemilih_id', $pemilih->id)
+                ->exists();
+            
+            if ($existing) {
                 continue;
             }
+
             $token = 'VOTE-' . Str::random(16);
             TokenPemilih::create([
-                'periode_id' => $periode->id,
+                'periode_id' => $periodeId,
                 'pemilih_id' => $pemilih->id,
                 'kelas_id' => $pemilih->kelas_id,
                 'token_hash' => Hash::make($token),
@@ -339,5 +345,126 @@ class PemilihController extends Controller
             ->delete();
 
         return back()->with('success', 'Semua token berhasil dihapus.');
+    }
+
+    public function showImport()
+    {
+        $periodeList = PeriodePemilihan::orderByDesc('mulai_pada')->get();
+        return view('admin.pemilih.import', compact('periodeList'));
+    }
+
+    public function importData(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:xlsx,csv',
+            'periode_pemilihan_id' => 'required|exists:periode_pemilihan,id',
+        ], [
+            'file.required' => 'File harus dipilih',
+            'file.mimes' => 'File harus berformat Excel (.xlsx) atau CSV (.csv)',
+            'periode_pemilihan_id.required' => 'Periode pemilihan harus dipilih',
+        ]);
+
+        $periode = PeriodePemilihan::find($request->periode_pemilihan_id);
+        $file = $request->file('file');
+        
+        $imported = 0;
+        $errors = [];
+        
+        try {
+            // Handle Excel files
+            if ($file->getClientOriginalExtension() === 'xlsx') {
+                // Gunakan PhpSpreadsheet jika tersedia
+                if (class_exists('\PhpOffice\PhpSpreadsheet\Reader\Xlsx')) {
+                    $reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
+                    $spreadsheet = $reader->load($file->path());
+                    $worksheet = $spreadsheet->getActiveSheet();
+                    $rows = $worksheet->toArray();
+                    
+                    // Skip header row
+                    unset($rows[0]);
+                } else {
+                    return back()->withErrors(['file' => 'Library Excel tidak tersedia. Silakan save file Excel sebagai CSV terlebih dahulu.']);
+                }
+            } else {
+                // Handle CSV files
+                $rows = [];
+                $handle = fopen($file->path(), 'r');
+                $header = fgetcsv($handle, 1000, ',');
+                
+                while (($data = fgetcsv($handle, 1000, ',')) !== false) {
+                    $rows[] = array_combine($header, $data);
+                }
+                fclose($handle);
+            }
+
+            // Process each row
+            foreach ($rows as $rowNum => $row) {
+                $rowNumber = $rowNum + 2; // +2 karena array mulai dari 0 dan header di row 1
+                
+                // Get values from row
+                $nisn = isset($row['NISN']) ? trim($row['NISN']) : (isset($row[0]) ? trim($row[0]) : null);
+                $nama = isset($row['Nama']) ? trim($row['Nama']) : (isset($row[1]) ? trim($row[1]) : null);
+                $tingkat = isset($row['Tingkat']) ? trim($row['Tingkat']) : (isset($row[2]) ? trim($row[2]) : null);
+                $namaKelas = isset($row['Nama Kelas']) ? trim($row['Nama Kelas']) : (isset($row[3]) ? trim($row[3]) : null);
+
+                // Validasi kolom wajib
+                if (empty($nisn) || empty($nama)) {
+                    $errors[] = "Baris {$rowNumber}: NISN dan Nama harus diisi";
+                    continue;
+                }
+
+                // Tentukan jenis berdasarkan tingkat
+                $jenis = empty($tingkat) ? 'guru' : 'siswa';
+                
+                // Find kelas jika siswa
+                $kelasId = null;
+                if ($jenis === 'siswa' && !empty($namaKelas) && !empty($tingkat)) {
+                    $kelas = Kelas::where('nama_kelas', $namaKelas)
+                        ->where('tingkat', $tingkat)
+                        ->first();
+                    
+                    if (!$kelas) {
+                        $errors[] = "Baris {$rowNumber}: Kelas '{$namaKelas}' tingkat {$tingkat} tidak ditemukan";
+                        continue;
+                    }
+                    $kelasId = $kelas->id;
+                }
+
+                // Check if pemilih already exists
+                $exists = Pemilih::where('nisn', $nisn)
+                    ->where('periode_pemilihan_id', $periode->id)
+                    ->exists();
+
+                if ($exists) {
+                    $errors[] = "Baris {$rowNumber}: NISN {$nisn} sudah ada di periode ini";
+                    continue;
+                }
+
+                // Create pemilih
+                try {
+                    Pemilih::create([
+                        'nisn' => $nisn,
+                        'nama' => $nama,
+                        'jenis' => $jenis,
+                        'kelas_id' => $kelasId,
+                        'periode_pemilihan_id' => $periode->id,
+                        'aktif' => true,
+                    ]);
+                    $imported++;
+                } catch (\Exception $e) {
+                    $errors[] = "Baris {$rowNumber}: Gagal menyimpan - " . $e->getMessage();
+                }
+            }
+
+            $message = "Import selesai! {$imported} pemilih berhasil ditambahkan.";
+            if (!empty($errors)) {
+                return back()->with('success', $message)->with('errors', $errors);
+            }
+
+            return back()->with('success', $message);
+
+        } catch (\Exception $e) {
+            return back()->withErrors(['file' => 'Gagal membaca file: ' . $e->getMessage()]);
+        }
     }
 }

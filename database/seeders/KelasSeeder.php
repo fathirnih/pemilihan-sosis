@@ -15,9 +15,9 @@ class KelasSeeder extends Seeder
         foreach ([1, 2, 3] as $tingkat) {
             foreach ($programs as $program) {
                 foreach ($rombel as $no) {
-                    $nama = $tingkat . ' ' . $program . ' ' . $no;
+                    $nama = $program . ' ' . $no;
                     Kelas::updateOrCreate(
-                        ['nama_kelas' => $nama],
+                        ['nama_kelas' => $nama, 'tingkat' => $tingkat],
                         ['nama_kelas' => $nama, 'tingkat' => $tingkat]
                     );
                 }

@@ -38,6 +38,9 @@
                 <a href="{{ route('admin.pemilih.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-3.5 py-2 rounded-lg transition-colors text-sm shadow-sm">
                     Pemilih Baru
                 </a>
+                <a href="{{ route('admin.pemilih.show-import') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-3.5 py-2 rounded-lg transition-colors text-sm shadow-sm">
+                    Import Pemilih
+                </a>
                 <form action="{{ route('admin.pemilih.generate-token') }}" method="POST">
                     @csrf
                     <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-3.5 py-2 rounded-lg transition-colors text-sm shadow-sm">

@@ -48,6 +48,8 @@ Route::middleware('admin')->group(function () {
     // Pemilih CRUD routes
     Route::get('/admin/pemilih', [PemilihController::class, 'index'])->name('admin.pemilih.index');
     Route::get('/admin/pemilih/create', [PemilihController::class, 'create'])->name('admin.pemilih.create');
+    Route::get('/admin/pemilih/import', [PemilihController::class, 'showImport'])->name('admin.pemilih.show-import');
+    Route::post('/admin/pemilih/import', [PemilihController::class, 'importData'])->name('admin.pemilih.import-data');
     Route::post('/admin/pemilih', [PemilihController::class, 'store'])->name('admin.pemilih.store');
     Route::get('/admin/pemilih/{id}/edit', [PemilihController::class, 'edit'])->name('admin.pemilih.edit');
     Route::put('/admin/pemilih/{id}', [PemilihController::class, 'update'])->name('admin.pemilih.update');
