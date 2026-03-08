@@ -13,12 +13,16 @@ return new class extends Migration
     {
         Schema::create('pemilih', function (Blueprint $table) {
             $table->id();
-            $table->string('nisn', 30)->unique();
+            $table->string('nisn', 30);
             $table->string('nama', 100);
             $table->enum('jenis', ['siswa', 'guru']);
             $table->foreignId('kelas_id')->nullable()->constrained('kelas')->cascadeOnUpdate()->nullOnDelete();
+            $table->unsignedBigInteger('periode_pemilihan_id')->nullable();
             $table->boolean('aktif')->default(true);
             $table->timestamps();
+            
+            // Composite unique: NISN unik per periode
+            $table->unique(['nisn', 'periode_pemilihan_id']);
         });
     }
 

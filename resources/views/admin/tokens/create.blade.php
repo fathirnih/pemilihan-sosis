@@ -19,6 +19,29 @@
                 @csrf
 
                 <div>
+                    <label for="periode_pemilihan_id" class="block text-sm font-semibold text-slate-900 mb-2">
+                        Periode Pemilihan <span class="text-red-500">*</span>
+                    </label>
+                    <select
+                        name="periode_pemilihan_id"
+                        id="periode_pemilihan_id"
+                        class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400 @error('periode_pemilihan_id') border-red-500 @enderror"
+                        required
+                        autofocus
+                    >
+                        <option value="">Pilih periode</option>
+                        @foreach ($periodeList as $periode)
+                            <option value="{{ $periode->id }}" {{ old('periode_pemilihan_id') == $periode->id ? 'selected' : '' }}>
+                                {{ $periode->nama_periode }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('periode_pemilihan_id')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div>
                     <label for="nama" class="block text-sm font-semibold text-slate-900 mb-2">
                         Nama Pemilih <span class="text-red-500">*</span>
                     </label>

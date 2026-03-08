@@ -15,18 +15,36 @@ class PemilihController extends Controller
 {
     public function index()
     {
-        $periode = PeriodePemilihan::where('status', 'aktif')->first();
-        if (!$periode) {
-            $periode = PeriodePemilihan::orderByDesc('id')->first();
+        // Get periode from filter
+        $selectedPeriode = request('periode_id') 
+            ? PeriodePemilihan::find(request('periode_id'))
+            : null;
+
+        // Jika ada parameter periode_id, gunakan untuk token query
+        // Jika tidak, gunakan periode aktif atau terakhir untuk kebutuhan lain
+        if ($selectedPeriode) {
+            $periodeIdForTokens = $selectedPeriode->id;
+        } else {
+            $defaultPeriode = PeriodePemilihan::where('status', 'aktif')->first();
+            if (!$defaultPeriode) {
+                $defaultPeriode = PeriodePemilihan::orderByDesc('id')->first();
+            }
+            $periodeIdForTokens = $defaultPeriode?->id ?? -1;
         }
-        $periodeId = $periode?->id ?? -1;
 
         $query = Pemilih::with([
             'kelas',
-            'tokens' => function ($query) use ($periodeId) {
-                $query->where('periode_id', $periodeId);
+            'periodePemilihan',
+            'tokens' => function ($query) use ($periodeIdForTokens) {
+                $query->where('periode_id', $periodeIdForTokens);
             }
         ]);
+
+        // Filter by periode hanya jika user memilih periode spesifik
+        if ($selectedPeriode) {
+            $query->where('periode_pemilihan_id', $selectedPeriode->id);
+        }
+        // Jika tidak ada filter, tampilkan SEMUA pemilih dari SEMUA periode
 
         if (request()->filled('q')) {
             $q = request('q');
@@ -53,29 +71,42 @@ class PemilihController extends Controller
         $pemilih = $query->orderBy('nama')->paginate(10)->withQueryString();
 
         $kelasList = Kelas::orderBy('tingkat')->orderBy('nama_kelas')->get();
+        // Ambil SEMUA periode untuk dropdown filter, tidak ada limit atau filter
+        $periodeList = PeriodePemilihan::orderBy('nama_periode')->get();
 
-        return view('admin.tokens.index', compact('pemilih', 'periode', 'kelasList'));
+        return view('admin.tokens.index', compact('pemilih', 'kelasList', 'periodeList', 'selectedPeriode'));
     }
 
     public function create()
     {
         $kelasList = Kelas::orderBy('tingkat')->orderBy('nama_kelas')->get();
-        return view('admin.tokens.create', compact('kelasList'));
+        $periodeList = PeriodePemilihan::orderByDesc('mulai_pada')->get();
+        return view('admin.tokens.create', compact('kelasList', 'periodeList'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
             'nama' => 'required|string|max:100',
-            'nis' => 'required|string|max:30|unique:pemilih,nisn',
+            'nis' => 'required|string|max:30',
             'jenis' => 'required|in:siswa,guru',
             'kelas_id' => 'nullable|exists:kelas,id',
+            'periode_pemilihan_id' => 'required|exists:periode_pemilihan,id',
         ], [
             'nama.required' => 'Nama pemilih harus diisi',
             'nis.required' => 'NISN/NIP harus diisi',
-            'nis.unique' => 'NISN/NIP sudah digunakan',
             'jenis.required' => 'Jenis pemilih harus dipilih',
+            'periode_pemilihan_id.required' => 'Periode pemilihan harus dipilih',
         ]);
+
+        // Check composite unique: nisn + periode_pemilihan_id
+        $exists = Pemilih::where('nisn', $request->nis)
+            ->where('periode_pemilihan_id', $request->periode_pemilihan_id)
+            ->exists();
+
+        if ($exists) {
+            return back()->withErrors(['nis' => 'NISN sudah digunakan di periode ini'])->withInput();
+        }
 
         if ($request->jenis === 'siswa' && !$request->filled('kelas_id')) {
             return back()->withErrors(['kelas_id' => 'Kelas wajib dipilih untuk siswa'])->withInput();
@@ -86,6 +117,7 @@ class PemilihController extends Controller
             'nisn' => $request->nis,
             'jenis' => $request->jenis,
             'kelas_id' => $request->jenis === 'siswa' ? $request->kelas_id : null,
+            'periode_pemilihan_id' => $request->periode_pemilihan_id,
             'aktif' => true,
         ]);
 
@@ -96,7 +128,8 @@ class PemilihController extends Controller
     {
         $pemilih = Pemilih::findOrFail($id);
         $kelasList = Kelas::orderBy('tingkat')->orderBy('nama_kelas')->get();
-        return view('admin.tokens.edit', compact('pemilih', 'kelasList'));
+        $periodeList = PeriodePemilihan::orderByDesc('mulai_pada')->get();
+        return view('admin.tokens.edit', compact('pemilih', 'kelasList', 'periodeList'));
     }
 
     public function update(Request $request, $id)
@@ -105,15 +138,26 @@ class PemilihController extends Controller
 
         $request->validate([
             'nama' => 'required|string|max:100',
-            'nis' => 'required|string|max:30|unique:pemilih,nisn,' . $pemilih->id,
+            'nis' => 'required|string|max:30',
             'jenis' => 'required|in:siswa,guru',
             'kelas_id' => 'nullable|exists:kelas,id',
+            'periode_pemilihan_id' => 'required|exists:periode_pemilihan,id',
         ], [
             'nama.required' => 'Nama pemilih harus diisi',
             'nis.required' => 'NISN/NIP harus diisi',
-            'nis.unique' => 'NISN/NIP sudah digunakan',
             'jenis.required' => 'Jenis pemilih harus dipilih',
+            'periode_pemilihan_id.required' => 'Periode pemilihan harus dipilih',
         ]);
+
+        // Check composite unique: nisn + periode_pemilihan_id (exclude current pemilih)
+        $exists = Pemilih::where('nisn', $request->nis)
+            ->where('periode_pemilihan_id', $request->periode_pemilihan_id)
+            ->where('id', '!=', $pemilih->id)
+            ->exists();
+
+        if ($exists) {
+            return back()->withErrors(['nis' => 'NISN sudah digunakan di periode ini'])->withInput();
+        }
 
         if ($request->jenis === 'siswa' && !$request->filled('kelas_id')) {
             return back()->withErrors(['kelas_id' => 'Kelas wajib dipilih untuk siswa'])->withInput();
@@ -124,6 +168,7 @@ class PemilihController extends Controller
             'nisn' => $request->nis,
             'jenis' => $request->jenis,
             'kelas_id' => $request->jenis === 'siswa' ? $request->kelas_id : null,
+            'periode_pemilihan_id' => $request->periode_pemilihan_id,
             'aktif' => true,
         ]);
 

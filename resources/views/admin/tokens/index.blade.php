@@ -52,6 +52,7 @@
                 </form>
                 <form action="{{ route('admin.pemilih.print-tokens') }}" method="GET" target="_blank" class="inline">
                     <input type="hidden" name="q" value="{{ request('q') }}">
+                    <input type="hidden" name="periode_id" value="{{ request('periode_id') }}">
                     <input type="hidden" name="jenis" value="{{ request('jenis') }}">
                     <input type="hidden" name="tingkat" value="{{ request('tingkat') }}">
                     <input type="hidden" name="kelas_id" value="{{ request('kelas_id') }}">
@@ -61,7 +62,16 @@
                 </form>
             </div>
 
-            <form method="GET" id="filter-form" class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
+            <form method="GET" id="filter-form" class="grid grid-cols-1 md:grid-cols-6 gap-4 items-end">
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Periode</label>
+                    <select name="periode_id" class="w-full rounded-lg border border-slate-300 px-3 py-2" data-filter-input>
+                        <option value="">Semua Periode</option>
+                        @foreach ($periodeList as $p)
+                            <option value="{{ $p->id }}" @selected(request('periode_id') == $p->id)>{{ $p->nama_periode }}</option>
+                        @endforeach
+                    </select>
+                </div>
                 <div class="md:col-span-2">
                     <label class="block text-sm font-semibold text-slate-700 mb-2">Cari</label>
                     <input type="text" name="q" value="{{ request('q') }}" placeholder="Nama atau NISN/NIP" class="w-full rounded-lg border border-slate-300 px-3 py-2" data-filter-input>
@@ -103,6 +113,7 @@
                             <th class="px-6 py-4 text-left text-sm font-semibold text-slate-900">No</th>
                             <th class="px-6 py-4 text-left text-sm font-semibold text-slate-900">NISN/NIP</th>
                             <th class="px-6 py-4 text-left text-sm font-semibold text-slate-900">Nama Pemilih</th>
+                            <th class="px-6 py-4 text-left text-sm font-semibold text-slate-900">Periode</th>
                             <th class="px-6 py-4 text-left text-sm font-semibold text-slate-900">Tingkat</th>
                             <th class="px-6 py-4 text-left text-sm font-semibold text-slate-900">Kelas</th>
                             <th class="px-6 py-4 text-left text-sm font-semibold text-slate-900">Token</th>
@@ -119,6 +130,7 @@
                                 <td class="px-6 py-4 text-sm text-slate-900">{{ $loop->iteration }}</td>
                                 <td class="px-6 py-4 text-sm text-slate-600">{{ $row->nisn }}</td>
                                 <td class="px-6 py-4 text-sm text-slate-900 font-medium">{{ $row->nama }}</td>
+                                <td class="px-6 py-4 text-sm text-slate-600">{{ $row->periodePemilihan?->nama_periode ?? '-' }}</td>
                                 <td class="px-6 py-4 text-sm text-slate-600">{{ $row->kelas?->tingkat ?? '-' }}</td>
                                 <td class="px-6 py-4 text-sm text-slate-600">{{ $row->kelas?->nama_kelas ?? '-' }}</td>
                                 <td class="px-6 py-4 text-sm">
@@ -166,7 +178,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="8" class="px-6 py-8 text-center text-slate-600">
+                                <td colspan="9" class="px-6 py-8 text-center text-slate-600">
                                     <p class="text-lg">Belum ada data pemilih.</p>
                                 </td>
                             </tr>
