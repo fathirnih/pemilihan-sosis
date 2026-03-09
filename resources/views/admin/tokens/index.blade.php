@@ -308,7 +308,7 @@
         <form action="{{ route('admin.pemilih.hapus-token-semua') }}" method="POST" class="m-0" id="form-hapus-terpilih" onsubmit="return confirm('Hapus pemilih/token yang dipilih?')">
             @csrf
             <button type="submit" class="flex items-center gap-2 px-3 py-1.5 hover:bg-red-900/50 text-red-400 rounded-lg transition-colors text-sm">
-                <i class="w-4 h-4" data-lucide="trash-2"></i> Hapus
+                <i class="w-4 h-4" data-lucide="trash-2"></i> Hapuss
             </button>
         </form>
 
