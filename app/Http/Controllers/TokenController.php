@@ -88,7 +88,7 @@ class TokenController extends Controller
         }
 
         // Generate unique token
-        $token = 'VOTE-' . Str::random(16);
+        $token = strtoupper(Str::random(8));
         
         // Create token record
         TokenPemilih::create([
@@ -224,7 +224,7 @@ class TokenController extends Controller
             ->where('pemilih_id', $token->pemilih_id)
             ->delete();
 
-        $newToken = 'VOTE-' . Str::random(16);
+        $newToken = strtoupper(Str::random(6));
 
         $token->update([
             'token' => $newToken,

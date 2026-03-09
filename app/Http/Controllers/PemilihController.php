@@ -11,25 +11,21 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
 use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
+use Illuminate\Support\Facades\DB;
 
 class PemilihController extends Controller
 {
     public function index()
     {
-        // Get periode from filter
         $selectedPeriode = request('periode_id') 
             ? PeriodePemilihan::find(request('periode_id'))
             : null;
 
-        // Jika ada parameter periode_id, gunakan untuk token query
-        // Jika tidak, gunakan periode aktif atau terakhir untuk kebutuhan lain
         if ($selectedPeriode) {
             $periodeIdForTokens = $selectedPeriode->id;
         } else {
-            $defaultPeriode = PeriodePemilihan::where('status', 'aktif')->first();
-            if (!$defaultPeriode) {
-                $defaultPeriode = PeriodePemilihan::orderByDesc('id')->first();
-            }
+            $defaultPeriode = PeriodePemilihan::where('status', 'aktif')->first() 
+                              ?? PeriodePemilihan::orderByDesc('id')->first();
             $periodeIdForTokens = $defaultPeriode?->id ?? -1;
         }
 
@@ -41,11 +37,9 @@ class PemilihController extends Controller
             }
         ]);
 
-        // Filter by periode hanya jika user memilih periode spesifik
         if ($selectedPeriode) {
             $query->where('periode_pemilihan_id', $selectedPeriode->id);
         }
-        // Jika tidak ada filter, tampilkan SEMUA pemilih dari SEMUA periode
 
         if (request()->filled('q')) {
             $q = request('q');
@@ -55,9 +49,7 @@ class PemilihController extends Controller
             });
         }
 
-        if (request()->filled('jenis')) {
-            $query->where('jenis', request('jenis'));
-        }
+        if (request()->filled('jenis')) $query->where('jenis', request('jenis'));
 
         if (request()->filled('tingkat')) {
             $query->whereHas('kelas', function ($sub) {
@@ -65,14 +57,10 @@ class PemilihController extends Controller
             });
         }
 
-        if (request()->filled('kelas_id')) {
-            $query->where('kelas_id', request('kelas_id'));
-        }
+        if (request()->filled('kelas_id')) $query->where('kelas_id', request('kelas_id'));
 
         $pemilih = $query->orderBy('nama')->paginate(10)->withQueryString();
-
         $kelasList = Kelas::orderBy('tingkat')->orderBy('nama_kelas')->get();
-        // Ambil SEMUA periode untuk dropdown filter, tidak ada limit atau filter
         $periodeList = PeriodePemilihan::orderBy('nama_periode')->get();
 
         return view('admin.tokens.index', compact('pemilih', 'kelasList', 'periodeList', 'selectedPeriode'));
@@ -93,25 +81,13 @@ class PemilihController extends Controller
             'jenis' => 'required|in:siswa,guru',
             'kelas_id' => 'nullable|exists:kelas,id',
             'periode_pemilihan_id' => 'required|exists:periode_pemilihan,id',
-        ], [
-            'nama.required' => 'Nama pemilih harus diisi',
-            'nis.required' => 'NISN/NIP harus diisi',
-            'jenis.required' => 'Jenis pemilih harus dipilih',
-            'periode_pemilihan_id.required' => 'Periode pemilihan harus dipilih',
         ]);
 
-        // Check composite unique: nisn + periode_pemilihan_id
         $exists = Pemilih::where('nisn', $request->nis)
             ->where('periode_pemilihan_id', $request->periode_pemilihan_id)
             ->exists();
 
-        if ($exists) {
-            return back()->withErrors(['nis' => 'NISN sudah digunakan di periode ini'])->withInput();
-        }
-
-        if ($request->jenis === 'siswa' && !$request->filled('kelas_id')) {
-            return back()->withErrors(['kelas_id' => 'Kelas wajib dipilih untuk siswa'])->withInput();
-        }
+        if ($exists) return back()->withErrors(['nis' => 'NISN sudah digunakan di periode ini'])->withInput();
 
         Pemilih::create([
             'nama' => $request->nama,
@@ -136,33 +112,13 @@ class PemilihController extends Controller
     public function update(Request $request, $id)
     {
         $pemilih = Pemilih::findOrFail($id);
-
         $request->validate([
             'nama' => 'required|string|max:100',
             'nis' => 'required|string|max:30',
             'jenis' => 'required|in:siswa,guru',
             'kelas_id' => 'nullable|exists:kelas,id',
             'periode_pemilihan_id' => 'required|exists:periode_pemilihan,id',
-        ], [
-            'nama.required' => 'Nama pemilih harus diisi',
-            'nis.required' => 'NISN/NIP harus diisi',
-            'jenis.required' => 'Jenis pemilih harus dipilih',
-            'periode_pemilihan_id.required' => 'Periode pemilihan harus dipilih',
         ]);
-
-        // Check composite unique: nisn + periode_pemilihan_id (exclude current pemilih)
-        $exists = Pemilih::where('nisn', $request->nis)
-            ->where('periode_pemilihan_id', $request->periode_pemilihan_id)
-            ->where('id', '!=', $pemilih->id)
-            ->exists();
-
-        if ($exists) {
-            return back()->withErrors(['nis' => 'NISN sudah digunakan di periode ini'])->withInput();
-        }
-
-        if ($request->jenis === 'siswa' && !$request->filled('kelas_id')) {
-            return back()->withErrors(['kelas_id' => 'Kelas wajib dipilih untuk siswa'])->withInput();
-        }
 
         $pemilih->update([
             'nama' => $request->nama,
@@ -170,7 +126,6 @@ class PemilihController extends Controller
             'jenis' => $request->jenis,
             'kelas_id' => $request->jenis === 'siswa' ? $request->kelas_id : null,
             'periode_pemilihan_id' => $request->periode_pemilihan_id,
-            'aktif' => true,
         ]);
 
         return redirect()->route('admin.pemilih.index')->with('success', 'Pemilih berhasil diperbarui');
@@ -180,172 +135,131 @@ class PemilihController extends Controller
     {
         $pemilih = Pemilih::findOrFail($id);
 
-        $suaraCount = Suara::where('pemilih_id', $pemilih->id)->count();
-        if ($suaraCount > 0) {
-            return back()->withErrors(['pemilih' => 'Pemilih tidak bisa dihapus karena sudah memiliki suara']);
+        try {
+            DB::transaction(function () use ($pemilih) {
+                Suara::where('pemilih_id', $pemilih->id)->delete();
+                TokenPemilih::where('pemilih_id', $pemilih->id)->delete();
+                $pemilih->delete();
+            });
+            return back()->with('success', 'Pemilih dan data terkait berhasil dihapus');
+        } catch (\Exception $e) {
+            return back()->withErrors(['pemilih' => 'Gagal menghapus: ' . $e->getMessage()]);
         }
-
-        TokenPemilih::where('pemilih_id', $pemilih->id)->delete();
-        $pemilih->delete();
-
-        return back()->with('success', 'Pemilih berhasil dihapus');
     }
 
     public function generateTokens(Request $request)
     {
-        // Hanya generate token untuk periode yang aktif atau draft
-        $pemilihList = Pemilih::whereHas('periodePemilihan', function ($query) {
-            $query->whereIn('status', ['aktif', 'draf']);
-        })
-        ->where('aktif', true)
-        ->get();
+        $periodeId = $request->periode_id ?? PeriodePemilihan::where('status', 'aktif')->first()?->id;
+        
+        if (!$periodeId) return back()->withErrors(['error' => 'Periode aktif tidak ditemukan']);
 
-        if ($pemilihList->isEmpty()) {
-            return back()->withErrors(['pemilih' => 'Data pemilih kosong atau semua periode sudah ditutup']);
+        $query = Pemilih::where('periode_pemilihan_id', $periodeId)->where('aktif', true);
+
+        if ($request->has('ids') && is_array($request->ids) && $request->select_all_pages != '1') {
+            $query->whereIn('id', $request->ids);
         }
 
-        $created = 0;
-        // Generate token untuk setiap pemilih berdasarkan periode pemilih itu sendiri
-        foreach ($pemilihList as $pemilih) {
-            // Token harus di-generate untuk periode yang sama dengan periode_pemilihan_id pemilih
-            $periodeId = $pemilih->periode_pemilihan_id;
-            
-            // Cek apakah sudah ada token untuk pemilih ini di periode tersebut
-            $existing = TokenPemilih::where('periode_id', $periodeId)
-                ->where('pemilih_id', $pemilih->id)
-                ->exists();
-            
-            if ($existing) {
-                continue;
+        $pemilihList = $query->whereDoesntHave('tokens', function ($q) use ($periodeId) {
+            $q->where('periode_id', $periodeId);
+        })->get();
+
+        if ($pemilihList->isEmpty()) return back()->with('success', 'Tidak ada pemilih baru yang memerlukan token.');
+
+        $count = 0;
+        DB::transaction(function () use ($pemilihList, $periodeId, &$count) {
+            foreach ($pemilihList as $pemilih) {
+                $tokenRaw =  strtoupper(Str::random(8));  
+                TokenPemilih::create([
+                    'periode_id'    => $periodeId,
+                    'pemilih_id'    => $pemilih->id,
+                    'kelas_id'      => $pemilih->kelas_id,
+                    'token'         => $tokenRaw,
+                    'token_hash'    => Hash::make($tokenRaw),
+                    'status'        => 'aktif',
+                    'sudah_memilih' => false,
+                    'nama_pemilih'  => $pemilih->nama,
+                    'nis_pemilih'   => $pemilih->nisn,
+                ]);
+                $count++;
             }
+        });
 
-            $token = 'VOTE-' . Str::random(16);
-            TokenPemilih::create([
-                'periode_id' => $periodeId,
-                'pemilih_id' => $pemilih->id,
-                'kelas_id' => $pemilih->kelas_id,
-                'token_hash' => Hash::make($token),
-                'token' => $token,
-                'status' => 'aktif',
-                'sudah_memilih' => false,
-                'nama_pemilih' => $pemilih->nama,
-                'nis_pemilih' => $pemilih->nisn,
-            ]);
-            $created++;
-        }
-
-        return back()->with('success', "Token berhasil dibuat untuk {$created} pemilih");
+        return back()->with('success', "Berhasil men-generate $count token baru.");
     }
 
     public function resetToken($id)
     {
         $pemilih = Pemilih::findOrFail($id);
-        $periode = PeriodePemilihan::where('status', 'aktif')->first();
-        if (!$periode) {
-            $periode = PeriodePemilihan::orderByDesc('id')->first();
+        $token = TokenPemilih::where('pemilih_id', $pemilih->id)
+                             ->where('periode_id', $pemilih->periode_pemilihan_id)
+                             ->first();
+
+        if (!$token) return back()->withErrors(['error' => 'Token tidak ditemukan']);
+
+        try {
+            DB::transaction(function () use ($token, $pemilih) {
+                Suara::where('periode_id', $token->periode_id)->where('pemilih_id', $pemilih->id)->delete();
+                $newToken = 'VOTE-' . strtoupper(Str::random(8));
+                $token->update([
+                    'token' => $newToken,
+                    'token_hash' => Hash::make($newToken),
+                    'status' => 'aktif',
+                    'sudah_memilih' => false,
+                    'digunakan_pada' => null,
+                ]);
+            });
+            return back()->with('success', "Token {$pemilih->nama} berhasil direset.");
+        } catch (\Exception $e) {
+            return back()->withErrors(['error' => 'Gagal reset: ' . $e->getMessage()]);
         }
-        if (!$periode) {
-            return back()->withErrors(['periode' => 'Belum ada periode pemilihan. Silakan buat periode terlebih dahulu.']);
+    }
+
+    public function deleteAllTokens(Request $request)
+    {
+        $periodeId = $request->periode_id;
+        if (!$periodeId) return back()->withErrors(['error' => 'Periode tidak valid.']);
+
+        try {
+            DB::transaction(function () use ($periodeId, $request) {
+                $query = TokenPemilih::where('periode_id', $periodeId);
+
+                if ($request->has('ids') && is_array($request->ids) && $request->select_all_pages != '1') {
+                    $query->whereIn('pemilih_id', $request->ids);
+                }
+
+                $pemilihIds = $query->pluck('pemilih_id')->toArray();
+                
+                if (!empty($pemilihIds)) {
+                    Suara::where('periode_id', $periodeId)->whereIn('pemilih_id', $pemilihIds)->delete();
+                    $query->delete();
+                }
+            });
+
+            return back()->with('success', 'Data token dan riwayat suara terpilih berhasil dihapus.');
+        } catch (\Exception $e) {
+            return back()->withErrors(['error' => 'Gagal menghapus: ' . $e->getMessage()]);
         }
-
-        $token = TokenPemilih::where('periode_id', $periode->id)
-            ->where('pemilih_id', $pemilih->id)
-            ->first();
-
-        if (!$token) {
-            return back()->withErrors(['token' => 'Token belum dibuat untuk pemilih ini']);
-        }
-
-        Suara::where('periode_id', $periode->id)
-            ->where('pemilih_id', $pemilih->id)
-            ->delete();
-
-        $newToken = 'VOTE-' . Str::random(16);
-        $token->update([
-            'token' => $newToken,
-            'token_hash' => Hash::make($newToken),
-            'status' => 'aktif',
-            'sudah_memilih' => false,
-            'digunakan_pada' => null,
-            'kadaluarsa_pada' => null,
-        ]);
-
-        return back()->with('success', "Token untuk {$pemilih->nama} berhasil direset");
     }
 
     public function printTokens(Request $request)
     {
-        $periode = PeriodePemilihan::where('status', 'aktif')->first();
-        if (!$periode) {
-            $periode = PeriodePemilihan::orderByDesc('id')->first();
-        }
-        if (!$periode) {
-            return back()->withErrors(['periode' => 'Belum ada periode pemilihan. Silakan buat periode terlebih dahulu.']);
-        }
+        $periodeId = $request->periode_id ?? PeriodePemilihan::where('status', 'aktif')->first()?->id;
+        if (!$periodeId) return back()->withErrors(['error' => 'Periode tidak ditemukan.']);
 
-        $query = Pemilih::with([
-            'kelas',
-            'tokens' => function ($q) use ($periode) {
-                $q->where('periode_id', $periode->id);
-            }
-        ])->whereHas('tokens', function ($q) use ($periode) {
-            $q->where('periode_id', $periode->id);
+        $query = Pemilih::with(['kelas', 'tokens' => function($q) use ($periodeId) {
+            $q->where('periode_id', $periodeId);
+        }])->whereHas('tokens', function ($q) use ($periodeId) {
+            $q->where('periode_id', $periodeId);
         });
 
-        if ($request->filled('jenis')) {
-            $query->where('jenis', $request->jenis);
-        }
-
-        if ($request->filled('tingkat')) {
-            $query->whereHas('kelas', function ($q) use ($request) {
-                $q->where('tingkat', $request->tingkat);
-            });
-        }
-
-        if ($request->filled('kelas_id')) {
-            $query->where('kelas_id', $request->kelas_id);
+        if ($request->has('ids') && is_array($request->ids) && $request->select_all_pages != '1') {
+            $query->whereIn('id', $request->ids);
         }
 
         $pemilih = $query->orderBy('nama')->get();
+        if ($pemilih->isEmpty()) return back()->withErrors(['error' => 'Tidak ada token untuk dicetak.']);
 
-        if ($pemilih->isEmpty()) {
-            return back()->withErrors(['token' => 'Tidak ada token untuk dicetak dengan filter tersebut.']);
-        }
-
-        return view('admin.tokens.print-all', [
-            'pemilih' => $pemilih,
-            'periode' => $periode,
-        ]);
-    }
-
-    public function deleteAllTokens()
-    {
-        $periode = PeriodePemilihan::where('status', 'aktif')->first();
-        if (!$periode) {
-            $periode = PeriodePemilihan::orderByDesc('id')->first();
-        }
-        if (!$periode) {
-            return back()->withErrors(['periode' => 'Belum ada periode pemilihan. Silakan buat periode terlebih dahulu.']);
-        }
-
-        $tokens = TokenPemilih::where('periode_id', $periode->id)
-            ->whereNotNull('pemilih_id')
-            ->get();
-
-        if ($tokens->isEmpty()) {
-            return back()->withErrors(['token' => 'Belum ada token untuk dihapus.']);
-        }
-
-        $pemilihIds = $tokens->pluck('pemilih_id')->all();
-        Suara::where('periode_id', $periode->id)
-            ->whereIn('pemilih_id', $pemilihIds)
-            ->delete();
-
-        TokenPemilih::where('periode_id', $periode->id)
-            ->whereNotNull('pemilih_id')
-            ->delete();
-
-        return back()->with('success', 'Semua token berhasil dihapus.');
+        return view('admin.tokens.print-all', ['pemilih' => $pemilih, 'periode' => PeriodePemilihan::find($periodeId)]);
     }
 
     public function showImport()

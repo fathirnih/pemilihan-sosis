@@ -57,6 +57,8 @@ Route::middleware('admin')->group(function () {
     Route::get('/admin/pemilih/print-tokens', [PemilihController::class, 'printTokens'])->name('admin.pemilih.print-tokens');
     Route::post('/admin/pemilih/generate-token', [PemilihController::class, 'generateTokens'])->name('admin.pemilih.generate-token');
     Route::post('/admin/pemilih/hapus-token-semua', [PemilihController::class, 'deleteAllTokens'])->name('admin.pemilih.hapus-token-semua');
+    Route::delete('/admin/pemilih/{id}/hapus-token', [PemilihController::class, 'hapusSatuToken'])->name('admin.pemilih.hapus-satu-token');
+    Route::delete('/admin/pemilih/bulk-hapus-token', [PemilihController::class, 'bulkHapusToken'])->name('admin.pemilih.bulk-hapus-token');
     Route::post('/admin/pemilih/{id}/reset-token', [PemilihController::class, 'resetToken'])->name('admin.pemilih.reset-token');
 
     // Token print/pdf routes (keep)

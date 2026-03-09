@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('username')->unique();
             $table->string('password');
             $table->string('email')->unique();
-            $table->string('jabatan'); // Role: Ketua, Wakil, Anggota, etc
+            $table->string('jabatan'); 
             $table->boolean('aktif')->default(true);
             $table->timestamps();
         });

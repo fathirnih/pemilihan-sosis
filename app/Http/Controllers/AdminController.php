@@ -11,6 +11,7 @@ use App\Models\Pemilih;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Illuminate\Http\Request;
 
 class AdminController extends Controller
 {

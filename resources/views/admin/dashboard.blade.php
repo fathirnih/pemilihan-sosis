@@ -3,183 +3,146 @@
 @section('title', 'Admin Dashboard')
 
 @section('admin.content')
-<div class="px-4 py-8 lg:px-8">
-    <div class="max-w-6xl">
-        <div class="mb-6">
-            <h2 class="text-2xl font-bold text-slate-900">Ringkasan</h2>
-            <p class="mt-1 text-slate-600">Pantau aktivitas pemilihan dan status periode.</p>
+<div class="p-6 lg:p-8 space-y-8 bg-slate-50 min-h-screen">
+    
+    {{-- Header --}}
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+            <h2 class="text-3xl font-black text-slate-900 tracking-tight">Ringkasan Utama</h2>
+            <p class="text-sm text-slate-500 font-medium">Pantau progres pemungutan suara secara real-time</p>
         </div>
-
-        <!-- Statistics -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-slate-600 text-sm font-medium mb-2">Total Token</p>
-                        <p class="text-3xl font-bold text-slate-900">{{ $totalTokens }}</p>
-                    </div>
-                    <div class="h-10 w-10 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center text-sm font-semibold">TK</div>
-                </div>
-            </div>
-
-            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-slate-600 text-sm font-medium mb-2">Token Aktif</p>
-                        <p class="text-3xl font-bold text-emerald-600">{{ $tokensAktif }}</p>
-                    </div>
-                    <div class="h-10 w-10 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center text-sm font-semibold">AK</div>
-                </div>
-            </div>
-
-            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-slate-600 text-sm font-medium mb-2">Sudah Memilih</p>
-                        <p class="text-3xl font-bold text-blue-600">{{ $sudahMemilih }}</p>
-                    </div>
-                    <div class="h-10 w-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-sm font-semibold">SM</div>
-                </div>
-            </div>
-
-            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-slate-600 text-sm font-medium mb-2">Total Suara</p>
-                        <p class="text-3xl font-bold text-purple-600">{{ $totalSuara }}</p>
-                    </div>
-                    <div class="h-10 w-10 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center text-sm font-semibold">TS</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Active Period -->
-        @if ($periode)
-            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 mb-8">
-                <h3 class="text-lg font-bold text-slate-900 mb-4">Periode Aktif</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <p class="text-slate-600 text-sm mb-1">Nama Periode</p>
-                        <p class="text-lg font-semibold text-slate-900">{{ $periode->nama_periode }}</p>
-                    </div>
-                    <div>
-                        <p class="text-slate-600 text-sm mb-1">Status</p>
-                        <span class="inline-block px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">{{ ucfirst($periode->status) }}</span>
-                    </div>
-                    <div>
-                        <p class="text-slate-600 text-sm mb-1">Mulai Pada</p>
-                        <p class="text-slate-900">{{ $periode->mulai_pada->format('d M Y H:i') }}</p>
-                    </div>
-                    <div>
-                        <p class="text-slate-600 text-sm mb-1">Selesai Pada</p>
-                        <p class="text-slate-900">{{ $periode->selesai_pada->format('d M Y H:i') }}</p>
-                    </div>
-                </div>
-            </div>
-        @else
-            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-8">
-                <p class="text-yellow-800">Tidak ada periode pemilihan yang aktif.</p>
-            </div>
-        @endif
-
-        <!-- Hasil Sementara -->
-        @if ($kandidats->count() > 0)
-            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 mb-8">
-                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                    <div>
-                        <h3 class="text-lg font-bold text-slate-900">Hasil Suara Sementara</h3>
-                        <p class="mt-1 text-sm text-slate-600">Update real-time berdasarkan suara yang masuk.</p>
-                    </div>
-                    <div class="flex items-center gap-4 text-sm text-slate-600">
-                        <span class="px-3 py-1 rounded-full bg-slate-100">Total suara: <strong class="text-slate-900">{{ $totalSuara }}</strong></span>
-                        <span class="px-3 py-1 rounded-full bg-slate-100">Sudah memilih: <strong class="text-slate-900">{{ $sudahMemilih }}</strong></span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-                @foreach ($topKandidats as $index => $kandidat)
-                    @php
-                        $suaraCount = $kandidat->suara->count();
-                        $percent = $totalSuara > 0 ? round(($suaraCount / $totalSuara) * 100, 1) : 0;
-                        $ketua = $kandidat->anggota->firstWhere('peran', 'ketua');
-                        $wakil = $kandidat->anggota->firstWhere('peran', 'wakil');
-                        $fotoUrl = $kandidat->foto ? asset('storage/' . $kandidat->foto) : null;
-                        $rankStyles = [
-                            'ring-amber-300 bg-amber-50 text-amber-700',
-                            'ring-slate-300 bg-slate-100 text-slate-700',
-                            'ring-orange-300 bg-orange-50 text-orange-700',
-                        ];
-                        $badgeText = 'Peringkat ' . ($index + 1);
-                    @endphp
-                    <div class="rounded-2xl border border-slate-200 bg-white shadow-sm p-6">
-                        <div class="flex items-center justify-between mb-4">
-                            <span class="text-xs font-semibold uppercase tracking-wide px-3 py-1 rounded-full {{ $rankStyles[$index] ?? 'bg-slate-100 text-slate-700' }}">
-                                {{ $badgeText }}
-                            </span>
-                            <span class="text-sm font-semibold text-slate-700">No {{ $kandidat->nomor_urut }}</span>
-                        </div>
-                        <div class="flex items-center gap-4">
-                            <div class="relative">
-                                @if ($fotoUrl)
-                                    <img src="{{ $fotoUrl }}" alt="Foto kandidat {{ $kandidat->nomor_urut }}" class="h-16 w-16 rounded-full object-cover ring-4 ring-slate-100">
-                                @else
-                                    <div class="h-16 w-16 rounded-full bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center text-sm font-semibold text-slate-600 ring-4 ring-slate-100">
-                                        NO {{ $kandidat->nomor_urut }}
-                                    </div>
-                                @endif
-                            </div>
-                            <div class="flex-1">
-                                <p class="text-base font-semibold text-slate-900">{{ $ketua?->pemilih?->nama ?? 'Ketua belum diisi' }}</p>
-                                <p class="text-sm text-slate-500">{{ $wakil?->pemilih?->nama ?? 'Wakil belum diisi' }}</p>
-                                <p class="mt-2 text-xs text-slate-500 line-clamp-2">{{ $kandidat->visi }}</p>
-                            </div>
-                        </div>
-                        <div class="mt-5">
-                            <div class="flex items-center justify-between text-sm text-slate-600 mb-2">
-                                <span>Total suara</span>
-                                <span class="font-semibold text-slate-900">{{ $suaraCount }}</span>
-                            </div>
-                            <div class="h-2 rounded-full bg-slate-100 overflow-hidden">
-                                <div class="h-2 rounded-full bg-blue-600" style="width: {{ $percent }}%"></div>
-                            </div>
-                            <p class="mt-2 text-xs text-slate-500">{{ $percent }}% dari total suara</p>
-                        </div>
-                    </div>
-                @endforeach
-            </div>
-
-            @if ($otherKandidats->count() > 0)
-                <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
-                    <h4 class="text-base font-semibold text-slate-900 mb-4">Kandidat Lainnya</h4>
-                    <div class="space-y-3">
-                        @foreach ($otherKandidats as $kandidat)
-                            @php
-                                $suaraCount = $kandidat->suara->count();
-                                $percent = $totalSuara > 0 ? round(($suaraCount / $totalSuara) * 100, 1) : 0;
-                                $ketua = $kandidat->anggota->firstWhere('peran', 'ketua');
-                                $wakil = $kandidat->anggota->firstWhere('peran', 'wakil');
-                            @endphp
-                            <div class="border border-slate-200 rounded-lg p-4">
-                                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-                                    <div>
-                                        <p class="font-semibold text-slate-900">No {{ $kandidat->nomor_urut }} - {{ $ketua?->pemilih?->nama ?? 'Ketua belum diisi' }}</p>
-                                        <p class="text-sm text-slate-500">{{ $wakil?->pemilih?->nama ?? 'Wakil belum diisi' }}</p>
-                                    </div>
-                                    <div class="text-right">
-                                        <p class="text-lg font-semibold text-slate-900">{{ $suaraCount }} suara</p>
-                                        <p class="text-xs text-slate-500">{{ $percent }}%</p>
-                                    </div>
-                                </div>
-                                <div class="mt-3 h-2 rounded-full bg-slate-100 overflow-hidden">
-                                    <div class="h-2 rounded-full bg-slate-800" style="width: {{ $percent }}%"></div>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
-            @endif
-        @endif
+        <button onclick="window.location.reload()" class="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-indigo-600 text-white font-bold text-sm rounded-2xl shadow-lg shadow-indigo-200 hover:bg-indigo-700 transition-all active:scale-95">
+            <span class="material-symbols-rounded text-xl">refresh</span>
+            <span>Refresh Data</span>
+        </button>
     </div>
+
+    {{-- Status Periode --}}
+    <section class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm overflow-hidden relative">
+        @if ($periode)
+        <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+            <div class="flex items-center gap-5">
+                <div class="size-14 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center shadow-inner">
+                    <span class="material-symbols-rounded text-3xl">event_available</span>
+                </div>
+                <div>
+                    <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">Periode Aktif</h3>
+                    <p class="text-xl font-bold text-slate-900">{{ $periode->nama_periode }}</p>
+                    <p class="text-xs text-slate-500 font-medium flex items-center gap-2 mt-1">
+                        <span class="material-symbols-rounded text-sm">calendar_month</span>
+                        {{ $periode->mulai_pada->format('d M Y') }} - {{ $periode->selesai_pada->format('d M Y') }} 
+                        <span class="text-slate-300">|</span>
+                        <span class="material-symbols-rounded text-sm">schedule</span>
+                        {{ $periode->mulai_pada->format('H:i') }} - {{ $periode->selesai_pada->format('H:i') }}
+                    </p>
+                </div>
+            </div>
+            <div class="flex items-center">
+                <span class="px-5 py-2 rounded-2xl bg-emerald-50 text-emerald-600 text-xs font-black uppercase tracking-widest flex items-center gap-2 border border-emerald-100">
+                    <span class="size-2 bg-emerald-500 rounded-full animate-ping"></span>
+                    {{ $periode->status }}
+                </span>
+            </div>
+        </div>
+        @else
+        <div class="flex items-center gap-4 text-orange-600 bg-orange-50 p-4 rounded-2xl border border-orange-100">
+            <span class="material-symbols-rounded text-3xl">warning</span>
+            <p class="font-bold text-sm">Tidak ada periode pemilihan yang aktif saat ini.</p>
+        </div>
+        @endif
+    </section>
+
+    {{-- Stats Grid --}}
+    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
+        @php
+            $stats = [
+                ['label' => 'Total Token', 'value' => number_format($totalTokens), 'icon' => 'toll', 'color' => 'slate', 'sub' => 'Terdaftar'],
+                ['label' => 'Token Aktif', 'value' => number_format($tokensAktif), 'icon' => 'verified', 'color' => 'emerald', 'sub' => 'Siap Pakai'],
+                ['label' => 'Sudah Memilih', 'value' => number_format($sudahMemilih), 'icon' => 'how_to_reg', 'color' => 'indigo', 'sub' => ($totalTokens > 0 ? round(($sudahMemilih / $totalTokens) * 100, 1) : 0) . '% Partisipasi'],
+                ['label' => 'Total Suara', 'value' => number_format($totalSuara), 'icon' => 'equalizer', 'color' => 'purple', 'sub' => 'Suara Masuk'],
+            ];
+        @endphp
+
+        @foreach($stats as $stat)
+        <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm relative group transition-all hover:-translate-y-1">
+            <div class="flex justify-between items-start mb-4">
+                <div class="size-12 rounded-2xl bg-{{ $stat['color'] }}-50 text-{{ $stat['color'] }}-600 flex items-center justify-center transition-colors group-hover:bg-{{ $stat['color'] }}-600 group-hover:text-white">
+                    <span class="material-symbols-rounded text-2xl">{{ $stat['icon'] }}</span>
+                </div>
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider italic">{{ $stat['sub'] }}</span>
+            </div>
+            <p class="text-xs font-bold text-slate-500 uppercase tracking-widest">{{ $stat['label'] }}</p>
+            <h4 class="text-3xl font-black text-slate-900 mt-1">{{ $stat['value'] }}</h4>
+        </div>
+        @endforeach
+    </div>
+
+    @if ($kandidats->count() > 0)
+    {{-- Hasil Suara --}}
+    <div class="space-y-6 pt-4">
+        <div>
+            <h3 class="text-2xl font-black text-slate-900 tracking-tight">Hasil Sementara</h3>
+            <p class="text-sm text-slate-500 font-medium">Urutan perolehan suara tertinggi saat ini</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            @foreach ($topKandidats as $index => $kandidat)
+                @php
+                    $suaraCount = $kandidat->suara->count();
+                    $percent = $totalSuara > 0 ? round(($suaraCount / $totalSuara) * 100, 1) : 0;
+                    $ketua = $kandidat->anggota->firstWhere('peran', 'ketua');
+                    $wakil = $kandidat->anggota->firstWhere('peran', 'wakil');
+                    
+                    $styles = [
+                        0 => ['border' => 'border-amber-400', 'bg' => 'bg-amber-50', 'text' => 'text-amber-600', 'icon' => 'workspace_premium', 'bar' => 'bg-amber-400'],
+                        1 => ['border' => 'border-slate-200', 'bg' => 'bg-slate-50', 'text' => 'text-slate-600', 'icon' => 'military_tech', 'bar' => 'bg-slate-400'],
+                        2 => ['border' => 'border-orange-200', 'bg' => 'bg-orange-50', 'text' => 'text-orange-600', 'icon' => 'looks_3', 'bar' => 'bg-orange-400']
+                    ];
+                    $current = $styles[$index] ?? $styles[1];
+                @endphp
+
+                <div class="bg-white rounded-[2.5rem] border {{ $current['border'] }} p-6 shadow-xl relative overflow-hidden flex flex-col items-center text-center transition-transform hover:scale-[1.02]">
+                    <div class="absolute top-0 right-0 p-6">
+                        <span class="text-5xl font-black text-slate-100">#{{ $kandidat->nomor_urut }}</span>
+                    </div>
+
+                    {{-- Rank Badge --}}
+                    <div class="mb-6 flex flex-col items-center">
+                        <div class="size-12 rounded-full {{ $current['bg'] }} {{ $current['text'] }} flex items-center justify-center mb-2 shadow-sm">
+                            <span class="material-symbols-rounded text-2xl">{{ $current['icon'] }}</span>
+                        </div>
+                        <span class="text-[10px] font-black uppercase tracking-[0.2em] {{ $current['text'] }}">Peringkat {{ $index + 1 }}</span>
+                    </div>
+
+                    {{-- Photo --}}
+                   <div class="flex gap-4">
+                        <div class="size-20 rounded-full overflow-hidden border-2 border-white shadow">
+                            <img src="{{ $kandidat->foto_ketua ? asset('storage/' . $kandidat->foto_ketua) : asset('images/default-user.png') }}" class="size-full object-cover">
+                        </div>
+                        
+                        <div class="size-20 rounded-full overflow-hidden border-2 border-white shadow">
+                            <img src="{{ $kandidat->foto_wakil ? asset('storage/' . $kandidat->foto_wakil) : asset('images/default-user.png') }}" class="size-full object-cover">
+                        </div>
+                    </div>
+
+                    <h4 class="text-lg font-black text-slate-900 leading-tight mb-1 truncate w-full px-4">
+                        {{ $ketua?->pemilih?->nama ?? 'Nama Ketua' }}
+                    </h4>
+                    <p class="text-xs font-bold text-slate-400 mb-4 italic">w/ {{ $wakil?->pemilih?->nama ?? 'Nama Wakil' }}</p>
+
+                    <div class="w-full mt-auto pt-6 border-t border-slate-50">
+                        <div class="flex justify-between items-end mb-2">
+                            <span class="text-2xl font-black text-slate-900">{{ number_format($suaraCount) }} <small class="text-[10px] uppercase text-slate-400">Suara</small></span>
+                            <span class="text-sm font-black {{ $current['text'] }}">{{ $percent }}%</span>
+                        </div>
+                        <div class="h-3 w-full bg-slate-100 rounded-full overflow-hidden">
+                            <div class="h-full {{ $current['bar'] }} rounded-full" style="width: {{ $percent }}%"></div>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    </div>
+    @endif
 </div>
 @endsection
