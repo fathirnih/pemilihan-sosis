@@ -28,9 +28,15 @@
         @endif
 
         @php
-            $totalSuaraPeriode = \App\Models\Suara::where('periode_id', $periodeId)->count();
-            $totalTokenPeriode = \App\Models\TokenPemilih::where('periode_id', $periodeId)->count();
-            $sudahMemilihPeriode = \App\Models\TokenPemilih::where('periode_id', $periodeId)->where('sudah_memilih', true)->count();
+            $totalSuaraPeriode = $periodeId
+                ? \App\Models\Suara::where('periode_id', $periodeId)->count()
+                : \App\Models\Suara::count();
+            $totalTokenPeriode = $periodeId
+                ? \App\Models\TokenPemilih::where('periode_id', $periodeId)->count()
+                : \App\Models\TokenPemilih::count();
+            $sudahMemilihPeriode = $periodeId
+                ? \App\Models\TokenPemilih::where('periode_id', $periodeId)->where('sudah_memilih', true)->count()
+                : \App\Models\TokenPemilih::where('sudah_memilih', true)->count();
             $partisipasi = $totalTokenPeriode > 0 ? round(($sudahMemilihPeriode / $totalTokenPeriode) * 100, 1) : 0;
         @endphp
 
@@ -38,12 +44,12 @@
             <div class="admin-metric-card">
                 <p class="admin-metric-label">Total Suara</p>
                 <h3 class="admin-metric-value">{{ $totalSuaraPeriode }}</h3>
-                <p class="admin-metric-sub">Periode dipilih</p>
+                <p class="admin-metric-sub">{{ $periodeId ? 'Periode dipilih' : 'Semua periode' }}</p>
             </div>
             <div class="admin-metric-card">
                 <p class="admin-metric-label">Sudah Memilih</p>
                 <h3 class="admin-metric-value">{{ $sudahMemilihPeriode }}</h3>
-                <p class="admin-metric-sub">Dari token aktif periode</p>
+                <p class="admin-metric-sub">{{ $periodeId ? 'Dari token aktif periode' : 'Semua periode' }}</p>
             </div>
             <div class="admin-metric-card">
                 <p class="admin-metric-label">Partisipasi</p>
@@ -53,14 +59,66 @@
         </section>
 
         <div class="admin-filter-panel">
-            <form method="GET" class="flex flex-wrap items-end gap-3">
+            <form method="GET" id="filter-form" class="flex flex-wrap items-end gap-3">
+                {{-- Search --}}
+                <div class="flex-1 min-w-[180px]">
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Cari Pemilih</label>
+                    <div class="flex gap-2">
+                        <input type="text" name="search" id="filter-search" value="{{ $search }}" placeholder="Nama / NISN..." class="admin-input flex-1" />
+                        <button type="submit" class="admin-btn admin-btn-primary whitespace-nowrap">Cari</button>
+                    </div>
+                </div>
+
+                {{-- Periode --}}
                 <div>
                     <label class="block text-sm font-semibold text-slate-700 mb-2">Periode</label>
                     <select name="periode_id" class="admin-select" onchange="this.form.submit()">
+                        <option value="" @selected(!$periodeId)>Semua Periode</option>
                         @foreach ($periodes as $p)
                             <option value="{{ $p->id }}" @selected((string) $p->id === (string) $periodeId)>{{ $p->nama_periode }}</option>
                         @endforeach
                     </select>
+                </div>
+
+                {{-- Tingkat --}}
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Tingkat</label>
+                    <select name="tingkat" class="admin-select" onchange="document.querySelector('[name=kelas_id]').value=''; this.form.submit()">
+                        <option value="" @selected(!$tingkat)>Semua Tingkat</option>
+                        <option value="none" @selected($tingkat === 'none')>Tanpa Tingkat (Guru)</option>
+                        @foreach ($tingkats as $t)
+                            <option value="{{ $t }}" @selected((string) $t === (string) $tingkat)>Tingkat {{ $t }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                {{-- Kelas --}}
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Kelas</label>
+                    <select name="kelas_id" class="admin-select" onchange="this.form.submit()">
+                        <option value="" @selected(!$kelasId)>Semua Kelas</option>
+                        @foreach ($kelasList as $k)
+                            <option value="{{ $k->id }}" @selected((string) $k->id === (string) $kelasId)>{{ $k->tingkat }} - {{ $k->nama_kelas }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                {{-- Kandidat --}}
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Kandidat</label>
+                    <select name="kandidat_id" class="admin-select" onchange="this.form.submit()">
+                        <option value="" @selected(!$kandidatId)>Semua Kandidat</option>
+                        @foreach ($kandidats as $k)
+                            <option value="{{ $k->id }}" @selected((string) $k->id === (string) $kandidatId)>
+                                {{ $k->nomor_urut }} - {{ $k->anggota?->firstWhere('peran','ketua')?->pemilih?->nama ?? 'Kandidat' }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                {{-- Reset --}}
+                <div>
+                    <a href="{{ route('admin.suara.index') }}" class="admin-btn admin-btn-soft">Reset</a>
                 </div>
             </form>
         </div>
@@ -73,7 +131,11 @@
                             <th class="admin-th">No</th>
                             <th class="admin-th">Pemilih</th>
                             <th class="admin-th">NISN/NIP</th>
+                            <th class="admin-th">Kelas</th>
                             <th class="admin-th">Kandidat</th>
+                            @if (!$periodeId)
+                                <th class="admin-th">Periode</th>
+                            @endif
                             <th class="admin-th">Waktu</th>
                             <th class="admin-th">Aksi</th>
                         </tr>
@@ -84,9 +146,13 @@
                                 <td class="admin-td text-slate-900">{{ $loop->iteration }}</td>
                                 <td class="admin-td text-slate-900 font-medium">{{ $item->pemilih?->nama }}</td>
                                 <td class="admin-td text-slate-600">{{ $item->pemilih?->nisn }}</td>
-                                <td class="admin-td text-slate-700">{{ $item->kandidat?->nomor_urut }} - {{ 
+                                <td class="admin-td text-slate-600">{{ $item->pemilih?->kelas ? $item->pemilih->kelas->tingkat . ' - ' . $item->pemilih->kelas->nama_kelas : '-' }}</td>
+                                <td class="admin-td text-slate-700">{{ $item->kandidat?->nomor_urut }} - {{
                                     $item->kandidat?->anggota?->firstWhere('peran', 'ketua')?->pemilih?->nama ?? 'Kandidat'
                                 }}</td>
+                                @if (!$periodeId)
+                                    <td class="admin-td text-slate-600">{{ $item->periode?->nama_periode }}</td>
+                                @endif
                                 <td class="admin-td text-slate-600">{{ $item->created_at?->format('d M Y H:i') }}</td>
                                 <td class="admin-td">
                                     <div class="flex flex-wrap gap-2">
@@ -101,7 +167,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="px-6 py-8 text-center text-slate-600">Belum ada suara</td>
+                                <td colspan="{{ $periodeId ? 7 : 8 }}" class="px-6 py-8 text-center text-slate-600">Belum ada suara</td>
                             </tr>
                         @endforelse
                     </tbody>
