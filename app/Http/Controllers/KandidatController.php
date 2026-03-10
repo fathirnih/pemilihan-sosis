@@ -6,8 +6,10 @@ use App\Models\Kandidat;
 use App\Models\KandidatAnggota;
 use App\Models\PeriodePemilihan;
 use App\Models\Pemilih;
+use App\Models\Suara;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class KandidatController extends Controller
@@ -48,6 +50,8 @@ class KandidatController extends Controller
             'foto' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'foto_ketua' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'foto_wakil' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'tampil_di_landing' => 'nullable|boolean',
+            'landing_urutan' => 'nullable|integer|min:1',
             'ketua_id' => 'required|exists:pemilih,id',
             'wakil_id' => 'nullable|exists:pemilih,id|different:ketua_id',
         ]);
@@ -58,6 +62,8 @@ class KandidatController extends Controller
             'visi',
             'misi',
         ]);
+        $payload['tampil_di_landing'] = $request->boolean('tampil_di_landing');
+        $payload['landing_urutan'] = $request->filled('landing_urutan') ? (int) $request->landing_urutan : null;
 
         if ($request->hasFile('foto')) {
             $payload['foto'] = $request->file('foto')->store('kandidat', 'public');
@@ -119,6 +125,8 @@ class KandidatController extends Controller
             'foto' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'foto_ketua' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'foto_wakil' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'tampil_di_landing' => 'nullable|boolean',
+            'landing_urutan' => 'nullable|integer|min:1',
             'ketua_id' => 'required|exists:pemilih,id',
             'wakil_id' => 'nullable|exists:pemilih,id|different:ketua_id',
         ]);
@@ -129,6 +137,8 @@ class KandidatController extends Controller
             'visi',
             'misi',
         ]);
+        $payload['tampil_di_landing'] = $request->boolean('tampil_di_landing');
+        $payload['landing_urutan'] = $request->filled('landing_urutan') ? (int) $request->landing_urutan : null;
 
         if ($request->hasFile('foto')) {
             if ($kandidat->foto) {
@@ -172,18 +182,29 @@ class KandidatController extends Controller
     public function destroy($id)
     {
         $kandidat = Kandidat::findOrFail($id);
-        if ($kandidat->foto) {
-            Storage::disk('public')->delete($kandidat->foto);
-        }
-        if ($kandidat->foto_ketua) {
-            Storage::disk('public')->delete($kandidat->foto_ketua);
-        }
-        if ($kandidat->foto_wakil) {
-            Storage::disk('public')->delete($kandidat->foto_wakil);
-        }
-        KandidatAnggota::where('kandidat_id', $kandidat->id)->delete();
-        $kandidat->delete();
+        $paths = array_filter([
+            $kandidat->foto,
+            $kandidat->foto_ketua,
+            $kandidat->foto_wakil,
+        ]);
 
-        return back()->with('success', 'Kandidat berhasil dihapus.');
+        try {
+            DB::transaction(function () use ($kandidat) {
+                // Hapus relasi dulu agar tidak melanggar foreign key.
+                Suara::where('kandidat_id', $kandidat->id)->delete();
+                KandidatAnggota::where('kandidat_id', $kandidat->id)->delete();
+                $kandidat->delete();
+            });
+
+            if (!empty($paths)) {
+                Storage::disk('public')->delete($paths);
+            }
+
+            return back()->with('success', 'Kandidat berhasil dihapus.');
+        } catch (\Throwable $e) {
+            return back()->withErrors([
+                'kandidat' => 'Gagal menghapus kandidat: ' . $e->getMessage(),
+            ]);
+        }
     }
 }

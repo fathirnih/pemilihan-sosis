@@ -30,6 +30,30 @@
             </div>
         @endif
 
+        @php
+            $totalPanitia = \App\Models\Panitia::count();
+            $panitiaAktif = \App\Models\Panitia::where('aktif', true)->count();
+            $panitiaNonaktif = \App\Models\Panitia::where('aktif', false)->count();
+        @endphp
+
+        <section class="admin-metrics">
+            <div class="admin-metric-card">
+                <p class="admin-metric-label">Total Panitia</p>
+                <h3 class="admin-metric-value">{{ $totalPanitia }}</h3>
+                <p class="admin-metric-sub">Semua akun panitia</p>
+            </div>
+            <div class="admin-metric-card">
+                <p class="admin-metric-label">Panitia Aktif</p>
+                <h3 class="admin-metric-value">{{ $panitiaAktif }}</h3>
+                <p class="admin-metric-sub">Bisa login</p>
+            </div>
+            <div class="admin-metric-card">
+                <p class="admin-metric-label">Panitia Nonaktif</p>
+                <h3 class="admin-metric-value">{{ $panitiaNonaktif }}</h3>
+                <p class="admin-metric-sub">Akun dibatasi</p>
+            </div>
+        </section>
+
         <div class="admin-card overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="admin-table">
@@ -93,7 +117,7 @@
 
         @if ($panitia->hasPages())
             <div class="mt-6">
-                {{ $panitia->links() }}
+                {{ $panitia->links('vendor.pagination.custom') }}
             </div>
         @endif
     </div>

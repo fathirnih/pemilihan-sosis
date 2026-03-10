@@ -4,14 +4,14 @@
 
 @section('admin.content')
 <div class="admin-page">
-    <div class="max-w-3xl">
+    <div class="admin-form-container">
         <div class="mb-6">
             <h1 class="admin-title">Edit Kandidat</h1>
             <p class="admin-subtitle">Perbarui data kandidat.</p>
         </div>
 
-        <a href="{{ route('admin.kandidat.index') }}" class="inline-flex items-center text-slate-600 hover:text-slate-900 mb-6">
-            ? Kembali ke daftar kandidat
+        <a href="{{ route('admin.kandidat.index') }}" class="admin-back-link">
+            &larr; Kembali ke daftar kandidat
         </a>
 
         <div class="admin-card admin-card-body">
@@ -37,6 +37,27 @@
                     @error('nomor_urut')
                         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                     @enderror
+                </div>
+
+                <div class="grid gap-4 md:grid-cols-2">
+                    <div class="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
+                        <label class="inline-flex items-center gap-3">
+                            <input type="checkbox" name="tampil_di_landing" value="1" class="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500" @checked(old('tampil_di_landing', $kandidat->tampil_di_landing))>
+                            <span class="text-sm font-semibold text-slate-800">Tampilkan di Landing Page</span>
+                        </label>
+                        <p class="mt-1 text-xs text-slate-500">Nonaktifkan jika kandidat tidak ingin ditampilkan di halaman utama website.</p>
+                        @error('tampil_di_landing')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-900 mb-2">Urutan Tampil Landing (Opsional)</label>
+                        <input type="number" name="landing_urutan" value="{{ old('landing_urutan', $kandidat->landing_urutan) }}" min="1" class="admin-input" placeholder="Contoh: 1">
+                        <p class="mt-1 text-xs text-slate-500">Kosongkan untuk mengikuti nomor urut kandidat.</p>
+                        @error('landing_urutan')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
                 </div>
 
                 <div>
@@ -122,7 +143,7 @@
                     @enderror
                 </div>
 
-                <div class="flex gap-3 pt-4">
+                <div class="admin-form-actions">
                     <button type="submit" class="flex-1 admin-btn admin-btn-primary justify-center">
                         <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>

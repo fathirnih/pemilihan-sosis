@@ -18,12 +18,18 @@ class Pemilih extends Model
         'nama',
         'jenis',
         'kelas_id',
+        'periode_pemilihan_id',
         'aktif',
     ];
 
     public function kelas(): BelongsTo
     {
         return $this->belongsTo(Kelas::class, 'kelas_id');
+    }
+
+    public function periodePemilihan(): BelongsTo
+    {
+        return $this->belongsTo(PeriodePemilihan::class, 'periode_pemilihan_id');
     }
 
     public function tokens(): HasMany

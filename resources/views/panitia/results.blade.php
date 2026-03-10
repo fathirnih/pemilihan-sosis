@@ -3,135 +3,219 @@
 @section('title', 'Hasil Pemilihan - Panitia')
 
 @section('panitia.content')
-<div class="px-4 py-8 lg:px-8">
-    <div class="max-w-6xl">
-        <div class="mb-6">
-            <h1 class="text-2xl font-bold text-slate-900">Hasil Pemilihan OSIS</h1>
-            <p class="mt-1 text-slate-600">Pantau hasil sementara secara real-time.</p>
+@php
+    $palette = ['#4f46e5', '#0f172a', '#0d9488', '#f97316', '#e11d48', '#7c3aed'];
+    $sortedKandidat = $kandidats->sortByDesc(fn ($kandidat) => $kandidat->suara->count())->values();
+@endphp
+
+<div class="admin-page">
+    <div class="admin-container max-w-7xl">
+        <div class="mb-4 flex flex-wrap items-center justify-end gap-2">
+            <button type="button" id="results-refresh-toggle" class="admin-btn admin-btn-primary">Pause Refresh</button>
+            <span id="results-refresh-status" class="admin-badge admin-badge-success">Auto-refresh aktif (5 detik)</span>
+            <span id="results-last-updated" class="admin-badge admin-badge-muted">Update: {{ now()->format('d M Y H:i:s') }}</span>
         </div>
-        <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm mb-8">
-            <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-                <div>
-                    <h2 class="text-lg font-semibold text-slate-900">Rekap Suara Lengkap</h2>
-                    <p class="text-sm text-slate-600">Detail per kandidat dengan visi & misi.</p>
-                </div>
-                <div class="flex items-center gap-3">
-                    <form method="GET" class="flex items-center gap-2">
-                        <label class="text-xs text-slate-500">Periode</label>
-                        <select name="periode_id" class="admin-select text-sm" onchange="this.form.submit()">
-                            @foreach ($periodes as $p)
-                                <option value="{{ $p->id }}" @selected((string) $p->id === (string) ($periodeId ?? $periode->id))>
-                                    {{ $p->nama_periode }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </form>
-                    <div class="text-xs text-slate-500">
-                        Update terakhir: {{ now()->format('d M Y H:i') }}
+
+        <div id="results-live" class="space-y-6 transition-opacity duration-200">
+            <section class="admin-card">
+                <div class="admin-card-body">
+                    <div class="admin-header mb-0">
+                        <div>
+                            <h1 class="admin-title">Hasil Pemilihan</h1>
+                            <p class="admin-subtitle">Pantau perolehan suara kandidat secara real-time dan terstruktur.</p>
+                        </div>
+
+                        <form method="GET" class="flex flex-wrap items-center gap-3">
+                            <label for="periode_id" class="text-sm font-medium text-slate-600">Periode</label>
+                            <select id="periode_id" name="periode_id" class="admin-select" onchange="this.form.submit()">
+                                @foreach ($periodes as $p)
+                                    <option value="{{ $p->id }}" @selected((string) $p->id === (string) ($periodeId ?? $periode->id))>
+                                        {{ $p->nama_periode }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            <span class="admin-badge admin-badge-muted">Realtime tanpa reload halaman</span>
+                        </form>
                     </div>
                 </div>
-            </div>
-        </div>
+            </section>
 
-        <!-- Ringkasan -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
-                <p class="text-slate-500 text-xs font-semibold uppercase tracking-wider mb-3">Total Suara</p>
-                <p class="text-4xl font-bold text-slate-900">{{ $totalSuara }}</p>
-            </div>
-            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
-                <p class="text-slate-500 text-xs font-semibold uppercase tracking-wider mb-3">Periode</p>
-                <p class="text-lg font-semibold text-slate-900">{{ $periode->nama_periode }}</p>
-                <p class="text-xs text-slate-500 mt-1">{{ ucfirst($periode->status) }}</p>
-            </div>
-            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
-                <p class="text-slate-500 text-xs font-semibold uppercase tracking-wider mb-3">Total Kandidat</p>
-                <p class="text-4xl font-bold text-slate-900">{{ $kandidats->count() }}</p>
-            </div>
-        </div>
+            <section class="admin-metrics">
+                <article class="admin-metric-card">
+                    <p class="admin-metric-label">Total Suara</p>
+                    <p class="admin-metric-value">{{ $totalSuara }}</p>
+                    <p class="admin-metric-sub">Akumulasi suara dari periode terpilih.</p>
+                </article>
 
-        <!-- Results -->
-        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
-            <h2 class="text-xl font-bold text-slate-900 mb-6">Daftar Kandidat</h2>
-            
-            @if ($kandidats->count() > 0)
-                <div class="space-y-6">
-                    @foreach ($kandidats->sortByDesc(fn($k) => $k->suara->count()) as $kandidat)
-                        @php
-                            $ketua = $kandidat->anggota->firstWhere('peran', 'ketua')?->pemilih?->nama;
-                            $wakil = $kandidat->anggota->firstWhere('peran', 'wakil')?->pemilih?->nama;
-                        @endphp
-                        <div class="border border-slate-200 rounded-2xl p-6 hover:shadow-md transition-shadow">
-                            <!-- Header -->
-                            <div class="flex justify-between items-start mb-4">
-                                <div class="flex-1">
-                                    <div class="flex items-center gap-3 mb-2">
-                                        <span class="inline-block px-3 py-1 bg-blue-100 text-blue-800 rounded-full font-bold text-sm">Nomor {{ $kandidat->nomor_urut }}</span>
-                                    </div>
-                                    <div class="text-sm text-slate-600">
-                                        <p>Ketua: <span class="font-semibold text-slate-900">{{ $ketua ?? '-' }}</span></p>
-                                        <p>Wakil: <span class="font-semibold text-slate-900">{{ $wakil ?? '-' }}</span></p>
-                                    </div>
-                                    <p class="text-slate-600 text-sm mt-2">Visi: {{ $kandidat->visi }}</p>
-                                    <p class="text-slate-600 text-sm">Misi: {{ $kandidat->misi }}</p>
-                                </div>
-                                <div class="text-right">
-                                    <p class="text-4xl font-bold text-blue-600">{{ $kandidat->suara->count() }}</p>
-                                    <p class="text-sm text-slate-600">suara</p>
-                                </div>
-                            </div>
+                <article class="admin-metric-card">
+                    <p class="admin-metric-label">Periode Aktif Ditampilkan</p>
+                    <p class="text-xl font-bold text-slate-900 mt-1">{{ $periode->nama_periode }}</p>
+                    <p class="admin-metric-sub">Status: {{ ucfirst($periode->status) }}</p>
+                </article>
 
-                            <!-- Progress Bar -->
-                            <div class="mb-3">
-                                <div class="bg-slate-200 rounded-full h-3 overflow-hidden">
-                                    <div 
-                                        class="bg-gradient-to-r from-blue-500 to-blue-600 h-3 transition-all duration-500"
-                                        style="width: {{ $totalSuara > 0 ? ($kandidat->suara->count() / $totalSuara * 100) : 0 }}%"
-                                    ></div>
-                                </div>
-                            </div>
+                <article class="admin-metric-card">
+                    <p class="admin-metric-label">Jumlah Kandidat</p>
+                    <p class="admin-metric-value">{{ $sortedKandidat->count() }}</p>
+                    <p class="admin-metric-sub">Kandidat yang ikut dalam periode ini.</p>
+                </article>
+            </section>
 
-                            <!-- Percentage -->
-                            <p class="text-sm font-semibold text-slate-900">
-                                {{ $totalSuara > 0 ? round($kandidat->suara->count() / $totalSuara * 100, 1) : 0 }}% 
-                                <span class="text-slate-500 font-normal">(dari {{ $totalSuara }} suara)</span>
-                            </p>
-
-                            <!-- Anggota -->
-                            @if ($kandidat->anggota->count() > 0)
-                                <div class="mt-4 pt-4 border-t border-slate-200">
-                                    <p class="text-xs text-slate-600 font-medium mb-2">Tim:</p>
-                                    <div class="space-y-1">
-                                        @foreach ($kandidat->anggota as $anggota)
-                                            <p class="text-sm text-slate-700">- {{ ucfirst($anggota->peran) }}: {{ $anggota->pemilih->nama ?? 'N/A' }}</p>
-                                        @endforeach
-                                    </div>
-                                </div>
-                            @endif
+            <section class="admin-card">
+                <div class="admin-card-body">
+                    <div class="mb-5 flex items-center justify-between gap-3">
+                        <div>
+                            <h2 class="text-lg font-semibold text-slate-900">Peringkat Kandidat</h2>
+                            <p class="text-sm text-slate-500">Urutan kandidat berdasarkan suara tertinggi.</p>
                         </div>
-                    @endforeach
-                </div>
+                        <p class="text-xs text-slate-500">Data tersinkron otomatis setiap 5 detik.</p>
+                    </div>
 
-                <!-- Info -->
-                <div class="mt-8 pt-6 border-t border-slate-200 text-sm text-slate-600">
-                    <p><strong>Catatan:</strong></p>
-                    <p>- Hasil pemilihan diupdate secara real-time</p>
-                    <p>- Halaman ini menampilkan jumlah suara untuk setiap kandidat</p>
-                    <p>- Akses panitia hanya untuk melihat hasil (read-only)</p>
+                    @if ($sortedKandidat->count() > 0)
+                        <div class="overflow-x-auto">
+                            <table class="admin-table min-w-[760px]">
+                                <thead class="admin-thead">
+                                    <tr>
+                                        <th class="admin-th w-20">Rank</th>
+                                        <th class="admin-th">Pasangan Kandidat</th>
+                                        <th class="admin-th">Visi dan Misi</th>
+                                        <th class="admin-th w-32 text-right">Suara</th>
+                                        <th class="admin-th w-44">Persentase</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100">
+                                    @foreach ($sortedKandidat as $index => $kandidat)
+                                        @php
+                                            $ketua = $kandidat->anggota->firstWhere('peran', 'ketua')?->pemilih?->nama;
+                                            $wakil = $kandidat->anggota->firstWhere('peran', 'wakil')?->pemilih?->nama;
+                                            $suara = $kandidat->suara->count();
+                                            $percent = $totalSuara > 0 ? round(($suara / $totalSuara) * 100, 1) : 0;
+                                            $color = $palette[$index % count($palette)];
+                                        @endphp
+                                        <tr class="hover:bg-slate-50/70">
+                                            <td class="admin-td">
+                                                <span class="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 text-xs font-bold text-slate-700">{{ $index + 1 }}</span>
+                                            </td>
+                                            <td class="admin-td">
+                                                <div class="space-y-1">
+                                                    <p class="text-sm font-semibold text-slate-900">{{ $ketua ?? '-' }}</p>
+                                                    <p class="text-xs text-slate-500">Wakil: {{ $wakil ?? '-' }}</p>
+                                                    <p class="text-xs text-slate-400">Nomor urut {{ $kandidat->nomor_urut }}</p>
+                                                </div>
+                                            </td>
+                                            <td class="admin-td">
+                                                <div class="space-y-1 text-xs text-slate-600">
+                                                    <p><span class="font-medium text-slate-700">Visi:</span> {{ $kandidat->visi }}</p>
+                                                    <p><span class="font-medium text-slate-700">Misi:</span> {{ $kandidat->misi }}</p>
+                                                </div>
+                                            </td>
+                                            <td class="admin-td text-right">
+                                                <p class="text-xl font-bold text-slate-900">{{ $suara }}</p>
+                                                <p class="text-xs text-slate-500">suara</p>
+                                            </td>
+                                            <td class="admin-td">
+                                                <div class="space-y-2">
+                                                    <p class="text-xs font-semibold text-slate-700">{{ $percent }}%</p>
+                                                    <div class="h-2.5 overflow-hidden rounded-full bg-slate-100">
+                                                        <div class="h-full rounded-full" style="width: {{ $percent }}%; background: {{ $color }}"></div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    @else
+                        <div class="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
+                            Belum ada data suara untuk periode ini.
+                        </div>
+                    @endif
                 </div>
-            @else
-                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
-                    <p class="text-yellow-900">Belum ada data suara. Silahkan tunggu pemilihan dimulai.</p>
-                </div>
-            @endif
+            </section>
         </div>
     </div>
 </div>
 
 <script>
-    // Auto-refresh every 5 seconds
-    setTimeout(() => {
-        location.reload();
+(() => {
+    const liveRegion = document.getElementById('results-live');
+    const toggleButton = document.getElementById('results-refresh-toggle');
+    const statusBadge = document.getElementById('results-refresh-status');
+    const updatedBadge = document.getElementById('results-last-updated');
+
+    if (!liveRegion) return;
+
+    let isPaused = false;
+    let isRefreshing = false;
+
+    const setRefreshState = () => {
+        if (toggleButton) {
+            toggleButton.textContent = isPaused ? 'Lanjutkan Refresh' : 'Pause Refresh';
+            toggleButton.className = isPaused ? 'admin-btn admin-btn-soft' : 'admin-btn admin-btn-primary';
+        }
+
+        if (statusBadge) {
+            statusBadge.textContent = isPaused ? 'Auto-refresh dijeda' : 'Auto-refresh aktif (5 detik)';
+            statusBadge.className = isPaused ? 'admin-badge admin-badge-muted' : 'admin-badge admin-badge-success';
+        }
+    };
+
+    const setUpdatedTime = () => {
+        if (!updatedBadge) return;
+
+        const now = new Date();
+        updatedBadge.textContent = `Update: ${now.toLocaleString('id-ID', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+        })}`;
+    };
+
+    const refreshResults = async () => {
+        if (isPaused || isRefreshing || document.hidden) return;
+
+        isRefreshing = true;
+        try {
+            const response = await fetch(window.location.href, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Cache-Control': 'no-cache',
+                },
+            });
+
+            if (!response.ok) return;
+
+            const html = await response.text();
+            const doc = new DOMParser().parseFromString(html, 'text/html');
+            const nextRegion = doc.getElementById('results-live');
+
+            if (!nextRegion) return;
+
+            liveRegion.classList.add('opacity-60');
+            liveRegion.innerHTML = nextRegion.innerHTML;
+            liveRegion.classList.remove('opacity-60');
+
+            setUpdatedTime();
+        } catch (error) {
+            console.error('Gagal refresh hasil panitia:', error);
+        } finally {
+            isRefreshing = false;
+        }
+    };
+
+    toggleButton?.addEventListener('click', () => {
+        isPaused = !isPaused;
+        setRefreshState();
+    });
+
+    setRefreshState();
+
+    setInterval(() => {
+        refreshResults();
     }, 5000);
+})();
 </script>
 @endsection

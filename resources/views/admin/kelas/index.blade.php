@@ -31,6 +31,24 @@
             </div>
         @endif
 
+        <section class="admin-metrics">
+            <div class="admin-metric-card">
+                <p class="admin-metric-label">Total Kelas</p>
+                <h3 class="admin-metric-value">{{ \App\Models\Kelas::count() }}</h3>
+                <p class="admin-metric-sub">Semua tingkat</p>
+            </div>
+            <div class="admin-metric-card">
+                <p class="admin-metric-label">Total Siswa</p>
+                <h3 class="admin-metric-value">{{ \App\Models\Pemilih::where('jenis', 'siswa')->count() }}</h3>
+                <p class="admin-metric-sub">Terdaftar sebagai pemilih</p>
+            </div>
+            <div class="admin-metric-card">
+                <p class="admin-metric-label">Kelas Berisi Siswa</p>
+                <h3 class="admin-metric-value">{{ \App\Models\Kelas::has('siswa')->count() }}</h3>
+                <p class="admin-metric-sub">Kelas aktif</p>
+            </div>
+        </section>
+
         <div class="admin-card overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="admin-table">
@@ -86,7 +104,7 @@
 
         @if ($kelas->hasPages())
             <div class="mt-6">
-                {{ $kelas->links() }}
+                {{ $kelas->links('vendor.pagination.custom') }}
             </div>
         @endif
     </div>

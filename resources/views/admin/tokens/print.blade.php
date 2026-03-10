@@ -1,200 +1,79 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>Cetak Token - {{ $token->nama_pemilih }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-            background: #f1f5f9;
-            color: #0f172a;
-            padding: 24px;
-        }
-
-        .wrapper {
-            max-width: 420px;
-            margin: 0 auto;
-        }
-
-        .token-card {
-            background: #ffffff;
-            border: 2px solid #1e3a8a;
-            border-radius: 14px;
-            overflow: hidden;
-            box-shadow: 0 14px 30px rgba(15, 23, 42, 0.18);
-        }
-
-        .card-header {
-            background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
-            color: #ffffff;
-            padding: 18px 20px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.25);
-        }
-
-        .title {
-            font-size: 12px;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            font-weight: 700;
-            opacity: 0.95;
-        }
-
-        .subtitle {
-            margin-top: 6px;
-            font-size: 13px;
-            opacity: 0.9;
-        }
-
-        .card-body {
-            padding: 18px 20px 16px;
-        }
-
-        .name {
-            font-size: 20px;
-            font-weight: 700;
-            margin-bottom: 4px;
-            word-break: break-word;
-        }
-
-        .meta {
-            font-size: 13px;
-            color: #334155;
-            margin-bottom: 2px;
-        }
-
-        .token-box {
-            margin-top: 14px;
-            padding: 12px;
-            border: 1px dashed #1e3a8a;
-            border-radius: 10px;
-            background: #eff6ff;
-        }
-
-        .token-label {
-            font-size: 11px;
-            text-transform: uppercase;
-            color: #1e3a8a;
-            font-weight: 700;
-            margin-bottom: 6px;
-        }
-
-        .token-value {
-            font-size: 18px;
-            line-height: 1.4;
-            letter-spacing: 1.2px;
-            font-family: "Courier New", monospace;
-            color: #0f172a;
-            word-break: break-all;
-            font-weight: 700;
-        }
-
-        .hint {
-            margin-top: 14px;
-            border-top: 1px solid #dbeafe;
-            padding-top: 10px;
-            font-size: 11px;
-            color: #475569;
-            line-height: 1.5;
-        }
-
-        .card-footer {
-            border-top: 1px solid #e2e8f0;
-            background: #f8fafc;
-            padding: 12px 20px;
-            font-size: 12px;
-            color: #475569;
-        }
-
-        .print-controls {
-            text-align: center;
-            margin-top: 16px;
-        }
-
-        .print-btn {
-            background: #1e40af;
-            color: #ffffff;
-            border: none;
-            border-radius: 8px;
-            padding: 10px 18px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        .print-btn:hover {
-            background: #1e3a8a;
-        }
-
-        @media print {
-            body {
-                background: #ffffff;
-                padding: 0;
-            }
-
-            .wrapper {
-                max-width: 100%;
-            }
-
-            .token-card {
-                box-shadow: none;
-            }
-
-            .print-controls {
-                display: none;
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .token-font { font-family: 'JetBrains Mono', monospace; letter-spacing: 0.15em; }
+        
+        @media print { 
+            .no-print { display: none !important; } 
+            body { background: white; padding: 0; display: flex; align-items: flex-start; justify-content: center; }
+            .print-card { 
+                box-shadow: none !important; 
+                border: 2px solid #e2e8f0 !important; 
+                width: 10cm; /* Ukuran lebar standar kartu saat diprint satuan */
+                margin-top: 1cm;
             }
         }
     </style>
 </head>
-<body>
-    @php
-        $kelasNama = $token->kelas?->nama_kelas ?? $token->pemilih?->kelas?->nama_kelas ?? '-';
-    @endphp
+<body class="bg-slate-50 min-h-screen flex items-center justify-center p-4">
 
-    <div class="wrapper">
-        <div class="token-card">
-            <div class="card-header">
-                <div class="title">Pemilihan OSIS</div>
-                <div class="subtitle">Kartu Token Pemilih</div>
-            </div>
-
-            <div class="card-body">
-                <div class="name">{{ $token->nama_pemilih }}</div>
-                <div class="meta">NISN/NIP: {{ $token->nis_pemilih }}</div>
-                <div class="meta">Kelas: {{ $kelasNama }}</div>
-
-                <div class="token-box">
-                    <div class="token-label">Kode Token</div>
-                    <div class="token-value">{{ $token->token }}</div>
-                </div>
-
-                <div class="hint">
-                    Simpan token ini dengan baik. Token hanya dapat digunakan satu kali saat pemungutan suara.
-                </div>
-            </div>
-
-            <div class="card-footer">
-                Dicetak: {{ now()->format('d/m/Y H:i') }}
-            </div>
+    <div class="w-full max-w-sm"> <div class="flex justify-between items-center mb-6 no-print">
+            <h1 class="text-base font-bold text-slate-800">Preview Kartu</h1>
+            <button onclick="window.print()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-bold shadow-md transition-all">
+                Cetak
+            </button>
         </div>
 
-        <div class="print-controls">
-            <button class="print-btn" onclick="window.print()">Cetak Kartu</button>
+        @php
+            $kelasNama = $token->kelas?->nama_kelas ?? $token->pemilih?->kelas?->nama_kelas ?? '-';
+        @endphp
+
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-xl overflow-hidden print-card">
+            
+            <header class="p-5 bg-blue-600 flex flex-col items-center justify-center text-center">
+                <div class="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center text-white mb-2 backdrop-blur-sm">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 14l9-5-9-5-9 5 9 5z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+                <h2 class="text-[9px] font-black text-blue-200 uppercase tracking-[0.2em]">Panitia Pemilihan OSIS</h2>
+                <h3 class="text-xl font-black text-white tracking-tight">KARTU TOKEN</h3>
+            </header>
+
+            <div class="p-6 flex flex-col items-center text-center">
+                <div class="w-full mb-4">
+                    <label class="text-[9px] font-bold text-slate-400 uppercase tracking-widest block">Nama Lengkap</label>
+                    <p class="text-base font-black text-slate-800 uppercase">{{ $token->nama_pemilih }}</p>
+                </div>
+                
+                <div class="flex items-center justify-center gap-6 w-full border-y border-slate-100 py-3 mb-5">
+                    <div>
+                        <label class="text-[9px] font-bold text-slate-400 uppercase tracking-widest block">NISN</label>
+                        <p class="font-bold text-slate-700 text-sm">{{ $token->nis_pemilih }}</p>
+                    </div>
+                    <div class="w-px h-8 bg-slate-200"></div>
+                    <div>
+                        <label class="text-[9px] font-bold text-slate-400 uppercase tracking-widest block">Kelas</label>
+                        <p class="font-bold text-slate-700 text-sm">{{ $kelasNama }}</p>
+                    </div>
+                </div>
+
+                <div class="w-full bg-slate-50 border-2 border-dashed border-blue-200 rounded-xl p-4">
+                    <label class="text-[9px] font-black text-blue-500 uppercase tracking-[0.2em] mb-1 block">Kode Rahasia</label>
+                    <p class="token-font text-2xl font-black text-blue-700">{{ $token->token }}</p>
+                </div>
+            </div>
+
+            <footer class="bg-slate-50 px-6 py-3 text-center border-t border-slate-100">
+                <p class="text-[8px] text-slate-400 font-bold uppercase tracking-widest">Sistem E-Voting &bull; {{ now()->format('Y') }}</p>
+            </footer>
         </div>
     </div>
 
-    <script>
-        if (new URLSearchParams(window.location.search).get('print') === '1') {
-            window.addEventListener('load', function () {
-                window.print();
-            });
-        }
-    </script>
 </body>
 </html>

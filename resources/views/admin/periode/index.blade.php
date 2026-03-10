@@ -31,6 +31,30 @@
             </div>
         @endif
 
+        @php
+            $totalPeriode = \App\Models\PeriodePemilihan::count();
+            $periodeAktif = \App\Models\PeriodePemilihan::where('status', 'aktif')->count();
+            $periodeDitutup = \App\Models\PeriodePemilihan::where('status', 'ditutup')->count();
+        @endphp
+
+        <section class="admin-metrics">
+            <div class="admin-metric-card">
+                <p class="admin-metric-label">Total Periode</p>
+                <h3 class="admin-metric-value">{{ $totalPeriode }}</h3>
+                <p class="admin-metric-sub">Seluruh data periode</p>
+            </div>
+            <div class="admin-metric-card">
+                <p class="admin-metric-label">Periode Aktif</p>
+                <h3 class="admin-metric-value">{{ $periodeAktif }}</h3>
+                <p class="admin-metric-sub">Sedang berjalan</p>
+            </div>
+            <div class="admin-metric-card">
+                <p class="admin-metric-label">Periode Ditutup</p>
+                <h3 class="admin-metric-value">{{ $periodeDitutup }}</h3>
+                <p class="admin-metric-sub">Sudah selesai</p>
+            </div>
+        </section>
+
         <div class="admin-card overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="admin-table">
@@ -109,7 +133,7 @@
 
         @if ($periodes->hasPages())
             <div class="mt-6">
-                {{ $periodes->links() }}
+                {{ $periodes->links('vendor.pagination.custom') }}
             </div>
         @endif
     </div>

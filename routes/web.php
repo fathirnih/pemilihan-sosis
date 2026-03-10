@@ -15,6 +15,7 @@ use App\Http\Controllers\KandidatController;
 use App\Http\Controllers\SuaraController;
 use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\PanitiaUserController;
+use App\Http\Controllers\LandingController;
 
 // Public routes - Voter
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
@@ -48,6 +49,8 @@ Route::middleware('admin')->group(function () {
     // Pemilih CRUD routes
     Route::get('/admin/pemilih', [PemilihController::class, 'index'])->name('admin.pemilih.index');
     Route::get('/admin/pemilih/create', [PemilihController::class, 'create'])->name('admin.pemilih.create');
+    Route::get('/admin/pemilih/import', [PemilihController::class, 'showImport'])->name('admin.pemilih.show-import');
+    Route::post('/admin/pemilih/import', [PemilihController::class, 'importData'])->name('admin.pemilih.import-data');
     Route::post('/admin/pemilih', [PemilihController::class, 'store'])->name('admin.pemilih.store');
     Route::get('/admin/pemilih/{id}/edit', [PemilihController::class, 'edit'])->name('admin.pemilih.edit');
     Route::put('/admin/pemilih/{id}', [PemilihController::class, 'update'])->name('admin.pemilih.update');
@@ -55,6 +58,8 @@ Route::middleware('admin')->group(function () {
     Route::get('/admin/pemilih/print-tokens', [PemilihController::class, 'printTokens'])->name('admin.pemilih.print-tokens');
     Route::post('/admin/pemilih/generate-token', [PemilihController::class, 'generateTokens'])->name('admin.pemilih.generate-token');
     Route::post('/admin/pemilih/hapus-token-semua', [PemilihController::class, 'deleteAllTokens'])->name('admin.pemilih.hapus-token-semua');
+    Route::delete('/admin/pemilih/{id}/hapus-token', [PemilihController::class, 'hapusSatuToken'])->name('admin.pemilih.hapus-satu-token');
+    Route::delete('/admin/pemilih/bulk-hapus-token', [PemilihController::class, 'bulkHapusToken'])->name('admin.pemilih.bulk-hapus-token');
     Route::post('/admin/pemilih/{id}/reset-token', [PemilihController::class, 'resetToken'])->name('admin.pemilih.reset-token');
 
     // Token print/pdf routes (keep)
@@ -122,6 +127,4 @@ Route::middleware('panitia')->group(function () {
 });
 
 // Default route - Landing page
-Route::get('/', function () {
-    return view('welcome-new');
-});
+Route::get('/', [LandingController::class, 'index'])->name('landing');

@@ -30,6 +30,30 @@
             </div>
         @endif
 
+        @php
+            $totalAdmin = \App\Models\Admin::count();
+            $adminAktif = \App\Models\Admin::where('aktif', true)->count();
+            $adminNonaktif = \App\Models\Admin::where('aktif', false)->count();
+        @endphp
+
+        <section class="admin-metrics">
+            <div class="admin-metric-card">
+                <p class="admin-metric-label">Total Admin</p>
+                <h3 class="admin-metric-value">{{ $totalAdmin }}</h3>
+                <p class="admin-metric-sub">Semua akun admin</p>
+            </div>
+            <div class="admin-metric-card">
+                <p class="admin-metric-label">Admin Aktif</p>
+                <h3 class="admin-metric-value">{{ $adminAktif }}</h3>
+                <p class="admin-metric-sub">Bisa login</p>
+            </div>
+            <div class="admin-metric-card">
+                <p class="admin-metric-label">Admin Nonaktif</p>
+                <h3 class="admin-metric-value">{{ $adminNonaktif }}</h3>
+                <p class="admin-metric-sub">Akun dibatasi</p>
+            </div>
+        </section>
+
         <div class="admin-card overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="admin-table">
@@ -91,7 +115,7 @@
 
         @if ($admins->hasPages())
             <div class="mt-6">
-                {{ $admins->links() }}
+                {{ $admins->links('vendor.pagination.custom') }}
             </div>
         @endif
     </div>
