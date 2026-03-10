@@ -25,23 +25,33 @@ class SuaraController extends Controller
         return view('admin.suara.index', compact('suara', 'periodes', 'periodeId'));
     }
 
-    public function create()
+    public function create(Request $request)
     {
         $periodes = PeriodePemilihan::orderByDesc('mulai_pada')->get();
-        $pemilih = Pemilih::orderBy('nama')->get();
-        $kandidats = Kandidat::with('anggota.pemilih')->orderBy('nomor_urut')->get();
+        $periodeId = $request->get('periode_id') ?: $periodes->first()?->id;
 
-        return view('admin.suara.create', compact('periodes', 'pemilih', 'kandidats'));
+        $pemilih = $periodeId
+            ? Pemilih::where('periode_pemilihan_id', $periodeId)->orderBy('nama')->get()
+            : collect();
+
+        $kandidats = $periodeId
+            ? Kandidat::with('anggota.pemilih')->where('periode_id', $periodeId)->orderBy('nomor_urut')->get()
+            : collect();
+
+        return view('admin.suara.create', compact('periodes', 'pemilih', 'kandidats', 'periodeId'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
             'periode_id' => 'required|exists:periode_pemilihan,id',
-            'kandidat_id' => 'required|exists:kandidat,id',
+            'kandidat_id' => [
+                'required',
+                Rule::exists('kandidat', 'id')->where('periode_id', $request->periode_id),
+            ],
             'pemilih_id' => [
                 'required',
-                'exists:pemilih,id',
+                Rule::exists('pemilih', 'id')->where('periode_pemilihan_id', $request->periode_id),
                 Rule::unique('suara')->where('periode_id', $request->periode_id),
             ],
         ]);
@@ -51,14 +61,21 @@ class SuaraController extends Controller
         return redirect()->route('admin.suara.index')->with('success', 'Suara berhasil ditambahkan.');
     }
 
-    public function edit($id)
+    public function edit(Request $request, $id)
     {
         $suara = Suara::findOrFail($id);
         $periodes = PeriodePemilihan::orderByDesc('mulai_pada')->get();
-        $pemilih = Pemilih::orderBy('nama')->get();
-        $kandidats = Kandidat::with('anggota.pemilih')->orderBy('nomor_urut')->get();
+        $periodeId = $request->get('periode_id') ?: $suara->periode_id;
 
-        return view('admin.suara.edit', compact('suara', 'periodes', 'pemilih', 'kandidats'));
+        $pemilih = $periodeId
+            ? Pemilih::where('periode_pemilihan_id', $periodeId)->orderBy('nama')->get()
+            : collect();
+
+        $kandidats = $periodeId
+            ? Kandidat::with('anggota.pemilih')->where('periode_id', $periodeId)->orderBy('nomor_urut')->get()
+            : collect();
+
+        return view('admin.suara.edit', compact('suara', 'periodes', 'pemilih', 'kandidats', 'periodeId'));
     }
 
     public function update(Request $request, $id)
@@ -67,10 +84,13 @@ class SuaraController extends Controller
 
         $request->validate([
             'periode_id' => 'required|exists:periode_pemilihan,id',
-            'kandidat_id' => 'required|exists:kandidat,id',
+            'kandidat_id' => [
+                'required',
+                Rule::exists('kandidat', 'id')->where('periode_id', $request->periode_id),
+            ],
             'pemilih_id' => [
                 'required',
-                'exists:pemilih,id',
+                Rule::exists('pemilih', 'id')->where('periode_pemilihan_id', $request->periode_id),
                 Rule::unique('suara')
                     ->where('periode_id', $request->periode_id)
                     ->ignore($suara->id),
