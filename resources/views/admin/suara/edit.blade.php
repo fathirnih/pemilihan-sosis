@@ -21,9 +21,9 @@
 
                 <div>
                     <label class="block text-sm font-semibold text-slate-900 mb-2">Periode</label>
-                    <select name="periode_id" class="admin-select w-full" required>
+                    <select name="periode_id" class="admin-select w-full" required onchange="window.location='{{ route('admin.suara.edit', $suara->id) }}?periode_id=' + this.value">
                         @foreach ($periodes as $p)
-                            <option value="{{ $p->id }}" @selected(old('periode_id', $suara->periode_id) == $p->id)>{{ $p->nama_periode }}</option>
+                            <option value="{{ $p->id }}" @selected(old('periode_id', $periodeId ?? $suara->periode_id) == $p->id)>{{ $p->nama_periode }}</option>
                         @endforeach
                     </select>
                     @error('periode_id')
