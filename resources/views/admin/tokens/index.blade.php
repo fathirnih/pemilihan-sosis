@@ -61,6 +61,16 @@
         </div>
     @endif
 
+    @if ($errors->any())
+        <div class="bg-rose-50 border border-rose-200 rounded-lg p-4 mb-6">
+            <ul class="text-rose-800 text-sm space-y-1">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
     <section class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden group">
             <div class="flex items-start justify-between">
@@ -211,7 +221,16 @@
                         </span>
                     </td>
                     <td class="px-6 py-4 text-sm text-slate-600 whitespace-nowrap">
-                        {{ $row->kelas?->nama_kelas ?? '-' }}
+                        @php
+                            $kelasLabel = '-';
+                            if ($row->kelas) {
+                                $kelasLabel = trim(
+                                    ($row->kelas->tingkat ? $row->kelas->tingkat . ' ' : '') .
+                                    ($row->kelas->nama_kelas ?? '')
+                                );
+                            }
+                        @endphp
+                        {{ $kelasLabel !== '' ? $kelasLabel : '-' }}
                     </td>
                     <td class="px-6 py-4">
                         @if ($token)
@@ -258,13 +277,17 @@
                             <div class="w-8 h-8"></div> {{-- Spacer --}}
                             @endif
 
-                            <form action="{{ route('admin.pemilih.destroy', $row->id) }}" method="POST" class="inline m-0" onsubmit="return confirm('Hapus pemilih ini?')">
+                            @if ($token)
+                            <form action="{{ route('admin.pemilih.hapus-satu-token', $row->id) }}" method="POST" class="inline m-0" onsubmit="return confirm('Hapus token pemilih ini?')">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all" title="Hapus">
+                                <button type="submit" class="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all" title="Hapus Token">
                                     <i class="w-4 h-4" data-lucide="trash-2"></i>
                                 </button>
                             </form>
+                            @else
+                            <div class="w-8 h-8"></div>
+                            @endif
                         </div>
                     </td>
                 </tr>
@@ -305,10 +328,10 @@
         </form>
 
         {{-- Form Hapus Terpilih --}}
-        <form action="{{ route('admin.pemilih.hapus-token-semua') }}" method="POST" class="m-0" id="form-hapus-terpilih" onsubmit="return confirm('Hapus pemilih/token yang dipilih?')">
+        <form action="{{ route('admin.pemilih.hapus-token-semua') }}" method="POST" class="m-0" id="form-hapus-terpilih" onsubmit="return confirm('Hapus token yang dipilih?')">
             @csrf
             <button type="submit" class="flex items-center gap-2 px-3 py-1.5 hover:bg-red-900/50 text-red-400 rounded-lg transition-colors text-sm">
-                <i class="w-4 h-4" data-lucide="trash-2"></i> Hapuss
+                <i class="w-4 h-4" data-lucide="trash-2"></i> Hapus Terpilih
             </button>
         </form>
 

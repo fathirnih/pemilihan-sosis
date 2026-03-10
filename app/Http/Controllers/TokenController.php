@@ -224,7 +224,7 @@ class TokenController extends Controller
             ->where('pemilih_id', $token->pemilih_id)
             ->delete();
 
-        $newToken = strtoupper(Str::random(6));
+        $newToken = strtoupper(Str::random(8));
 
         $token->update([
             'token' => $newToken,

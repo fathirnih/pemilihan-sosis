@@ -21,6 +21,8 @@ class Kandidat extends Model
         'foto',
         'foto_ketua',
         'foto_wakil',
+        'tampil_di_landing',
+        'landing_urutan',
     ];
 
     public function periode(): BelongsTo

@@ -1,8 +1,48 @@
 @extends('layouts.app')
 
 @section('content')
- <div class="min-h-screen bg-slate-50">
+ <div class="admin-theme min-h-screen bg-slate-50">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
+<style>
+    .admin-theme {
+        --scroll-track: #eef2ff;
+        --scroll-thumb: #94a3b8;
+        --scroll-thumb-hover: #6366f1;
+    }
+
+    .admin-theme * {
+        scrollbar-width: thin;
+        scrollbar-color: var(--scroll-thumb) var(--scroll-track);
+    }
+
+    .admin-theme ::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+    }
+
+    .admin-theme ::-webkit-scrollbar-track {
+        background: linear-gradient(180deg, #f8fafc 0%, var(--scroll-track) 100%);
+        border-radius: 9999px;
+    }
+
+    .admin-theme ::-webkit-scrollbar-thumb {
+        background: linear-gradient(180deg, #a5b4fc 0%, var(--scroll-thumb) 100%);
+        border: 2px solid #f8fafc;
+        border-radius: 9999px;
+    }
+
+    .admin-theme ::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(180deg, #818cf8 0%, var(--scroll-thumb-hover) 100%);
+    }
+
+    .admin-theme ::-webkit-scrollbar-corner {
+        background: transparent;
+    }
+
+    #adminSidebar nav {
+        scrollbar-gutter: stable;
+    }
+</style>
 
     <div id="page-loader" class="fixed inset-0 z-[9999] bg-slate-50/80 backdrop-blur-sm flex flex-col items-center justify-center transition-opacity duration-500">
     <div class="relative flex items-center justify-center">
@@ -25,7 +65,7 @@
              SIDEBAR
         ══════════════════════════════════════ --}}
         <aside id="adminSidebar"
-            class="fixed inset-y-0 left-0 z-30 w-72 -translate-x-full bg-white border-r border-slate-100 transition-transform duration-300 ease-in-out lg:static lg:translate-x-0 lg:w-64 flex flex-col"
+            class="fixed inset-y-0 left-0 z-30 w-72 -translate-x-full bg-white border-r border-slate-100 transition-transform duration-300 ease-in-out lg:sticky lg:top-0 lg:h-screen lg:self-start lg:translate-x-0 lg:w-64 flex flex-col"
             style="box-shadow: 1px 0 0 0 #f1f5f9, 4px 0 24px rgba(0,0,0,0.04)">
 
             {{-- ── Brand ── --}}

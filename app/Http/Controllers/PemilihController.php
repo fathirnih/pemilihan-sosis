@@ -7,6 +7,7 @@ use App\Models\TokenPemilih;
 use App\Models\PeriodePemilihan;
 use App\Models\Kelas;
 use App\Models\Suara;
+use App\Models\KandidatAnggota;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
@@ -137,6 +138,7 @@ class PemilihController extends Controller
 
         try {
             DB::transaction(function () use ($pemilih) {
+                KandidatAnggota::where('pemilih_id', $pemilih->id)->delete();
                 Suara::where('pemilih_id', $pemilih->id)->delete();
                 TokenPemilih::where('pemilih_id', $pemilih->id)->delete();
                 $pemilih->delete();
@@ -216,29 +218,96 @@ class PemilihController extends Controller
 
     public function deleteAllTokens(Request $request)
     {
-        $periodeId = $request->periode_id;
-        if (!$periodeId) return back()->withErrors(['error' => 'Periode tidak valid.']);
+        $selectedIds = collect($request->input('ids', []))
+            ->filter()
+            ->map(fn ($id) => (int) $id)
+            ->unique()
+            ->values()
+            ->all();
+
+        $pemilihIds = $request->input('select_all_pages') === '1'
+            ? $this->buildFilteredPemilihQuery($request)->pluck('id')->all()
+            : $selectedIds;
+
+        if (empty($pemilihIds)) {
+            return back()->withErrors(['error' => 'Tidak ada pemilih yang dipilih.']);
+        }
 
         try {
-            DB::transaction(function () use ($periodeId, $request) {
-                $query = TokenPemilih::where('periode_id', $periodeId);
-
-                if ($request->has('ids') && is_array($request->ids) && $request->select_all_pages != '1') {
-                    $query->whereIn('pemilih_id', $request->ids);
-                }
-
-                $pemilihIds = $query->pluck('pemilih_id')->toArray();
-                
-                if (!empty($pemilihIds)) {
-                    Suara::where('periode_id', $periodeId)->whereIn('pemilih_id', $pemilihIds)->delete();
-                    $query->delete();
-                }
+            $deletedTokenCount = 0;
+            DB::transaction(function () use ($pemilihIds, &$deletedTokenCount) {
+                Suara::whereIn('pemilih_id', $pemilihIds)->delete();
+                $deletedTokenCount = TokenPemilih::whereIn('pemilih_id', $pemilihIds)->delete();
             });
 
-            return back()->with('success', 'Data token dan riwayat suara terpilih berhasil dihapus.');
+            if ($deletedTokenCount === 0) {
+                return back()->withErrors(['error' => 'Token untuk data terpilih tidak ditemukan.']);
+            }
+
+            return back()->with('success', "Berhasil menghapus {$deletedTokenCount} token terpilih.");
         } catch (\Exception $e) {
             return back()->withErrors(['error' => 'Gagal menghapus: ' . $e->getMessage()]);
         }
+    }
+
+    public function hapusSatuToken($id)
+    {
+        $pemilih = Pemilih::findOrFail($id);
+
+        try {
+            $deletedTokenCount = 0;
+            DB::transaction(function () use ($pemilih, &$deletedTokenCount) {
+                Suara::where('pemilih_id', $pemilih->id)->delete();
+                $deletedTokenCount = TokenPemilih::where('pemilih_id', $pemilih->id)->delete();
+            });
+
+            if ($deletedTokenCount === 0) {
+                return back()->withErrors(['error' => "Token untuk {$pemilih->nama} tidak ditemukan."]);
+            }
+
+            return back()->with('success', "Token {$pemilih->nama} berhasil dihapus.");
+        } catch (\Exception $e) {
+            return back()->withErrors(['error' => 'Gagal menghapus token: ' . $e->getMessage()]);
+        }
+    }
+
+    public function bulkHapusToken(Request $request)
+    {
+        return $this->deleteAllTokens($request);
+    }
+
+    private function buildFilteredPemilihQuery(Request $request)
+    {
+        $query = Pemilih::query();
+
+        if ($request->filled('periode_id')) {
+            $query->where('periode_pemilihan_id', $request->input('periode_id'));
+        }
+
+        if ($request->filled('q')) {
+            $q = $request->input('q');
+            $query->where(function ($sub) use ($q) {
+                $sub->where('nama', 'like', '%' . $q . '%')
+                    ->orWhere('nisn', 'like', '%' . $q . '%');
+            });
+        }
+
+        if ($request->filled('jenis')) {
+            $query->where('jenis', $request->input('jenis'));
+        }
+
+        if ($request->filled('tingkat')) {
+            $tingkat = $request->input('tingkat');
+            $query->whereHas('kelas', function ($sub) use ($tingkat) {
+                $sub->where('tingkat', $tingkat);
+            });
+        }
+
+        if ($request->filled('kelas_id')) {
+            $query->where('kelas_id', $request->input('kelas_id'));
+        }
+
+        return $query;
     }
 
     public function printTokens(Request $request)

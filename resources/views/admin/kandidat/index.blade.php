@@ -25,7 +25,41 @@
             </div>
         @endif
 
-        <div class="admin-card admin-card-body mb-6">
+        @php
+            $periodeAktif = $periodes->firstWhere('id', (int) $periodeId);
+            $totalKandidat = \App\Models\Kandidat::where('periode_id', $periodeId)->count();
+            $totalSuaraPeriode = \App\Models\Suara::where('periode_id', $periodeId)->count();
+            $pasanganLengkap = \App\Models\Kandidat::where('periode_id', $periodeId)
+                ->whereHas('anggota', fn ($q) => $q->where('peran', 'ketua'))
+                ->whereHas('anggota', fn ($q) => $q->where('peran', 'wakil'))
+                ->count();
+            $tampilLanding = \App\Models\Kandidat::where('periode_id', $periodeId)->where('tampil_di_landing', true)->count();
+        @endphp
+
+        <section class="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
+            <div class="admin-metric-card">
+                <p class="admin-metric-label">Kandidat Periode</p>
+                <h3 class="admin-metric-value">{{ $totalKandidat }}</h3>
+                <p class="admin-metric-sub">{{ $periodeAktif?->nama_periode ?? 'Periode dipilih' }}</p>
+            </div>
+            <div class="admin-metric-card">
+                <p class="admin-metric-label">Total Suara</p>
+                <h3 class="admin-metric-value">{{ $totalSuaraPeriode }}</h3>
+                <p class="admin-metric-sub">Suara di periode ini</p>
+            </div>
+            <div class="admin-metric-card">
+                <p class="admin-metric-label">Pasangan Lengkap</p>
+                <h3 class="admin-metric-value">{{ $pasanganLengkap }}</h3>
+                <p class="admin-metric-sub">Memiliki ketua dan wakil</p>
+            </div>
+            <div class="admin-metric-card">
+                <p class="admin-metric-label">Tampil di Landing</p>
+                <h3 class="admin-metric-value">{{ $tampilLanding }}</h3>
+                <p class="admin-metric-sub">Kandidat dipublikasikan ke halaman utama</p>
+            </div>
+        </section>
+
+        <div class="admin-filter-panel">
             <form method="GET" class="flex flex-wrap items-end gap-3">
                 <div>
                     <label class="block text-sm font-semibold text-slate-700 mb-2">Periode</label>
@@ -51,6 +85,7 @@
                             <th class="admin-th">Foto Ketua</th>
                             <th class="admin-th">Foto Wakil</th>
                             <th class="admin-th">Visi</th>
+                            <th class="admin-th">Landing</th>
                             <th class="admin-th">Aksi</th>
                         </tr>
                     </thead>
@@ -88,6 +123,14 @@
                                 </td>
                                 <td class="admin-td text-slate-600">{{ \Illuminate\Support\Str::limit($item->visi, 60) }}</td>
                                 <td class="admin-td">
+                                    @if ($item->tampil_di_landing)
+                                        <span class="admin-badge admin-badge-success">Tampil</span>
+                                        <p class="mt-1 text-xs text-slate-500">Urutan: {{ $item->landing_urutan ?? $item->nomor_urut }}</p>
+                                    @else
+                                        <span class="admin-badge admin-badge-muted">Disembunyikan</span>
+                                    @endif
+                                </td>
+                                <td class="admin-td">
                                     <div class="flex flex-wrap gap-2">
                                         <a href="{{ route('admin.kandidat.edit', $item->id) }}" class="admin-btn admin-btn-warning text-xs px-3 py-2">
                                             <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -113,7 +156,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="9" class="px-6 py-8 text-center text-slate-600">Belum ada kandidat</td>
+                                <td colspan="10" class="px-6 py-8 text-center text-slate-600">Belum ada kandidat</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -123,7 +166,7 @@
 
         @if ($kandidats->hasPages())
             <div class="mt-6">
-                {{ $kandidats->links() }}
+                {{ $kandidats->links('vendor.pagination.custom') }}
             </div>
         @endif
     </div>

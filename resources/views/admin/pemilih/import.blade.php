@@ -3,15 +3,15 @@
 @section('title', 'Import Pemilih - Admin')
 
 @section('admin.content')
-<div class="px-4 py-8 lg:px-8">
-    <div class="max-w-3xl">
+<div class="admin-page">
+    <div class="admin-form-container">
         <div class="mb-6">
-            <h2 class="text-2xl font-bold text-slate-900">Import Pemilih</h2>
-            <p class="mt-1 text-slate-600">Impor data pemilih dari file Excel atau CSV</p>
+            <h1 class="admin-title">Import Pemilih</h1>
+            <p class="admin-subtitle">Impor data pemilih dari file Excel atau CSV.</p>
         </div>
 
-        <a href="{{ route('admin.pemilih.index') }}" class="inline-flex items-center text-slate-600 hover:text-slate-900 mb-6">
-            ← Kembali ke daftar pemilih
+        <a href="{{ route('admin.pemilih.index') }}" class="admin-back-link">
+            &larr; Kembali ke daftar pemilih
         </a>
 
         @if (session('success'))
@@ -24,14 +24,14 @@
                     <p class="text-yellow-800 font-semibold mb-2">Peringatan:</p>
                     <ul class="text-yellow-700 text-sm space-y-1">
                         @foreach (session('import_errors', []) as $error)
-                            <li>• {{ $error }}</li>
+                            <li>- {{ $error }}</li>
                         @endforeach
                     </ul>
                 </div>
             @endif
         @endif
 
-        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-8">
+        <div class="admin-card admin-card-body">
             <form action="{{ route('admin.pemilih.import-data') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
                 @csrf
 
@@ -42,7 +42,7 @@
                     <select
                         name="periode_pemilihan_id"
                         id="periode_pemilihan_id"
-                        class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400 @error('periode_pemilihan_id') border-red-500 @enderror"
+                        class="admin-select w-full @error('periode_pemilihan_id') border-red-500 @enderror"
                         required
                     >
                         <option value="">Pilih periode</option>
@@ -66,7 +66,7 @@
                         name="file"
                         id="file"
                         accept=".xlsx,.csv"
-                        class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400 @error('file') border-red-500 @enderror"
+                        class="admin-input @error('file') border-red-500 @enderror"
                         required
                     >
                     @error('file')
@@ -75,33 +75,29 @@
                     <p class="text-slate-500 text-xs mt-2">Format file yang didukung: .xlsx, .csv</p>
                 </div>
 
-                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                    <p class="text-blue-900 text-sm font-semibold mb-2">Format File:</p>
-                    <p class="text-blue-800 text-sm mb-3">File harus memiliki kolom berikut (header di baris pertama):</p>
-                    <ul class="text-blue-800 text-sm space-y-1 ml-4">
-                        <li>• <strong>NISN</strong> - Nomor identitas (wajib)</li>
-                        <li>• <strong>Nama</strong> - Nama lengkap (wajib)</li>
-                        <li>• <strong>Tingkat</strong> - Tingkat kelas (1, 2, 3 untuk siswa, kosong untuk guru)</li>
-                        <li>• <strong>Nama Kelas</strong> - Nama kelas (misal:  IPA 1,  RPL 2)</li>
+                <div class="rounded-lg border border-blue-200 bg-blue-50 p-4">
+                    <p class="mb-2 text-sm font-semibold text-blue-900">Format File:</p>
+                    <p class="mb-3 text-sm text-blue-800">File harus memiliki kolom header di baris pertama:</p>
+                    <ul class="ml-4 space-y-1 text-sm text-blue-800">
+                        <li>- <strong>NISN</strong> (wajib)</li>
+                        <li>- <strong>Nama</strong> (wajib)</li>
+                        <li>- <strong>Tingkat</strong> (1, 2, 3 untuk siswa, kosong untuk guru)</li>
+                        <li>- <strong>Nama Kelas</strong> (contoh: 12 IPA 1, 11 RPL 2)</li>
                     </ul>
                 </div>
 
-                <div class="bg-amber-50 border border-amber-200 rounded-lg p-4">
-                    <p class="text-amber-900 text-sm font-semibold mb-2">Catatan:</p>
-                    <ul class="text-amber-800 text-sm space-y-1 ml-4">
-                        <li>• Jenis pemilih otomatis ditentukan (siswa jika ada tingkat, guru jika kosong)</li>
-                        <li>• Duplikat NISN dalam periode yang sama akan di-skip</li>
-                        <li>• Nama kelas dan Tingkat harus sesuai dengan data kelas yang sudah ada</li>
+                <div class="rounded-lg border border-amber-200 bg-amber-50 p-4">
+                    <p class="mb-2 text-sm font-semibold text-amber-900">Catatan:</p>
+                    <ul class="ml-4 space-y-1 text-sm text-amber-800">
+                        <li>- Jenis pemilih otomatis ditentukan (siswa jika ada tingkat, guru jika kosong).</li>
+                        <li>- Duplikat NISN di periode yang sama akan dilewati.</li>
+                        <li>- Nama kelas dan tingkat harus sesuai data kelas yang sudah ada.</li>
                     </ul>
                 </div>
 
-                <div class="flex gap-3 pt-4">
-                    <button type="submit" class="flex-1 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors">
-                        Import
-                    </button>
-                    <a href="{{ route('admin.pemilih.index') }}" class="flex-1 px-6 py-3 bg-slate-900 hover:bg-slate-800 text-white font-semibold rounded-lg transition-colors text-center">
-                        Batal
-                    </a>
+                <div class="admin-form-actions">
+                    <button type="submit" class="flex-1 admin-btn admin-btn-primary justify-center">Import</button>
+                    <a href="{{ route('admin.pemilih.index') }}" class="flex-1 admin-btn admin-btn-soft justify-center">Batal</a>
                 </div>
             </form>
         </div>

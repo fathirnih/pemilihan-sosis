@@ -15,6 +15,7 @@ use App\Http\Controllers\KandidatController;
 use App\Http\Controllers\SuaraController;
 use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\PanitiaUserController;
+use App\Http\Controllers\LandingController;
 
 // Public routes - Voter
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
@@ -126,6 +127,4 @@ Route::middleware('panitia')->group(function () {
 });
 
 // Default route - Landing page
-Route::get('/', function () {
-    return view('welcome-new');
-});
+Route::get('/', [LandingController::class, 'index'])->name('landing');

@@ -4,14 +4,14 @@
 
 @section('admin.content')
 <div class="admin-page">
-    <div class="max-w-3xl">
+    <div class="admin-form-container">
         <div class="mb-6">
             <h1 class="admin-title">Edit Panitia</h1>
             <p class="admin-subtitle">Perbarui data akun panitia.</p>
         </div>
 
-        <a href="{{ route('admin.panitia.index') }}" class="inline-flex items-center text-slate-600 hover:text-slate-900 mb-6">
-            <- Kembali ke daftar panitia
+        <a href="{{ route('admin.panitia.index') }}" class="admin-back-link">
+            &larr; Kembali ke daftar panitia
         </a>
 
         <div class="admin-card admin-card-body">
@@ -48,7 +48,7 @@
                     <input type="checkbox" name="aktif" value="1" class="h-4 w-4" {{ old('aktif', $panitia->aktif) ? 'checked' : '' }}>
                     <span class="text-sm text-slate-700">Aktif</span>
                 </div>
-                <div class="flex gap-3 pt-4">
+                <div class="admin-form-actions">
                     <button type="submit" class="flex-1 admin-btn admin-btn-primary justify-center">
                         <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>

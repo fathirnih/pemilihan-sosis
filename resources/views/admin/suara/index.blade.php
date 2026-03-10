@@ -3,14 +3,14 @@
 @section('title', 'Suara - Admin')
 
 @section('admin.content')
-<div class="px-4 py-8 lg:px-8">
-    <div class="max-w-6xl">
-        <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-6">
+<div class="admin-page">
+    <div class="admin-container">
+        <div class="admin-header">
             <div>
-                <h1 class="text-2xl font-bold text-slate-900">Suara</h1>
-                <p class="mt-1 text-slate-600">Kelola data suara pemilih.</p>
+                <h1 class="admin-title">Suara</h1>
+                <p class="admin-subtitle">Kelola data suara pemilih.</p>
             </div>
-            <a href="{{ route('admin.suara.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-md transition-colors text-sm shadow-sm">
+            <a href="{{ route('admin.suara.create') }}" class="admin-btn admin-btn-primary">
                 Tambah Suara
             </a>
         </div>
@@ -21,11 +21,42 @@
             </div>
         @endif
 
-        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-5 mb-6">
+        @if ($errors->any())
+            <div class="bg-rose-50 border border-rose-200 rounded-lg p-4 mb-6">
+                <p class="text-rose-800">{{ $errors->first() }}</p>
+            </div>
+        @endif
+
+        @php
+            $totalSuaraPeriode = \App\Models\Suara::where('periode_id', $periodeId)->count();
+            $totalTokenPeriode = \App\Models\TokenPemilih::where('periode_id', $periodeId)->count();
+            $sudahMemilihPeriode = \App\Models\TokenPemilih::where('periode_id', $periodeId)->where('sudah_memilih', true)->count();
+            $partisipasi = $totalTokenPeriode > 0 ? round(($sudahMemilihPeriode / $totalTokenPeriode) * 100, 1) : 0;
+        @endphp
+
+        <section class="admin-metrics">
+            <div class="admin-metric-card">
+                <p class="admin-metric-label">Total Suara</p>
+                <h3 class="admin-metric-value">{{ $totalSuaraPeriode }}</h3>
+                <p class="admin-metric-sub">Periode dipilih</p>
+            </div>
+            <div class="admin-metric-card">
+                <p class="admin-metric-label">Sudah Memilih</p>
+                <h3 class="admin-metric-value">{{ $sudahMemilihPeriode }}</h3>
+                <p class="admin-metric-sub">Dari token aktif periode</p>
+            </div>
+            <div class="admin-metric-card">
+                <p class="admin-metric-label">Partisipasi</p>
+                <h3 class="admin-metric-value">{{ $partisipasi }}%</h3>
+                <p class="admin-metric-sub">{{ $totalTokenPeriode }} total token</p>
+            </div>
+        </section>
+
+        <div class="admin-filter-panel">
             <form method="GET" class="flex flex-wrap items-end gap-3">
                 <div>
                     <label class="block text-sm font-semibold text-slate-700 mb-2">Periode</label>
-                    <select name="periode_id" class="rounded-lg border border-slate-300 px-3 py-2" onchange="this.form.submit()">
+                    <select name="periode_id" class="admin-select" onchange="this.form.submit()">
                         @foreach ($periodes as $p)
                             <option value="{{ $p->id }}" @selected((string) $p->id === (string) $periodeId)>{{ $p->nama_periode }}</option>
                         @endforeach
@@ -34,36 +65,36 @@
             </form>
         </div>
 
-        <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="admin-card overflow-hidden">
             <div class="overflow-x-auto">
-                <table class="w-full">
-                    <thead class="bg-slate-50 border-b border-slate-200">
+                <table class="admin-table">
+                    <thead class="admin-thead">
                         <tr>
-                            <th class="px-6 py-4 text-left text-sm font-semibold text-slate-900">No</th>
-                            <th class="px-6 py-4 text-left text-sm font-semibold text-slate-900">Pemilih</th>
-                            <th class="px-6 py-4 text-left text-sm font-semibold text-slate-900">NISN/NIP</th>
-                            <th class="px-6 py-4 text-left text-sm font-semibold text-slate-900">Kandidat</th>
-                            <th class="px-6 py-4 text-left text-sm font-semibold text-slate-900">Waktu</th>
-                            <th class="px-6 py-4 text-left text-sm font-semibold text-slate-900">Aksi</th>
+                            <th class="admin-th">No</th>
+                            <th class="admin-th">Pemilih</th>
+                            <th class="admin-th">NISN/NIP</th>
+                            <th class="admin-th">Kandidat</th>
+                            <th class="admin-th">Waktu</th>
+                            <th class="admin-th">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-200">
                         @forelse ($suara as $item)
                             <tr class="hover:bg-slate-50 transition-colors">
-                                <td class="px-6 py-4 text-sm text-slate-900">{{ $loop->iteration }}</td>
-                                <td class="px-6 py-4 text-sm text-slate-900 font-medium">{{ $item->pemilih?->nama }}</td>
-                                <td class="px-6 py-4 text-sm text-slate-600">{{ $item->pemilih?->nisn }}</td>
-                                <td class="px-6 py-4 text-sm text-slate-700">{{ $item->kandidat?->nomor_urut }} - {{ 
+                                <td class="admin-td text-slate-900">{{ $loop->iteration }}</td>
+                                <td class="admin-td text-slate-900 font-medium">{{ $item->pemilih?->nama }}</td>
+                                <td class="admin-td text-slate-600">{{ $item->pemilih?->nisn }}</td>
+                                <td class="admin-td text-slate-700">{{ $item->kandidat?->nomor_urut }} - {{ 
                                     $item->kandidat?->anggota?->firstWhere('peran', 'ketua')?->pemilih?->nama ?? 'Kandidat'
                                 }}</td>
-                                <td class="px-6 py-4 text-sm text-slate-600">{{ $item->created_at?->format('d M Y H:i') }}</td>
-                                <td class="px-6 py-4 text-sm">
+                                <td class="admin-td text-slate-600">{{ $item->created_at?->format('d M Y H:i') }}</td>
+                                <td class="admin-td">
                                     <div class="flex flex-wrap gap-2">
-                                        <a href="{{ route('admin.suara.edit', $item->id) }}" class="px-3 py-2 bg-amber-500 hover:bg-amber-600 text-white text-xs font-medium rounded transition-colors">Edit</a>
+                                        <a href="{{ route('admin.suara.edit', $item->id) }}" class="admin-btn admin-btn-warning text-xs px-3 py-2">Edit</a>
                                         <form action="{{ route('admin.suara.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Hapus suara ini?')" class="inline">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="px-3 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-medium rounded transition-colors">Hapus</button>
+                                            <button type="submit" class="admin-btn admin-btn-danger text-xs px-3 py-2">Hapus</button>
                                         </form>
                                     </div>
                                 </td>
@@ -80,7 +111,7 @@
 
         @if ($suara->hasPages())
             <div class="mt-6">
-                {{ $suara->links() }}
+                {{ $suara->links('vendor.pagination.custom') }}
             </div>
         @endif
     </div>
